@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">E-Commerce</string>
+    <string name="rightAddress">The Right Address\nFor Shopping\nAny Day</string>
+    <string name="quality">It is now very easy to reach the\nbest quality among the\nproducts on the internet!</string>
+    <string name="start">Start</string>
+    <string name="g_log_in">Login</string>
+    <string name="g_register">Register</string>
+    <string name="lets_login">Let\'s Login</string>
+    <string name="dont_have_account">"Don't have an account? Register "</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forget_password">Forget Password?</string>
+    <string name="facebook">Facebook</string>
+    <string name="gmail">Gmail</string>
+    <string name="lets_register">let\'s Register</string>
+    <string name="fristName">First Name</string>
+    <string name="lastName">Last Name</string>
+
+    <string name="webClint_id">754586980531-tu65s12gv40kg9442q4jd8nhq0vqq5jl.apps.googleusercontent.com</string>
+</resources>

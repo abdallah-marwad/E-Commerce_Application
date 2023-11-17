@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_register_graph"
+    app:startDestination="@id/introductionFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.abdallah.ecommerce.ui.fragment.login.LoginFragment"
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login"
+        >
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+           app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountOptionFragment"
+        android:name="com.abdallah.ecommerce.ui.fragment.AccountOptionFragment"
+        android:label="AccountOptionFragment"
+        tools:layout="@layout/fragment_account_options"
+        >
+        <action
+            android:id="@+id/action_accountOptionFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left"
+            />
+        <action
+            android:id="@+id/action_accountOptionFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+           app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.abdallah.ecommerce.ui.registeration.RegisterFragment"
+        android:label="RegisterFragment"
+        tools:layout="@layout/fragment_register"
+        >
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/introductionFragment"
+        android:name="com.abdallah.ecommerce.ui.fragment.IntroductionFragment"
+        android:label="IntroductionFragment"
+        tools:layout="@layout/fragment_introduction"
+        >
+        <action
+            android:id="@+id/action_introductionFragment_to_accountOptionFragment"
+            app:destination="@id/accountOptionFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
+    </fragment>
+</navigation>
