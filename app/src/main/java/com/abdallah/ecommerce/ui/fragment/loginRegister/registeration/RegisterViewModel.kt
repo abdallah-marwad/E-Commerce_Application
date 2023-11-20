@@ -1,10 +1,10 @@
-package com.abdallah.ecommerce.ui.registeration
+package com.abdallah.ecommerce.ui.fragment.loginRegister.registeration
 
 import android.app.Activity
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdallah.ecommerce.utils.InternetConnection
 import com.abdallah.ecommerce.utils.Resource
@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.registeration.RegisterWithGoogle
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.UserProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -31,8 +32,9 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val google:  RegisterWithGoogle,
+    application: Application,
 
-) : ViewModel() {
+    ) : AndroidViewModel(application) {
 
 
 
@@ -44,15 +46,17 @@ class RegisterViewModel @Inject constructor(
 
     private val _register = MutableStateFlow<Resource<String>>(Resource.UnSpecified())
     val register: Flow<Resource<String>> = _register
+    val googleRegister: Flow<Resource<String>> = google.googleRegister
+
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun createAccountWithEmailAndPassword(
         user: User,
         password: String,
-        application: Application
     ) {
         viewModelScope.launch {
-            if (!InternetConnection().hasInternetConnection(application)) {
+            if (!InternetConnection().hasInternetConnection(getApplication())) {
                 _noInternet.send(true)
                 return@launch
             }
@@ -93,8 +97,16 @@ class RegisterViewModel @Inject constructor(
                 }
             }
     }
-     fun googleSignInRequest(activity : Activity) =
-         google.googleSignInRequest(activity)
+     @RequiresApi(Build.VERSION_CODES.M)
+     suspend fun googleSignInRequest(activity : Activity) : GoogleSignInClient? {
+         if(!InternetConnection().hasInternetConnection(getApplication())){
+                 _noInternet.send(true)
+                 return null
+
+         }
+         return google.googleSignInRequest(activity)
+     }
+
 
 
 

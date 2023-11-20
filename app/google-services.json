@@ -14,11 +14,56 @@
       },
       "oauth_client": [
         {
-          "client_id": "754586980531-tu65s12gv40kg9442q4jd8nhq0vqq5jl.apps.googleusercontent.com",
+          "client_id": "754586980531-gpcse9rkijpa8lh48est909t81evojab.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.abdallah.ecommerce",
-            "certificate_hash": "25d51a3b3674059a47be752002193a024de4423d"
+            "certificate_hash": "ba0f1f046c5774089e28b42a48ef475e45326c5f"
+          }
+        },
+        {
+          "client_id": "754586980531-ii70i559fu9jg8fpb5svfd3si6lpdib9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.abdallah.ecommerce",
+            "certificate_hash": "0521040b4609968719b8969391fe71f5622ccd87"
+          }
+        },
+        {
+          "client_id": "754586980531-joda3s719mjukr1o8gqt1kg28pvi0be2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCin0gI5kboCgfnTvSkLdeg8riEJxk7xzg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754586980531-joda3s719mjukr1o8gqt1kg28pvi0be2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754586980531:android:61ded61eab075b18dc60c6",
+        "android_client_info": {
+          "package_name": "com.example.study"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754586980531-7t7fipgvjsukqnel6547olofvnthem0u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.study",
+            "certificate_hash": "0521040b4609968719b8969391fe71f5622ccd87"
           }
         },
         {

@@ -16,5 +16,7 @@
     <string name="fristName">First Name</string>
     <string name="lastName">Last Name</string>
 
-    <string name="webClint_id">754586980531-tu65s12gv40kg9442q4jd8nhq0vqq5jl.apps.googleusercontent.com</string>
+    <string name="webClint_id">754586980531-joda3s719mjukr1o8gqt1kg28pvi0be2.apps.googleusercontent.com</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

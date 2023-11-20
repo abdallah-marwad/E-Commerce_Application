@@ -143,18 +143,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_Register" />
+
     <TextView
         android:id="@+id/orTxt"
         android:layout_width="30dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintStart_toStartOf="@id/divider"
-        app:layout_constraintEnd_toEndOf="@id/divider"
-        android:text="OR"
         android:background="@color/white"
+        android:gravity="center"
+        android:text="OR"
         android:textSize="@dimen/_12ssp"
-        app:layout_constraintTop_toTopOf="@id/divider"
         app:layout_constraintBottom_toBottomOf="@id/divider"
+        app:layout_constraintEnd_toEndOf="@id/divider"
+        app:layout_constraintStart_toStartOf="@id/divider"
+        app:layout_constraintTop_toTopOf="@id/divider"
 
         />
 
@@ -209,4 +210,16 @@
             android:textSize="@dimen/_10ssp" />
 
     </LinearLayout>
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:indicatorColor="@color/g_blue"
+        app:indicatorName="BallPulseIndicator"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="@id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="@id/linearLayout"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

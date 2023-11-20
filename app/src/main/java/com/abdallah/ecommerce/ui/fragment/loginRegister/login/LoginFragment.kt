@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.ui.fragment.login
+package com.abdallah.ecommerce.ui.fragment.loginRegister.login
 
 import android.content.Intent
 import android.os.Build
@@ -63,8 +63,9 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
 
                     is Resource.Success -> {
                         binding.btnLoginLoginFrag.revertAnimation()
-                        startActivity(Intent(requireContext(), ShoppingActivity::class.java))
-                    }
+                        Toast.makeText(requireContext(), "successful login", Toast.LENGTH_LONG)
+                        startActivity(Intent(context , ShoppingActivity::class.java))
+                        activity?.finish()                    }
 
                     is Resource.Failure -> {
                         binding.btnLoginLoginFrag.revertAnimation()

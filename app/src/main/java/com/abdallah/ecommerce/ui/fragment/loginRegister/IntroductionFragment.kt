@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.ui.fragment
+package com.abdallah.ecommerce.ui.fragment.loginRegister
 
 import android.os.Bundle
 import android.util.Log

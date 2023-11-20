@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.ui.registeration
+package com.abdallah.ecommerce.ui.fragment.loginRegister.registeration
 
 import android.content.Intent
 import android.os.Build
@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,18 +18,16 @@ import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.registeration.RegisterWithPhone
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
+import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment(R.layout.fragment_register) {
     private val TAG = "RegisterFragment"
     private lateinit var arl: ActivityResultLauncher<Intent>
-
     private lateinit var binding: FragmentRegisterBinding
     private val viewModel by viewModels<RegisterViewModel>()
 
@@ -53,6 +50,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         arlInitial()
         registerStateCallBack()
         noInternetCallBack()
+        googleSignInCallBack()
         fragOnClicks()
         validationState()
 
@@ -65,30 +63,29 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         arl = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-//            try {
-            lifecycleScope.launchWhenStarted {
-                withContext(Dispatchers.Main) {
-                    val account = GoogleSignIn.getSignedInAccountFromIntent(result.data).result
-
-                    account?.let { googleAccount ->
-                        viewModel.googleAuthWithFireBase(googleAccount)
-                    }
-
-
-//            } catch (e: Exception) {
-//                Log.d("tests" , "Exception from google :  "+e.localizedMessage)
-//            }
-
-                }
-            }
-        }
+           try {
+               lifecycleScope.launchWhenStarted {
+                       val account = GoogleSignIn.getSignedInAccountFromIntent(result.data).result
+                       account?.let { googleAccount ->
+                           viewModel.googleAuthWithFireBase(googleAccount)
+                       }
+               }
+           }catch (e: Exception) {
+               Toast.makeText(context,"please try again",Toast.LENGTH_LONG).show()
+           }
 
     }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun googleSignInRequest() {
-        val signInClient = viewModel.googleSignInRequest(requireActivity())
-        signInClient.signInIntent.apply {
-            arl.launch(this)
+        lifecycleScope.launchWhenStarted {
+            val signInClient = viewModel.googleSignInRequest(requireActivity())
+            signInClient?.let {googleClient->
+                googleClient.apply {
+                    arl.launch(signInIntent)
+                }
+            }
         }
     }
 
@@ -109,7 +106,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 viewModel.createAccountWithEmailAndPassword(
                     user,
                     password,
-                    requireActivity().application
                 )
             }
 
@@ -141,6 +137,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         binding.btnRegister.revertAnimation()
                         Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
                             .show()
+                        startActivity(Intent(context , ShoppingActivity::class.java))
+                        activity?.finish()
                     }
 
                     is Resource.Failure -> {
@@ -164,12 +162,44 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     private fun noInternetCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.noInternet.collect {
-                Toast.makeText(requireContext(), "No Inter net connection", Toast.LENGTH_LONG)
+                Toast.makeText(requireContext(), "No Internet connection", Toast.LENGTH_LONG)
                     .show()
 
             }
         }
     }
+    private fun googleSignInCallBack() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.googleRegister.collect{
+                when (it){
+                    is Resource.Loading -> {
+                        showLoader()
+                    }
+                    is Resource.Success -> {
+                        Toast.makeText(context , "Successful signin" , Toast.LENGTH_SHORT).show()
+                        hideLoader()
+                        startActivity(Intent(context , ShoppingActivity::class.java))
+                        activity?.finish()
+                    }
+                    is Resource.Failure -> {
+                        Toast.makeText(context , "fail to signin " , Toast.LENGTH_SHORT).show()
+                        hideLoader()
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun showLoader() {
+        binding.loader.visibility = View.VISIBLE
+        binding.linearLayout.visibility = View.INVISIBLE
+    }
+    private fun hideLoader() {
+        binding.loader.visibility = View.INVISIBLE
+        binding.linearLayout.visibility = View.VISIBLE
+    }
+
 
     private fun validationState() {
         lifecycleScope.launchWhenStarted {
