@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.databinding.FragmentIntroductionBinding
+import org.greenrobot.eventbus.EventBus
+
 
 class IntroductionFragment : Fragment() {
     private lateinit var binding: FragmentIntroductionBinding
@@ -26,10 +28,10 @@ class IntroductionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("screen", "IntroductionFragment ")
-
         binding.btnStart.setOnClickListener{
             findNavController().navigate(R.id.action_introductionFragment_to_accountOptionFragment)
         }
     }
+
 
 }

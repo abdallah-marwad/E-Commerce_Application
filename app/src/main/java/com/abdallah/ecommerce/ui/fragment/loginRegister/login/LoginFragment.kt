@@ -22,6 +22,7 @@ import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 
 class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
@@ -33,13 +34,14 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        Log.d("screen", "LoginFragment ")
+    ): View {
+        Log.d("screen", "screen is LoginFragment ")
 
         binding = FragmentLoginBinding.inflate(inflater)
 
         return binding.root
     }
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,12 +49,20 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         binding.btnLoginLoginFrag.setOnClickListener(this)
         binding.forgetPassword.setOnClickListener(this)
         noInternetCallBack()
-        loginState()
-        validationState()
+        loginCallBack()
+        validationCallBack()
         resetPasswordCallBack()
+        skipOnClick()
     }
 
-    private fun loginState() {
+    private fun skipOnClick() {
+        binding.skip.setOnClickListener{
+            startActivity(Intent(context , ShoppingActivity::class.java))
+            requireActivity().finish()
+        }
+    }
+
+    private fun loginCallBack() {
         lifecycleScope.launchWhenStarted {
 
             viewModel.loginResult.collect { loginResult ->
@@ -63,7 +73,7 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
 
                     is Resource.Success -> {
                         binding.btnLoginLoginFrag.revertAnimation()
-                        Toast.makeText(requireContext(), "successful login", Toast.LENGTH_LONG)
+                        makeText(requireContext(), "successful login", Toast.LENGTH_LONG)
                         startActivity(Intent(context , ShoppingActivity::class.java))
                         activity?.finish()                    }
 
@@ -79,7 +89,7 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         }
     }
 
-    private fun validationState() {
+    private fun validationCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.failedValidation.collect {
                 if (it.email is ValidationState.Invalid) {

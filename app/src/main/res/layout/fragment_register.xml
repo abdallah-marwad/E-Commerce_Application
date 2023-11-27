@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
     android:layout_height="match_parent">
 
     <ImageView
@@ -14,6 +15,19 @@
         app:layout_constraintTop_toBottomOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
+    <TextView
+        android:id="@+id/skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_12sdp"
+        android:fontFamily="@font/poppins_thin"
+        android:gravity="center"
+        android:text="@string/skip"
+        android:textColor="@color/app_theme_color"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_app_name_Login_register"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_app_name_Login_register" />
     <TextView
         android:id="@+id/tv_app_name_Login_register"
         android:layout_width="wrap_content"
@@ -27,7 +41,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.1" />
@@ -42,7 +56,6 @@
         android:text="@string/lets_register"
         android:textColor="@color/g_black"
         android:textSize="@dimen/_25sdp"
-        app:layout_constraintEnd_toEndOf="@+id/tv_app_name_Login_register"
         app:layout_constraintStart_toStartOf="@id/tv_app_name_Login_register"
         app:layout_constraintTop_toBottomOf="@id/tv_app_name_Login_register" />
 
@@ -56,7 +69,6 @@
         android:text="@string/dont_have_account"
         android:textColor="@color/g_gray700"
         android:textSize="@dimen/_13sdp"
-        app:layout_constraintEnd_toEndOf="@+id/tv_lets_login_register"
         app:layout_constraintStart_toStartOf="@id/tv_lets_login_register"
         app:layout_constraintTop_toBottomOf="@id/tv_lets_login_register" />
 
@@ -68,7 +80,8 @@
         android:layout_marginHorizontal="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_38sdp"
         android:hint="@string/fristName"
-
+        android:singleLine="true"
+        android:maxLines="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.07"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,6 +95,9 @@
         android:layout_marginHorizontal="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:hint="@string/lastName"
+        android:singleLine="true"
+        android:maxLines="1"
+
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintHeight_percent="0.07"
         app:layout_constraintStart_toStartOf="@+id/imageView"
@@ -96,6 +112,8 @@
         android:layout_marginTop="@dimen/_10sdp"
         android:hint="@string/email"
         app:layout_constraintEnd_toEndOf="parent"
+        android:singleLine="true"
+        android:maxLines="1"
 
         app:layout_constraintHeight_percent="0.07"
         app:layout_constraintStart_toStartOf="parent"
@@ -109,6 +127,8 @@
         android:layout_marginHorizontal="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:hint="@string/password"
+        android:singleLine="true"
+        android:maxLines="1"
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintHeight_percent="0.07"
         app:layout_constraintStart_toStartOf="@+id/imageView"
@@ -166,6 +186,7 @@
         android:layout_marginHorizontal="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_8sdp"
         android:orientation="horizontal"
+        android:animateLayoutChanges="true"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         tools:layout_editor_absoluteX="26dp">
 
@@ -216,7 +237,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:indicatorColor="@color/g_blue"
+        app:indicatorColor="@color/app_theme_color"
         app:indicatorName="BallPulseIndicator"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="@+id/linearLayout"

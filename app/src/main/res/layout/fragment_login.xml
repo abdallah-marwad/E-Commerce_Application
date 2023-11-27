@@ -31,6 +31,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.18" />
 
+
     <TextView
         android:id="@+id/tv_lets_login"
         android:layout_width="wrap_content"
@@ -43,6 +44,19 @@
         android:textSize="@dimen/_25sdp"
         app:layout_constraintStart_toStartOf="@id/tv_app_name_Login"
         app:layout_constraintTop_toBottomOf="@id/tv_app_name_Login" />
+
+    <TextView
+        android:id="@+id/skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_thin"
+        android:gravity="center"
+        android:text="@string/skip"
+        android:textColor="@color/app_theme_color"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_app_name_Login"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/tv_app_name_Login" />
 
     <TextView
         android:id="@+id/tv_dont_have_account"

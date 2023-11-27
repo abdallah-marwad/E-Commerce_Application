@@ -6,7 +6,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.databinding.ActivityShoppingBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ShoppingActivity : AppCompatActivity() {
     private lateinit var binding :ActivityShoppingBinding
     override fun onCreate(savedInstanceState: Bundle?) {

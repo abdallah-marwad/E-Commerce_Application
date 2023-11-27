@@ -52,6 +52,43 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:754586980531:android:b1599585eabfe997dc60c6",
+        "android_client_info": {
+          "package_name": "com.example.ecommercemerchant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754586980531-q97merc6ev0gd0o8o8r7q2i0vufg6nbb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ecommercemerchant",
+            "certificate_hash": "0521040b4609968719b8969391fe71f5622ccd87"
+          }
+        },
+        {
+          "client_id": "754586980531-joda3s719mjukr1o8gqt1kg28pvi0be2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCin0gI5kboCgfnTvSkLdeg8riEJxk7xzg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754586980531-joda3s719mjukr1o8gqt1kg28pvi0be2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:754586980531:android:61ded61eab075b18dc60c6",
         "android_client_info": {
           "package_name": "com.example.study"

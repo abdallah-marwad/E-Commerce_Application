@@ -53,10 +53,15 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         googleSignInCallBack()
         fragOnClicks()
         validationState()
-
+        skipOnClick()
 
     }
-
+    private fun skipOnClick() {
+        binding.skip.setOnClickListener{
+            startActivity(Intent(context , ShoppingActivity::class.java))
+            requireActivity().finish()
+        }
+    }
 
 
     private fun arlInitial() {
@@ -68,9 +73,10 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                        val account = GoogleSignIn.getSignedInAccountFromIntent(result.data).result
                        account?.let { googleAccount ->
                            viewModel.googleAuthWithFireBase(googleAccount)
-                       }
+                       }?:hideLoader()
                }
            }catch (e: Exception) {
+               hideLoader()
                Toast.makeText(context,"please try again",Toast.LENGTH_LONG).show()
            }
 
@@ -85,7 +91,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 googleClient.apply {
                     arl.launch(signInIntent)
                 }
-            }
+            }?:hideLoader()
         }
     }
 
@@ -118,6 +124,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
 
             binding.gmailLogin.setOnClickListener {
+                showLoader()
                 googleSignInRequest()
             }
 
@@ -162,6 +169,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     private fun noInternetCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.noInternet.collect {
+                hideLoader()
                 Toast.makeText(requireContext(), "No Internet connection", Toast.LENGTH_LONG)
                     .show()
 
