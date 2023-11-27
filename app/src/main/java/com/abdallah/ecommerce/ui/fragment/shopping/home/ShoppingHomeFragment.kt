@@ -56,42 +56,43 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         downloadBannerImages()
-        createBanner()
 
     }
 
     private fun downloadBannerImages() {
-        startBannerShimmer()
-        viewModel.downloadImage.downloadImage(Constant.HOME_BANNER_BATH + "1")
-            .addOnSuccessListener {
-                stopBannerShimmer()
-                imgList.add(it)
-                bannerAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener {
-                stopBannerShimmer()
-            }
-        viewModel.downloadImage.downloadImage(Constant.HOME_BANNER_BATH + "2")
-            .addOnSuccessListener {
-                stopBannerShimmer()
-                imgList.add(it)
-                bannerAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener {
-                stopBannerShimmer()
-            }
-        viewModel.downloadImage.downloadImage(Constant.HOME_BANNER_BATH + "3")
-            .addOnSuccessListener {
-                stopBannerShimmer()
-                imgList.add(it)
-                bannerAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener {
-                stopBannerShimmer()
+        viewModel.downloadAllImages()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.imageList.collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            stopBannerShimmer()
+                            result.data?.let {
+                                createBanner(it)
+                                autoLoopBanner()
+                            }
+                        }
+
+                        is Resource.Failure -> {
+                            stopBannerShimmer()
+                            Toast.makeText(
+                                context, "Error occured " + result.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        is Resource.Loading -> {
+                            startBannerShimmer()
+
+                        }
+                        else -> {}
+                    }
+
+
+                }
             }
 
+        }
     }
-
 
     private fun startBannerShimmer(){
         binding.shimmerBanner.visibility = View.VISIBLE
@@ -101,8 +102,8 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
         binding.shimmerBanner.visibility = View.INVISIBLE
         binding.shimmerBanner.stopShimmer()
     }
-    private fun createBanner() {
-        bannerAdapter = InfiniteScrollAdapter(BannerRecAdapter(imgList))
+    private fun createBanner(uriList : ArrayList<Uri>) {
+        bannerAdapter = InfiniteScrollAdapter(BannerRecAdapter(uriList))
         binding.bannerHomeParent.adapter = bannerAdapter
         binding.bannerHomeParent.setOrientation(DSVOrientation.HORIZONTAL)
         binding.bannerHomeParent.setItemTransformer(
@@ -145,40 +146,6 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
         }
 
     }
-//    private fun downloadBannerImages() {
-//
-//
-//        viewModel.downloadAllImages()
-//        lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModel.imageList.collect { result ->
-//                    when (result) {
-//                        is Resource.Success -> {
-//                            stopBannerShimmer()
-//                            result.data?.let {
-//                                createBanner(it)
-//                                autoLoopBanner()
-//                            }
-//                        }
-//
-//                        is Resource.Failure -> {
-//                            stopBannerShimmer()
-//                            Toast.makeText(
-//                                context, "Error occured " + result.message,
-//                                Toast.LENGTH_LONG
-//                            ).show()
-//                        }
-//                        is Resource.Loading -> {
-//                            startBannerShimmer()
-//
-//                        }
-//                        else -> {}
-//                    }
-//
-//
-//                }
-//            }
-//
-//        }
-//    }
+
+
 }
