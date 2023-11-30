@@ -8,7 +8,6 @@
         android:id="@+id/banner_home_parent"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_125sdp"
-        app:dsv_orientation="horizontal"
         app:cardCornerRadius="@dimen/_8sdp"
         android:background="@color/shimmerColor"
         app:cardBackgroundColor="@color/shimmerColor"

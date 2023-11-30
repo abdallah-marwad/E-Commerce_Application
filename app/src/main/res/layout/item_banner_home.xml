@@ -6,7 +6,7 @@
     android:id="@+id/banner_home_parent"
     android:layout_width="match_parent"
     android:layout_height="@dimen/_125sdp"
-    android:layout_margin="@dimen/_12sdp"
+    android:layout_margin="@dimen/_8sdp"
     app:cardCornerRadius="@dimen/_8sdp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent">

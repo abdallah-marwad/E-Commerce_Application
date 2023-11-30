@@ -2,6 +2,7 @@ package com.abdallah.ecommerce.ui.fragment.shopping.home
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,25 +13,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.whenStarted
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
-import com.abdallah.ecommerce.ui.fragment.loginRegister.registeration.RegisterViewModel
-import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
-import com.google.firebase.Firebase
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.storage
-import com.yarolegovich.discretescrollview.DSVOrientation
-import com.yarolegovich.discretescrollview.InfiniteScrollAdapter
-import com.yarolegovich.discretescrollview.transform.ScaleTransformer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 @AndroidEntryPoint
 class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
@@ -40,9 +31,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
     private var parentJob: Job = Job()
     private var coroutineScope: CoroutineScope = CoroutineScope(parentJob + Dispatchers.IO)
     private var bannerCurrentPosition = 0
-    val imgList = ArrayList<Uri>()
-    lateinit var bannerAdapter: InfiniteScrollAdapter<*>
-
+    var stopLoop = false
 
 
     override fun onCreateView(
@@ -80,10 +69,12 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
                                 Toast.LENGTH_LONG
                             ).show()
                         }
+
                         is Resource.Loading -> {
                             startBannerShimmer()
 
                         }
+
                         else -> {}
                     }
 
@@ -94,58 +85,60 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
         }
     }
 
-    private fun startBannerShimmer(){
+    private fun startBannerShimmer() {
         binding.shimmerBanner.visibility = View.VISIBLE
         binding.shimmerBanner.startShimmer()
     }
-    private fun stopBannerShimmer(){
+
+    private fun stopBannerShimmer() {
         binding.shimmerBanner.visibility = View.INVISIBLE
         binding.shimmerBanner.stopShimmer()
     }
-    private fun createBanner(uriList : ArrayList<Uri>) {
-        bannerAdapter = InfiniteScrollAdapter(BannerRecAdapter(uriList))
+
+    private fun createBanner(uriList: ArrayList<Uri>) {
+        var bannerAdapter = BannerRecAdapter(uriList)
         binding.bannerHomeParent.adapter = bannerAdapter
-        binding.bannerHomeParent.setOrientation(DSVOrientation.HORIZONTAL)
-        binding.bannerHomeParent.setItemTransformer(
-            ScaleTransformer.Builder()
-                .setMinScale(0.8f)
-                .build()
-        )
+        bannerAdapter.notifyDataSetChanged()
 
     }
 
 
     override fun onPause() {
         super.onPause()
-        parentJob.cancel()
-
+        stopLoop = true
     }
 
     override fun onResume() {
         super.onResume()
+        stopLoop = false
         autoLoopBanner()
     }
 
+
     private fun autoLoopBanner() {
-        parentJob.cancel()
-        parentJob = coroutineScope.launch() {
-            while (true) {
-                delay(3000L)
-                val bannerLastItem = binding.bannerHomeParent.adapter?.itemCount ?: return@launch
+             coroutineScope.launch() {
+                    while (true) {
+
+                        if(stopLoop)
+                            return@launch
+
+                        Thread.sleep(5000L)
+
+                        val bannerLastItem =
+                            binding.bannerHomeParent.adapter?.itemCount ?: return@launch
 
 
-                if (bannerCurrentPosition == bannerLastItem) {
-                    bannerCurrentPosition = 0
+                        if (bannerCurrentPosition == bannerLastItem) {
+                            bannerCurrentPosition = 0
+                        }
+
+                            binding.bannerHomeParent.smoothScrollToPosition(bannerCurrentPosition)
+
+
+                        Log.d("test", "position is $bannerCurrentPosition")
+                        bannerCurrentPosition++
+                    }
                 }
-                withContext(Dispatchers.Main) {
-                    binding.bannerHomeParent.smoothScrollToPosition(bannerCurrentPosition)
-                }
-                Log.d("test", "position is $bannerCurrentPosition")
-                bannerCurrentPosition++
             }
-        }
-
-    }
-
-
 }
+
