@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce
+package com.abdallah.ecommerce.application
 
 import android.app.Activity
 import android.app.Application

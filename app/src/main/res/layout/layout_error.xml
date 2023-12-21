@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/llError"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:gravity="center"
+  android:orientation="vertical"
+  android:padding="@dimen/_10sdp"
+  android:visibility="gone">
+
+  <androidx.appcompat.widget.AppCompatImageView
+    android:id="@+id/ivError"
+    android:layout_width="@dimen/_150sdp"
+    android:layout_height="@dimen/_150sdp"
+    android:src="@drawable/ic_connection" />
+
+  <androidx.appcompat.widget.AppCompatTextView
+    android:id="@+id/tvError"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_10sdp"
+    android:gravity="center"
+    android:textColor="@color/black"
+    android:textSize="@dimen/_14ssp" />
+
+  <androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/btnRetry"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_10sdp"
+    android:paddingStart="@dimen/_30sdp"
+    android:paddingEnd="@dimen/_30sdp"
+    android:text="Retry"
+    android:textAllCaps="false"
+    android:textColor="@color/white"
+    android:textSize="@dimen/_14ssp"
+    android:visibility="visible"
+      android:background="@drawable/blue_background"
+      />
+</androidx.appcompat.widget.LinearLayoutCompat>

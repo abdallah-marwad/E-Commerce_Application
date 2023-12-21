@@ -12,6 +12,17 @@
         <item name="android:textColor">@color/g_gray700</item>
         <item name="android:textSize">@dimen/h2TextSize</item>
     </style>
+    <style name="titleTxtStyle">
+        <item name="android:fontFamily">@font/poppins_light</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+    </style>
+    <style name="seeMoreTxtStyle">
+        <item name="android:fontFamily">@font/poppins_light</item>
+        <item name="android:textColor">@color/app_theme_color</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
     <style name="h3">
         <item name="android:fontFamily">@font/poppins_light</item>
@@ -49,6 +60,7 @@
     <dimen name="h4TextSize">@dimen/_27ssp</dimen>
     <dimen name="h2TextSize">@dimen/_13ssp</dimen>
     <dimen name="h3TextSize">@dimen/_17ssp</dimen>
+    <dimen name="screenPadding">@dimen/_12sdp</dimen>
 
 
 
@@ -67,5 +79,16 @@
         <item name="textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
 
+    </style>
+
+
+    <!-- LoadingDialog theme -->
+    <style name="LoadingTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>
