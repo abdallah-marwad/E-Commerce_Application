@@ -32,9 +32,11 @@ fun validateInputAsNotEmpty(email: String): ValidationState {
 }
 
 fun validateInputAsNotEmpty(ed: EditText, errTxt: String): Boolean {
-    if (ed.text.toString().isEmpty())
+    if (ed.text.toString().isEmpty()) {
         ed.error = errTxt
-    return false
+        return false
+    }
+
 
     return true
 }
