@@ -2,6 +2,8 @@ package com.abdallah.ecommerce.data.registeration
 
 import android.app.Activity
 import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -14,12 +16,16 @@ import com.google.firebase.auth.PhoneAuthProvider
 class RegisterWithPhone (
 
 
-){
+) {
     lateinit var storedVerificationId: String
     lateinit var activity: Activity
     lateinit var auth: FirebaseAuth
-    private fun verifyOtp(otp: String) {
-        val credential = PhoneAuthProvider.getCredential(storedVerificationId , otp)
+
+    private val _codeSent = MutableLiveData<Boolean>()
+    val codeSent = _codeSent
+
+    fun verifyOtp(otp: String) {
+        val credential = PhoneAuthProvider.getCredential(storedVerificationId, otp)
         signInWithPhoneAuthCredential(credential)
     }
 
@@ -27,11 +33,16 @@ class RegisterWithPhone (
         auth = FirebaseAuth.getInstance()
         auth.signInWithCredential(credential)
             .addOnCompleteListener {
-                if(it.isSuccessful){
-                    Log.d("tests" , "Phone registration isSuccessful")
+                if (it.isSuccessful) {
+                    Log.d("tests", "Phone registration isSuccessful")
+                    Toast.makeText(activity, "Phone registration is Successful", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }.addOnFailureListener {
-                Log.d("tests" , "registration Failure")
+                Log.d("tests", "registration Failure")
+                Toast.makeText(activity, "registration Failure ${it.message}", Toast.LENGTH_SHORT)
+                    .show()
+
 
             }
     }
@@ -42,7 +53,6 @@ class RegisterWithPhone (
             return
         }
          sendVerificationCode(number)
-
      }
 
     private fun sendVerificationCode(number: String) {
@@ -86,6 +96,7 @@ class RegisterWithPhone (
 
 
                 storedVerificationId = verificationId
+                _codeSent.value = true
             }
         }
 

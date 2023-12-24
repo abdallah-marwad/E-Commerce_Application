@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.utils.dialogs
+package com.abdallah.ecommerce.utils.BottomSheets
 
 import android.app.Activity
 import android.graphics.Color.TRANSPARENT
