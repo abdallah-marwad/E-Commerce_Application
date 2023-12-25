@@ -19,6 +19,7 @@ import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
+import com.abdallah.ecommerce.utils.BottomSheets.VerificationOtpBottomSheet
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -119,7 +120,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             phoneLogin.setOnClickListener {
                 val registerWithPhone = RegisterWithPhone()
                 registerWithPhone.activity = requireActivity()
-                registerWithPhone.sendOtp("01551123149")
+                registerWithPhone.sendOtp("01068646841")
+                otpSentCallBack(registerWithPhone)
             }
 
 
@@ -132,7 +134,21 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
     }
 
+    private fun otpSentCallBack(registerWithPhone: RegisterWithPhone) {
+        registerWithPhone.codeSent.observe(viewLifecycleOwner) {
+            showOtpBottomSheet(registerWithPhone)
+
+        }
+    }
+
+    private fun showOtpBottomSheet(registerWithPhone: RegisterWithPhone) {
+        VerificationOtpBottomSheet().createDialog(requireActivity()) {
+            registerWithPhone.verifyOtp(it)
+        }
+    }
+
     private fun registerStateCallBack() {
+
         lifecycleScope.launchWhenStarted {
             viewModel.register.collect { resource ->
                 when (resource) {

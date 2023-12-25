@@ -10,8 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.databinding.FragmentBaseBinding
-import com.abdallah.ecommerce.utils.dialogs.LoadingDialog
-import com.abdallah.ecommerce.utils.validation.ValidationState.Valid.msg
+import com.abdallah.ecommerce.utils.BottomSheets.LoadingDialog
 import com.matrix.tete.application.utils.extensions.gone
 import com.matrix.tete.application.utils.extensions.visible
 import java.lang.reflect.ParameterizedType

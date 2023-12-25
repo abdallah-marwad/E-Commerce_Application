@@ -2,6 +2,8 @@ package com.abdallah.ecommerce.data.firebase.registeration
 
 import android.app.Activity
 import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -15,8 +17,12 @@ class RegisterWithPhone (){
     lateinit var storedVerificationId: String
     lateinit var activity: Activity
     lateinit var auth: FirebaseAuth
-    private fun verifyOtp(otp: String) {
-        val credential = PhoneAuthProvider.getCredential(storedVerificationId , otp)
+
+    private val _codeSent = MutableLiveData<Boolean>()
+    val codeSent = _codeSent
+
+    fun verifyOtp(otp: String) {
+        val credential = PhoneAuthProvider.getCredential(storedVerificationId, otp)
         signInWithPhoneAuthCredential(credential)
     }
 
@@ -39,7 +45,6 @@ class RegisterWithPhone (){
             return
         }
          sendVerificationCode(number)
-
      }
 
     private fun sendVerificationCode(number: String) {
@@ -83,6 +88,7 @@ class RegisterWithPhone (){
 
 
                 storedVerificationId = verificationId
+                _codeSent.value = true
             }
         }
 

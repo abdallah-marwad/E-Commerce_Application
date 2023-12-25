@@ -2,19 +2,17 @@ package com.abdallah.ecommerce.ui.fragment.shopping.home
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.abdallah.ecommerce.application.core.BaseFragment
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
 import com.abdallah.ecommerce.ui.fragment.shopping.home.mainCategory.MainCategoryAdapter
 import com.abdallah.ecommerce.utils.Resource
 import com.google.firebase.firestore.FirebaseFirestore
-import com.abdallah.ecommerce.application.core.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +38,8 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>() {
         super.onViewCreated(view, savedInstanceState)
         downloadBannerImages()
         getCategories()
+        startBannerShimmer()
+        startMainCategoryShimmer()
 
     }
 

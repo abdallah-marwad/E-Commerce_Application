@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.databinding.ActivityBaseBinding
+import com.abdallah.ecommerce.utils.BottomSheets.LoadingDialog
 import com.abdallah.ecommerce.utils.LocaleHelper
-import com.abdallah.ecommerce.utils.dialogs.LoadingDialog
 import com.google.android.material.internal.ViewUtils.hideKeyboard
 import java.lang.reflect.ParameterizedType
 

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/_10sdp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/resetPassTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_10sdp"
+        android:fontFamily="@font/poppins_thin"
+        android:gravity="center"
+        android:text="OTP VERIFICATION"
+        android:textColor="@color/g_black"
+        android:textSize="@dimen/_20sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/resetPassHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:fontFamily="@font/poppins_light"
+        android:gravity="start"
+
+        android:text="Enter The Verification Otp "
+        android:textColor="@color/g_black"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/resetPassTxt"
+        app:layout_constraintTop_toBottomOf="@id/resetPassTxt" />
+
+    <EditText
+        android:id="@+id/edOtp"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_45sdp"
+        android:gravity="start|center_vertical"
+        style="@style/editText"
+        android:paddingStart="@dimen/_10sdp"
+        android:hint="@string/otp"
+        android:singleLine="true"
+        android:textStyle="bold"
+        android:inputType="number"
+        android:layout_marginTop="@dimen/_16sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/resetPassTxt"
+        app:layout_constraintTop_toBottomOf="@+id/resetPassHint" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCancel"
+        style="@style/whiteButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_40sdp"
+        app:layout_constraintWidth_percent="0.43"
+        android:fontFamily="@font/poppins_light"
+        android:text="Cancel"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_16sdp"
+        app:layout_constraintStart_toStartOf="@+id/edOtp"
+        app:layout_constraintTop_toBottomOf="@+id/edOtp"
+        app:spinning_bar_color="@color/white" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSend"
+        style="@style/blueButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginTop="@dimen/_16sdp"
+        android:fontFamily="@font/poppins_light"
+        android:text="Send"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/edOtp"
+        app:layout_constraintTop_toBottomOf="@+id/edOtp"
+        app:layout_constraintWidth_percent="0.43"
+        app:spinning_bar_color="@color/white" />
+</androidx.constraintlayout.widget.ConstraintLayout>

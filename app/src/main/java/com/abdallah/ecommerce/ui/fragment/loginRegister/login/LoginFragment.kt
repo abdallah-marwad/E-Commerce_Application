@@ -16,8 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.databinding.FragmentLoginBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
+import com.abdallah.ecommerce.utils.BottomSheets.showResetPasswordDialog
 import com.abdallah.ecommerce.utils.Resource
-import com.abdallah.ecommerce.utils.dialogs.showResetPasswordDialog
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint

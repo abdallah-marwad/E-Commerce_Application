@@ -1,6 +1,7 @@
 package com.abdallah.ecommerce.utils.validation
 
 import android.util.Patterns
+import android.widget.EditText
 
 private const val MIN_PASSWORD_LENGTH = 6
 fun validateEmail(email : String) : ValidationState {
@@ -23,9 +24,18 @@ fun validatePassword(password : String) : ValidationState {
     return ValidationState.Valid
 }
 
-fun validateInputAsNotEmpty(email : String) : ValidationState {
-    if(email.isEmpty())
+fun validateInputAsNotEmpty(email: String): ValidationState {
+    if (email.isEmpty())
         return ValidationState.Invalid("This filed is required")
 
     return ValidationState.Valid
 }
+
+fun validateInputAsNotEmpty(ed: EditText, errTxt: String): Boolean {
+    if (ed.text.toString().isEmpty())
+        ed.error = errTxt
+    return false
+
+    return true
+}
+
