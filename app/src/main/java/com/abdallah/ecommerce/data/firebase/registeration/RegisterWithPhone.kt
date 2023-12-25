@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.data.registeration
+package com.abdallah.ecommerce.data.firebase.registeration
 
 import android.app.Activity
 import android.util.Log
@@ -11,10 +11,7 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 
 
-class RegisterWithPhone (
-
-
-){
+class RegisterWithPhone (){
     lateinit var storedVerificationId: String
     lateinit var activity: Activity
     lateinit var auth: FirebaseAuth

@@ -15,7 +15,7 @@ import com.abdallah.ecommerce.utils.validation.validateInputAsNotEmpty
 import com.abdallah.ecommerce.utils.validation.validatePassword
 import com.google.firebase.auth.FirebaseAuth
 import com.abdallah.ecommerce.data.model.User
-import com.abdallah.ecommerce.data.registeration.RegisterWithGoogle
+import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithGoogle
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -31,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val google:  RegisterWithGoogle,
+    private val google: RegisterWithGoogle,
     application: Application,
 
     ) : AndroidViewModel(application) {

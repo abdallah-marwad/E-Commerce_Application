@@ -16,7 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.User
-import com.abdallah.ecommerce.data.registeration.RegisterWithPhone
+import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.Resource
