@@ -11,15 +11,17 @@ import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.RegisterValidation
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.abdallah.ecommerce.utils.validation.validateEmail
-import com.abdallah.ecommerce.utils.validation.validateInputAsNotEmpty
+import com.abdallah.ecommerce.utils.validation.isInputNotEmpty
 import com.abdallah.ecommerce.utils.validation.validatePassword
 import com.google.firebase.auth.FirebaseAuth
 import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithGoogle
+import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.UserProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +34,7 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val google: RegisterWithGoogle,
+    private val phoneRegister: RegisterWithPhone,
     application: Application,
 
     ) : AndroidViewModel(application) {
@@ -46,9 +49,23 @@ class RegisterViewModel @Inject constructor(
 
     private val _register = MutableStateFlow<Resource<String>>(Resource.UnSpecified())
     val register: Flow<Resource<String>> = _register
+
     val googleRegister: Flow<Resource<String>> = google.googleRegister
 
+    val phoneRegisterState = phoneRegister.phoneRegisterState
+    val sendOtpState = phoneRegister.sendOtpState
 
+
+    fun sendVerificationCode(phoneNumber : String , activity: Activity){
+        viewModelScope.launch (Dispatchers.IO){
+            phoneRegister.sendVerificationCode(phoneNumber,activity)
+        }
+    }
+    fun registerWithPhone(otp : String){
+        viewModelScope.launch (Dispatchers.IO){
+            phoneRegister.registerWithPhone(otp)
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun createAccountWithEmailAndPassword(
@@ -72,7 +89,7 @@ class RegisterViewModel @Inject constructor(
     private fun emitValidationErr(user: User, password: String) {
         val registerFailed = RegisterValidation(
             validateEmail(user.email), validatePassword(password),
-            validateInputAsNotEmpty(user.firstName), validateInputAsNotEmpty(user.lastName)
+            isInputNotEmpty(user.firstName), isInputNotEmpty(user.lastName)
         )
         runBlocking {
             _validationState.send(registerFailed)
@@ -154,8 +171,8 @@ class RegisterViewModel @Inject constructor(
     ): Boolean {
         val emailState = validateEmail(email)
         val passwordState = validatePassword(password)
-        val firstNameState = validateInputAsNotEmpty(firstName)
-        val lastNameState = validateInputAsNotEmpty(lastName)
+        val firstNameState = isInputNotEmpty(firstName)
+        val lastNameState = isInputNotEmpty(lastName)
 
         return emailState is ValidationState.Valid &&
                 passwordState is ValidationState.Valid &&

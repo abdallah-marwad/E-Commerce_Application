@@ -1,8 +1,6 @@
-package com.abdallah.ecommerce.ui.fragment.shopping.home.mainCategory
+package com.abdallah.ecommerce.ui.fragment.shopping.home
 
 import android.annotation.SuppressLint
-import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +11,6 @@ import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.utils.CustomShimmerDrawable
 import com.bumptech.glide.Glide
-import com.google.firebase.storage.StorageReference
 
 class MainCategoryAdapter(val data: ArrayList<Category> ) :
     RecyclerView.Adapter<MainCategoryAdapter.ViewHolder>() {

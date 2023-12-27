@@ -3,10 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/_10sdp"
+    android:animateLayoutChanges="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/resetPassTxt"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_10sdp"
@@ -19,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/resetPassHint"
+        android:id="@+id/hint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_4sdp"
@@ -30,8 +31,8 @@
         android:textColor="@color/g_black"
         android:textSize="@dimen/_13sdp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/resetPassTxt"
-        app:layout_constraintTop_toBottomOf="@id/resetPassTxt" />
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
     <EditText
         android:id="@+id/edOtp"
@@ -47,8 +48,9 @@
         android:layout_marginTop="@dimen/_16sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/resetPassTxt"
-        app:layout_constraintTop_toBottomOf="@+id/resetPassHint" />
+        app:layout_constraintStart_toStartOf="@+id/hint"
+        app:layout_constraintTop_toBottomOf="@+id/hint" />
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnCancel"
@@ -79,4 +81,16 @@
         app:layout_constraintTop_toBottomOf="@+id/edOtp"
         app:layout_constraintWidth_percent="0.43"
         app:spinning_bar_color="@color/white" />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:indicatorColor="@color/app_theme_color"
+        app:indicatorName="BallPulseIndicator"
+        app:layout_constraintBottom_toBottomOf="@+id/btnCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnCancel" />
 </androidx.constraintlayout.widget.ConstraintLayout>

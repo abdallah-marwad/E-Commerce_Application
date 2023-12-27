@@ -1,5 +1,6 @@
 package com.abdallah.ecommerce.ui.fragment.loginRegister.registeration
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -19,9 +20,10 @@ import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
-import com.abdallah.ecommerce.utils.BottomSheets.VerificationOtpBottomSheet
+import com.abdallah.ecommerce.utils.BottomSheets.SingleInputBottomSheet
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
+import com.abdallah.ecommerce.utils.validation.isPhoneNumberValid
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -118,10 +120,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
 
             phoneLogin.setOnClickListener {
-                val registerWithPhone = RegisterWithPhone()
-                registerWithPhone.activity = requireActivity()
-                registerWithPhone.sendOtp("01068646841")
-                otpSentCallBack(registerWithPhone)
+                showRegisterPhoneBottomSheet()
             }
 
 
@@ -134,16 +133,87 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
     }
 
-    private fun otpSentCallBack(registerWithPhone: RegisterWithPhone) {
-        registerWithPhone.codeSent.observe(viewLifecycleOwner) {
-            showOtpBottomSheet(registerWithPhone)
+
+
+    @SuppressLint("SuspiciousIndentation")
+    private fun showOtpBottomSheet() {
+
+        val bottomSheet = SingleInputBottomSheet()
+            bottomSheet.createDialog(requireActivity() ,
+                "Enter Otp" ,
+                "Verify",
+                "Otp Verification",
+                "Enter The Verification Otp sent to you"
+            ) {otp , ed->
+            if (otp.length != 6) {
+                ed.error = "Please Enter 6 digits"
+                return@createDialog
+            }
+            viewModel.registerWithPhone(otp)
+            observeOtpState(bottomSheet)
+        }
+    }
+    private fun observeOtpState(bottomSheet : SingleInputBottomSheet) {
+        viewModel.sendOtpState.observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Success -> {
+                    bottomSheet.dismiss()
+                }
+
+                is Resource.Failure -> {
+                    bottomSheet.dismiss()
+                    Toast.makeText(activity, it.message, Toast.LENGTH_SHORT).show()
+                }
+
+                is Resource.Loading -> {
+                    bottomSheet.showLoader()
+                }
+
+                else -> {}
+            }
+        }
+    }
+    private fun showRegisterPhoneBottomSheet() {
+
+        val phoneBottomSheet = SingleInputBottomSheet()
+        phoneBottomSheet.createDialog(
+            requireActivity(),
+            "Enter Phone Number" ,
+            "Send Otp",
+            "Register with phone number",
+            "enter your phone number for registration"
+        )
+        {phoneNumber , ed->
+            if(isPhoneNumberValid(ed)){
+                viewModel.sendVerificationCode(phoneNumber , requireActivity())
+            }
+            observeRegisterPhone(phoneBottomSheet)
+
 
         }
     }
+    private fun observeRegisterPhone(bottomSheet : SingleInputBottomSheet) {
+        viewModel.phoneRegisterState.observe(viewLifecycleOwner) {
 
-    private fun showOtpBottomSheet(registerWithPhone: RegisterWithPhone) {
-        VerificationOtpBottomSheet().createDialog(requireActivity()) {
-            registerWithPhone.verifyOtp(it)
+            when (it){
+                is Resource.Success ->{
+                    bottomSheet.dismiss()
+                    showOtpBottomSheet()
+                }
+                is Resource.Failure ->{
+                    bottomSheet.dismiss()
+                    Toast.makeText(activity , it.message , Toast.LENGTH_SHORT).show()
+                }
+                is Resource.Loading ->{
+                    bottomSheet.showLoader()
+                }
+
+                else -> {
+
+                }
+            }
+
+
         }
     }
 

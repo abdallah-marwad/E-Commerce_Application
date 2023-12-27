@@ -52,7 +52,7 @@ class BannerRecAdapter(val data: ArrayList<Uri> ) :
                         return false
                     }
                 })
-                .placeholder(CustomShimmerDrawable().shimmerDrawable)
+                .placeholder(R.drawable.err_banner)//CustomShimmerDrawable().shimmerDrawable
                 .error(R.drawable.err_banner)
                 .into(holder.imageBanner)
 

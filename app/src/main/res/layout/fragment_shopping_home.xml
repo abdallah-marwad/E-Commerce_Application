@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    >
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingHorizontal="@dimen/screenPadding"
-    android:paddingTop="@dimen/screenPadding"
+    android:padding="@dimen/screenPadding"
     tools:context=".ui.fragment.shopping.home.ShoppingHomeFragment">
 
     <TextView
@@ -82,7 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_search"
         android:layout_marginTop="@dimen/_18sdp"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:listitem="@layout/item_banner_home">
         <include layout="@layout/home_banner_shimmer"/>
     </com.facebook.shimmer.ShimmerFrameLayout>
@@ -94,7 +99,7 @@
         android:layout_marginTop="@dimen/_4sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/banner_home_parent"
+        app:layout_constraintTop_toBottomOf="@id/shimmer_banner"
         >
 
         <TextView
@@ -117,6 +122,18 @@
 
             />
     </LinearLayout>
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_categories_area"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shimmer_banner"
+        android:visibility="visible"
+        tools:listitem="@layout/item_banner_home">
+        <include layout="@layout/shimmer_labels"/>
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
 <RelativeLayout
     android:id="@+id/mainRecCategoryArea"
@@ -142,13 +159,12 @@
 </RelativeLayout>
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_main_category"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/categoriesArea"        android:layout_margin="@dimen/_12sdp"
-        android:layout_marginVertical="@dimen/_15sdp"
-        android:visibility="gone"
+        android:visibility="visible"
         >
         <LinearLayout
             android:layout_width="match_parent"
@@ -157,10 +173,22 @@
             <include layout="@layout/main_category_shimmer"/>
             <include layout="@layout/main_category_shimmer"/>
             <include layout="@layout/main_category_shimmer"/>
+            <include layout="@layout/main_category_shimmer"/>
 
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
-
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_deals_area"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shimmer_main_category"
+        android:visibility="visible"
+        tools:listitem="@layout/item_banner_home">
+        <include layout="@layout/shimmer_labels"/>
+    </com.facebook.shimmer.ShimmerFrameLayout>
     <LinearLayout
         android:id="@+id/bestDealsContainer"
         android:layout_width="0dp"
@@ -169,7 +197,7 @@
         android:layout_marginTop="@dimen/_12sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mainRecCategoryArea"
+        app:layout_constraintTop_toBottomOf="@id/shimmer_main_category"
         >
 
         <TextView
@@ -193,9 +221,9 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/viewpager_home"
+        android:id="@+id/bestDealsRV"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
         android:nestedScrollingEnabled="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -207,12 +235,6 @@
         tools:listitem="@layout/best_deals_item"/>
 
 
-
-
-
-
-
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
@@ -220,6 +242,5 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.68" />
 
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
