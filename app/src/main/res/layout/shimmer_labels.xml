@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/categoriesArea"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_30sdp"
+    android:orientation="horizontal"
+    android:layout_marginTop="@dimen/_4sdp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="@dimen/_80sdp"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/_88sdp"
+        android:layout_alignParentStart="true"
+
+        app:cardCornerRadius="@dimen/_6sdp"
+        android:layout_height="@dimen/_15sdp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textStyle="bold"
+        android:background="@color/shimmerColor"
+        />
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="@dimen/_70sdp"
+        app:cardCornerRadius="@dimen/_6sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:layout_alignParentEnd="true"
+        >
+    <TextView
+        android:id="@+id/seeMoreCategories"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="@color/app_theme_color"
+        android:background="@color/shimmerColor"
+        android:textStyle="bold"
+        />
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

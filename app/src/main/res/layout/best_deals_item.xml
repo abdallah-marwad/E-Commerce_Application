@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_90sdp"
             android:src="@drawable/blue_background"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -46,43 +47,70 @@
             app:layout_constraintTop_toBottomOf="@+id/bestDealsImg"
             tool:text="Apple Watch" />
 
-        <TextView
-            android:id="@+id/itemNewPrice"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/priceArea"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_12sdp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/itemName"
-            tool:text="50 EGP" />
+            app:layout_constraintTop_toBottomOf="@+id/itemName">
+
+            <TextView
+                android:id="@+id/itemNewPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/itemName"
+                tool:text="EGP 50000" />
+
+            <TextView
+                android:id="@+id/itemOldPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_marginVertical="@dimen/_4sdp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageView2"
+                app:layout_constraintStart_toEndOf="@+id/itemNewPrice"
+                app:layout_constraintTop_toBottomOf="@+id/itemName"
+                tool:text="5500" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/itemOldPrice"
-            android:layout_width="match_parent"
+            android:id="@+id/offerPercentage"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/_8sdp"
-            android:layout_marginVertical="@dimen/_4sdp"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_11sdp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/itemNewPrice"
+            android:textSize="@dimen/_12sdp"
+            android:textColor="@color/green"
             app:layout_constraintBottom_toBottomOf="parent"
-            tool:text="70 EGP" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/priceArea"
+            tool:text="40% Off" />
 
         <ImageView
+            android:id="@+id/imageView2"
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
-            android:src="@drawable/ic_add"
-            app:tint="@color/white"
-            android:padding="@dimen/_6sdp"
             android:background="@drawable/btn_add_top_left_corner"
+            android:padding="@dimen/_6sdp"
+            android:src="@drawable/ic_add"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/white" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

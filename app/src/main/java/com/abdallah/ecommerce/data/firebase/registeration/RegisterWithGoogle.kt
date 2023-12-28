@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.data.registeration
+package com.abdallah.ecommerce.data.firebase.registeration
 
 import android.app.Activity
 import android.util.Log

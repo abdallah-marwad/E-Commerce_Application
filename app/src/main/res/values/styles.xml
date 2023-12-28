@@ -47,11 +47,13 @@
     </style>
 
     <style name="editText">
-        <item name="android:background">@drawable/white_background_bordered</item>
+        <item name="android:background">@drawable/white_background</item>
         <item name="android:gravity">center</item>
         <item name="singleLine">true</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">@font/poppins_light</item>
+        <item name="android:paddingStart">@dimen/_8sdp</item>
+        <item name="android:paddingEnd">@dimen/_8sdp</item>
     </style>
 
 

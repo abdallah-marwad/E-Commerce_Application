@@ -4,6 +4,6 @@
     android:layout_width="@dimen/_55sdp"
     app:cardBackgroundColor="@color/shimmerColor"
 
-    android:layout_height="@dimen/_65sdp"
-    android:layout_margin="@dimen/_8sdp"
-    app:cardCornerRadius="@dimen/_4sdp"/>
+    android:layout_height="@dimen/_75sdp"
+    android:layout_marginEnd="@dimen/_8sdp"
+    app:cardCornerRadius="@dimen/_8sdp"/>
