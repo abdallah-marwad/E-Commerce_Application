@@ -14,9 +14,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentLoginBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.showResetPasswordDialog
+import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.google.android.material.snackbar.Snackbar
@@ -36,9 +38,8 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View {
         Log.d("screen", "screen is LoginFragment ")
-
         binding = FragmentLoginBinding.inflate(inflater)
-
+        SharedPreferencesHelper.addBoolean(Constant.NOT_FIRST_TIME,true)
         return binding.root
     }
 
@@ -57,6 +58,7 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
 
     private fun skipOnClick() {
         binding.skip.setOnClickListener{
+            SharedPreferencesHelper.addBoolean(Constant.IS_SKIP,true)
             startActivity(Intent(context , ShoppingActivity::class.java))
             requireActivity().finish()
         }
@@ -73,13 +75,14 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
 
                     is Resource.Success -> {
                         binding.btnLoginLoginFrag.revertAnimation()
-                        makeText(requireContext(), "successful login", Toast.LENGTH_LONG)
+                        makeText(requireContext(), "successful login", Toast.LENGTH_LONG).show()
+                        SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
                         startActivity(Intent(context , ShoppingActivity::class.java))
                         activity?.finish()                    }
 
                     is Resource.Failure -> {
                         binding.btnLoginLoginFrag.revertAnimation()
-                        Toast.makeText(requireContext(), loginResult.message, Toast.LENGTH_LONG)
+                        Toast.makeText(requireContext(), loginResult.message, Toast.LENGTH_LONG).show()
 
                     }
 

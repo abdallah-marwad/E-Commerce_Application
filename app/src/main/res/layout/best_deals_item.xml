@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/parentArea"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/_4sdp"
-    android:layout_marginBottom="@dimen/_10sdp"
+    android:layout_marginBottom="@dimen/_8sdp"
     app:cardCornerRadius="@dimen/_8sdp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,16 +23,7 @@
             android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/favourite"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
-            android:padding="@dimen/_6sdp"
-            app:tint="@color/white"
-            android:layout_margin="@dimen/_6sdp"
-            android:src="@drawable/ic_favorite_border"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
 
         <TextView
             android:id="@+id/itemName"
@@ -78,7 +71,7 @@
                 android:layout_marginVertical="@dimen/_4sdp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/black"
+                android:textColor="@color/g_gray500"
                 android:textSize="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imageView2"
@@ -95,8 +88,8 @@
             android:layout_marginBottom="@dimen/_8sdp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textSize="@dimen/_12sdp"
-            android:textColor="@color/green"
+            android:textSize="@dimen/_11sdp"
+            android:textColor="@color/g_red"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/priceArea"
@@ -107,8 +100,9 @@
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
             android:background="@drawable/btn_add_top_left_corner"
-            android:padding="@dimen/_6sdp"
-            android:src="@drawable/ic_add"
+            android:backgroundTint="@color/secondary_color"
+            android:padding="@dimen/_7sdp"
+            android:src="@drawable/ic_add_cart"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:tint="@color/white" />

@@ -17,10 +17,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.User
-import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
+import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.SingleInputBottomSheet
+import com.abdallah.ecommerce.utils.Constant
+import com.abdallah.ecommerce.utils.Constant.IS_SKIP
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.abdallah.ecommerce.utils.validation.isPhoneNumberValid
@@ -41,8 +43,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         savedInstanceState: Bundle?
     ): View? {
         Log.d("screen", "RegisterFragment ")
-
         binding = FragmentRegisterBinding.inflate(inflater)
+        SharedPreferencesHelper.addBoolean(Constant.NOT_FIRST_TIME,true)
 
         return binding.root
     }
@@ -51,20 +53,14 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arlInitial()
-        registerStateCallBack()
+        userAndPassRegisterCallBack()
         noInternetCallBack()
         googleSignInCallBack()
         fragOnClicks()
         validationState()
-        skipOnClick()
 
     }
-    private fun skipOnClick() {
-        binding.skip.setOnClickListener{
-            startActivity(Intent(context , ShoppingActivity::class.java))
-            requireActivity().finish()
-        }
-    }
+
 
 
     private fun arlInitial() {
@@ -129,6 +125,11 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 googleSignInRequest()
             }
 
+            skip.setOnClickListener{
+                SharedPreferencesHelper.addBoolean(IS_SKIP,true)
+                startActivity(Intent(context , ShoppingActivity::class.java))
+                requireActivity().finish()
+            }
 
         }
     }
@@ -158,6 +159,11 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             when (it) {
                 is Resource.Success -> {
                     bottomSheet.dismiss()
+                    Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
+                        .show()
+                    SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
+                    startActivity(Intent(context , ShoppingActivity::class.java))
+                    activity?.finish()
                 }
 
                 is Resource.Failure -> {
@@ -217,7 +223,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
     }
 
-    private fun registerStateCallBack() {
+    private fun userAndPassRegisterCallBack() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.register.collect { resource ->
@@ -230,6 +236,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         binding.btnRegister.revertAnimation()
                         Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
                             .show()
+                        SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
+
                         startActivity(Intent(context , ShoppingActivity::class.java))
                         activity?.finish()
                     }
@@ -272,6 +280,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     is Resource.Success -> {
                         Toast.makeText(context , "Successful signin" , Toast.LENGTH_SHORT).show()
                         hideLoader()
+                        SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
+
                         startActivity(Intent(context , ShoppingActivity::class.java))
                         activity?.finish()
                     }

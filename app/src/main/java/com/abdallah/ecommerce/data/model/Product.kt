@@ -1,8 +1,12 @@
 package com.abdallah.ecommerce.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+//@Entity(tableName = "products")
 data class Product (
-    var id : String? = null,
+//    @PrimaryKey
+    var id : String = "",
     var productName: String? = null,
     var categoryName: String? = null,
     var productdescription: String? = null,
@@ -15,6 +19,9 @@ data class Product (
     var productImages: ArrayList<String>? = null,
     var productSize: ArrayList<String>? = null,
     var productColors: ArrayList<Int>? = null,
+    var ratersIdsAndRating: ArrayList<RatingModel> = ArrayList(),
+    var ratersNum: Int? = 0,
+    var rating: Float = 5f,
     var productMainImg: String? = null,
     var location: String? = null,
 

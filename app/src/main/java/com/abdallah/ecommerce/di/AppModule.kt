@@ -3,7 +3,11 @@ package com.abdallah.ecommerce.di
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.firestoreSettings
+import com.google.firebase.firestore.memoryCacheSettings
+import com.google.firebase.firestore.persistentCacheSettings
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 import dagger.Module
@@ -26,7 +30,5 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFireStorage() = Firebase.storage.reference
-
-
 
 }

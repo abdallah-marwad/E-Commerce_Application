@@ -12,6 +12,9 @@
     <color name="g_gray700">#666666</color>
     <color name="g_black">#171717</color>
     <color name="app_theme_color">#000DAE</color>
+    <color name="off_white">#ECF3F8</color>
+    <color name="secondary_color">#DE502A</color>
+    <color name="secondary_dark_color">#BF3E1B</color>
     <color name="green">#04BC0B</color>
     <color name="g_white">#F5F8FA</color>
     <color name="g_icon_tint">#97AABD</color>

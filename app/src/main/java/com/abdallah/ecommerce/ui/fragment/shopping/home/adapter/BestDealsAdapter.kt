@@ -1,26 +1,16 @@
-package com.abdallah.ecommerce.ui.fragment.shopping.home
+package com.abdallah.ecommerce.ui.fragment.shopping.home.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
-import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.BestDealsItemBinding
 import com.abdallah.ecommerce.utils.CustomShimmerDrawable
+import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.google.firebase.storage.StorageReference
 
 class BestDealsAdapter(val data: ArrayList<Product> ) :
     RecyclerView.Adapter<BestDealsAdapter.ViewHolder>() {
@@ -37,7 +27,7 @@ class BestDealsAdapter(val data: ArrayList<Product> ) :
 
         Glide.with(holder.itemView.context)
                 .load(data[position].productMainImg)
-                .placeholder(R.drawable.err_banner)
+                .placeholder(CustomShimmerDrawable().shimmerDrawable)
                 .error(R.drawable.err_banner)
                 .into(holder.binding.bestDealsImg)
         val newPrice = item.price!! - item.offerValue!!
@@ -47,8 +37,15 @@ class BestDealsAdapter(val data: ArrayList<Product> ) :
         holder.binding.itemNewPrice.text = "EGP "+newPrice
         holder.binding.itemName.text = item.productName
 
+        holder.binding.parentArea.setOnClickListener {
+
+        }
+        holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
+
+
 
     }
+
 
     override fun getItemCount(): Int {
         return data.size

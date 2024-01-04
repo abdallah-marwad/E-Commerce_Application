@@ -9,7 +9,15 @@
         android:id="@+id/homeFragment"
         android:name="com.abdallah.ecommerce.ui.fragment.shopping.home.ShoppingHomeFragment"
         android:label="fragment_shopping_home"
-        tools:layout="@layout/fragment_shopping_home" />
+        tools:layout="@layout/fragment_shopping_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_allProducts"
+            app:destination="@id/allProducts"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
+    </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.abdallah.ecommerce.ui.fragment.shopping.search.SearchFragment"
@@ -25,4 +33,21 @@
         android:name="com.abdallah.ecommerce.ui.fragment.shopping.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/allProducts"
+        android:name="com.abdallah.ecommerce.ui.fragment.shopping.allProducts.AllProductsFragment"
+        android:label="fragment_all_products"
+        tools:layout="@layout/fragment_all_products" >
+        <argument
+            android:name="categories"
+            app:argType="com.abdallah.ecommerce.data.model.Categories"
+            app:nullable="true" />
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+
+    </fragment>
 </navigation>

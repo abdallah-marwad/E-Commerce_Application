@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.ui.fragment.shopping.home
+package com.abdallah.ecommerce.ui.fragment.shopping.home.adapter
 
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -15,7 +15,6 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.google.firebase.storage.StorageReference
 
 class BannerRecAdapter(val data: ArrayList<Uri> ) :
     RecyclerView.Adapter<BannerRecAdapter.ViewHolder>() {
@@ -26,7 +25,7 @@ class BannerRecAdapter(val data: ArrayList<Uri> ) :
         return ViewHolder(v)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder,  position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             Glide
                 .with(holder.itemView.context)
                 .load(data[position])
@@ -52,7 +51,7 @@ class BannerRecAdapter(val data: ArrayList<Uri> ) :
                         return false
                     }
                 })
-                .placeholder(R.drawable.err_banner)//CustomShimmerDrawable().shimmerDrawable
+                .placeholder(CustomShimmerDrawable().shimmerDrawable)
                 .error(R.drawable.err_banner)
                 .into(holder.imageBanner)
 
