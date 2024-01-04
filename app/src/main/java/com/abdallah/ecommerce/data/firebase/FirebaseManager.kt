@@ -1,6 +1,7 @@
 package com.abdallah.ecommerce.data.firebase
 
 import com.abdallah.ecommerce.data.model.Product
+import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.utils.Constant
 
 import com.google.android.gms.tasks.Task
@@ -30,10 +31,14 @@ fun getProductsByCategoryPagging(
          firestore.collection("products").whereEqualTo( "categoryName", categoryName).limit(Constant.PAGE_SIZE)
 fun getUserData(
         firestore: FirebaseFirestore,
-        categoryName : String,
         email : String
     )=
          firestore.collection("users").whereEqualTo( "email", email)
+fun saveUserData(
+        firestore: FirebaseFirestore,
+        userData : UserData,
+    )=
+         firestore.collection("users").document(userData.email).set(userData)
 
 
 

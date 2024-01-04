@@ -77,6 +77,7 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
                         binding.btnLoginLoginFrag.revertAnimation()
                         makeText(requireContext(), "successful login", Toast.LENGTH_LONG).show()
                         SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
+                        // get user data
                         startActivity(Intent(context , ShoppingActivity::class.java))
                         activity?.finish()                    }
 

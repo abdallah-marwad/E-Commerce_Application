@@ -15,7 +15,9 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.data.firebase.FirebaseManager.saveUserData
 import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
@@ -159,7 +161,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             when (it) {
                 is Resource.Success -> {
                     bottomSheet.dismiss()
-                    Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
+                    this.saveUserData(true)
+                    Toast.makeText(requireContext(), "successful sign in", Toast.LENGTH_LONG)
                         .show()
                     SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
                     startActivity(Intent(context , ShoppingActivity::class.java))
@@ -179,6 +182,11 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             }
         }
     }
+
+    private fun saveUserData(isLoggedIn: Boolean) {
+
+    }
+
     private fun showRegisterPhoneBottomSheet() {
 
         val phoneBottomSheet = SingleInputBottomSheet()
@@ -234,12 +242,11 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
                     is Resource.Success -> {
                         binding.btnRegister.revertAnimation()
+                        saveUserData(false)
                         Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
                             .show()
-                        SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
+                        findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
 
-                        startActivity(Intent(context , ShoppingActivity::class.java))
-                        activity?.finish()
                     }
 
                     is Resource.Failure -> {
@@ -278,6 +285,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         showLoader()
                     }
                     is Resource.Success -> {
+                        saveUserData(true)
                         Toast.makeText(context , "Successful signin" , Toast.LENGTH_SHORT).show()
                         hideLoader()
                         SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)

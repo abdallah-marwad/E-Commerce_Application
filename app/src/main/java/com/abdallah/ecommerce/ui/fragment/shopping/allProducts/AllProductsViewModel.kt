@@ -31,9 +31,7 @@ class AllProductsViewModel @Inject constructor(
     private val _products =
         MutableStateFlow<Resource<ArrayList<Product>>>(Resource.UnSpecified())
     val productsFlow: Flow<Resource<ArrayList<Product>>> = _products
-    val flow = Pager(PagingConfig(pageSize = Constant.PAGE_SIZE.toInt())) {
-        FirebasePagingSource(FirebaseManager.getProductsByCategoryPagging(fireStore , categoryName))
-    }.flow.cachedIn(viewModelScope)
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun getProductsByCategory(categoryName : String) =

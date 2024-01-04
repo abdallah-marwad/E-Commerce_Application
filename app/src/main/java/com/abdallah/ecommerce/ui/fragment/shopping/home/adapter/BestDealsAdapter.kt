@@ -12,7 +12,7 @@ import com.abdallah.ecommerce.utils.CustomShimmerDrawable
 import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 import com.bumptech.glide.Glide
 
-class BestDealsAdapter(val data: ArrayList<Product> ) :
+class BestDealsAdapter(val data: ArrayList<Product> , val listener : BestDealsOnClick) :
     RecyclerView.Adapter<BestDealsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,11 +34,14 @@ class BestDealsAdapter(val data: ArrayList<Product> ) :
         holder.binding.itemOldPrice.paintFlags = holder.binding.itemOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         holder.binding.itemOldPrice.text = item.price.toString()
         holder.binding.offerPercentage.text = "${item.offerPercentage}% Off"
-        holder.binding.itemNewPrice.text = "EGP "+newPrice
+        holder.binding.itemNewPrice.text = "EGP $newPrice"
         holder.binding.itemName.text = item.productName
 
         holder.binding.parentArea.setOnClickListener {
-
+            listener.itemOnClick(item)
+        }
+        holder.binding.cart.setOnClickListener {
+            listener.cartOnClick(item.id)
         }
         holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
 
@@ -46,6 +49,10 @@ class BestDealsAdapter(val data: ArrayList<Product> ) :
 
     }
 
+    interface BestDealsOnClick{
+        fun itemOnClick(product: Product)
+        fun cartOnClick(productId : String)
+    }
 
     override fun getItemCount(): Int {
         return data.size

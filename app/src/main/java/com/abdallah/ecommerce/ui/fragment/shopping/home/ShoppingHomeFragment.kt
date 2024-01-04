@@ -1,6 +1,7 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -21,12 +22,16 @@ import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.Categories
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
+import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
+import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BannerRecAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BestDealsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.MainCategoryAdapter
+import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
+import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -34,7 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) , MainCategoryAdapter.MainCategoryOnClick{
+class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDealsAdapter.BestDealsOnClick , MainCategoryAdapter.MainCategoryOnClick{
 
     private lateinit var binding: FragmentShoppingHomeBinding
     private val viewModel by viewModels<ShoppingHomeViewModel>()
@@ -286,7 +291,7 @@ private fun initMainCategoryRv(data: ArrayList<Category>) {
 }
     @SuppressLint("SuspiciousIndentation")
     private fun initOfferedRv(data: ArrayList<Product>) {
-    val adapter = BestDealsAdapter(data)
+    val adapter = BestDealsAdapter(data , this)
     binding.bestDealsRV.adapter = adapter
         RecyclerAnimation.animateRecycler(binding.bestDealsRV)
         adapter.notifyDataSetChanged()
@@ -305,6 +310,33 @@ private fun initMainCategoryRv(data: ArrayList<Category>) {
         categories.addAll(categoryList)
         val action = ShoppingHomeFragmentDirections.actionHomeFragmentToAllProducts(categories , categoryName , position)
         findNavController().navigate(action)
+    }
+
+    override fun itemOnClick(product: Product) {
+    }
+
+    override fun cartOnClick(productId: String) {
+        if(SharedPreferencesHelper.getBoolean(Constant.IS_LOGGED_IN).not()){
+            val dialog = AppDialog()
+            dialog.showDialog(
+                "Couldn't add item to cart",
+                "Please login first to able to add items",
+                "LogIn",
+                "Not Now",
+                R.drawable.login,
+                {
+                    dialog.dismiss()
+                    context?.startActivity(Intent(context , LoginRegisterActivity::class.java))
+                },
+                {
+                    dialog.dismiss()
+                }
+
+            )
+            return
+        }
+
+
     }
 
 }

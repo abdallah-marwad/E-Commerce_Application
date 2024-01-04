@@ -9,14 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import androidx.paging.LoadState
 import androidx.transition.Fade
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
@@ -29,14 +27,12 @@ import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.animation.ViewAnimation
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick {
 
     lateinit var binding: FragmentAllProductsBinding
-    private val allProductsAdapter  :  AllProductsAdapter by lazy { AllProductsAdapter(ArrayList())}
     private val args: AllProductsFragmentArgs by navArgs()
     private val viewModel by viewModels<AllProductsViewModel>()
 
@@ -52,14 +48,10 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.categoryName = args.categoryName
         initAllCategoriesRv()
         startProductShimmer()
         fragmentOnclick()
         setAppbarTitle()
-        setProgressBarAccordingToLoadState()
-        setProductsAdapter()
-        getProducts()
 
     }
 
@@ -71,7 +63,27 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     private fun setAppbarTitle(){
         binding.toolbar.title.text = "All Products"
     }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun initAllCategoriesRv() {
+        args.categories ?: return
+        val categoriesAdapter = AllCategoriesAdapter(args.categories!!, this)
+        binding.categoriesRv.adapter = categoriesAdapter
+        RecyclerAnimation.animateRecycler(binding.categoriesRv)
+        categoriesAdapter.notifyDataSetChanged()
+        binding.categoriesRv.scheduleLayoutAnimation()
+        binding.categoriesRv.smoothScrollToPosition(args.position)
+        categoriesAdapter.selectSpecificItem(args.position)
+        getProduct(args.categoryName)
 
+    }
+
+    private fun initAllProductsRv(data: ArrayList<Product>) {
+        val allProductsAdapter = AllProductsAdapter(data)
+        binding.productRv.adapter = allProductsAdapter
+        RecyclerAnimation.animateRecycler(binding.productRv)
+        allProductsAdapter.notifyDataSetChanged()
+        binding.productRv.scheduleLayoutAnimation()
+    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getProduct(categoryName: String) {
@@ -85,7 +97,7 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
                                 ViewAnimation().viewAnimation(binding.noProducts ,binding.parentArea)
                                 binding.noProducts.visibility = View.VISIBLE
                             }
-//                            initAllProductsRv(result.data)
+                            initAllProductsRv(result.data)
 
 
 
@@ -127,54 +139,10 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
         binding.noProducts.visibility = View.GONE
 
     }
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun initAllCategoriesRv() {
-        val list = args.categories ?: return
-
-        val categoriesAdapter = AllCategoriesAdapter(list, this)
-        binding.categoriesRv.adapter = categoriesAdapter
-        RecyclerAnimation.animateRecycler(binding.categoriesRv)
-        categoriesAdapter.notifyDataSetChanged()
-        binding.categoriesRv.scheduleLayoutAnimation()
-        binding.categoriesRv.smoothScrollToPosition(args.position)
-        categoriesAdapter.selectSpecificItem(args.position)
-//        getProduct(args.categoryName)
-
-    }
-
-//    private fun initAllProductsRv(data: ArrayList<Product>) {
-//         allProductsAdapter = AllProductsAdapter(data)
-//        binding.productRv.adapter = allProductsAdapter
-//        RecyclerAnimation.animateRecycler(binding.productRv)
-//        allProductsAdapter.notifyDataSetChanged()
-//        binding.productRv.scheduleLayoutAnimation()
-//    }
-    private fun setProgressBarAccordingToLoadState() {
-     lifecycleScope.launch {
-            allProductsAdapter.loadStateFlow.collectLatest {
-                binding.paggingProgress.isVisible = it.append is LoadState.Loading
-            }
-        }
-    }
-    private fun setProductsAdapter() {
-        binding.productRv.adapter = allProductsAdapter
-    }
-
-    private fun getProducts() {
-        lifecycleScope.launch {
-            viewModel.flow.collectLatest {product->
-                stopProductShimmer()
-                allProductsAdapter.submitData(product)
-                allProductsAdapter.notifyDataSetChanged()
-            }
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun allCategoryOnClick(category: Category) {
-//        getProduct(category.categoryName!!)
-        viewModel.categoryName = category.categoryName!!
-        getProducts()
+        getProduct(category.categoryName!!)
     }
 
 
