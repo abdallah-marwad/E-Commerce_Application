@@ -6,5 +6,6 @@ object Constant {
     const val REQUIRED_FIELD = "This filed is required"
     const val PLS_ENTER_VALID_PHONE = "Please enter valid phone number"
     const val PLS_ENTER_VALID_EMAIL = "Please enter valid email"
+    const val BEST_DEALS_TRANSACTION_NAME = "bestDealsTransaction"
 
 }

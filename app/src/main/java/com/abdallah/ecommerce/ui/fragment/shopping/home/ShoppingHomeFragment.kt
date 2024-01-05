@@ -14,23 +14,23 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
+import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
+class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
+    BestDealsAdapter.BestDealsOnClick {
 
     private lateinit var binding: FragmentShoppingHomeBinding
     private val viewModel by viewModels<ShoppingHomeViewModel>()
@@ -52,9 +52,11 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("test", "onViewCreated")
+
         downloadBannerImages()
         getCategories()
-        getProducts()
+        getBestDealsProducts()
         startBannerShimmer()
         startMainCategoryShimmer()
 
@@ -171,16 +173,17 @@ private fun getCategories() {
 
     }
 }
-private fun getProducts() {
-    viewModel.getOfferedProducts()
-    lifecycleScope.launch {
-        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.offeredProducts.collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        stopDealsShimmer()
-                        result.data?.let {initOfferedRv(it)}
-                    }
+
+    private fun getBestDealsProducts() {
+        viewModel.getOfferedProducts()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.offeredProducts.collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            stopDealsShimmer()
+                            result.data?.let { initBestDealsRv(it) }
+                        }
 
                     is Resource.Failure -> {
                         stopDealsShimmer()
@@ -235,20 +238,33 @@ private fun stopMainCategoryShimmer() {
 
 }
 
-private fun stopDealsShimmer() {
-    binding.shimmerDealsArea.stopShimmer()
-    binding.shimmerDealsArea.visibility = View.INVISIBLE
-}
+    private fun stopDealsShimmer() {
+        binding.shimmerDealsArea.stopShimmer()
+        binding.shimmerDealsArea.visibility = View.INVISIBLE
+    }
 
-private fun initMainCategoryRv(data: ArrayList<Category>) {
-    val adapter = MainCategoryAdapter(data)
-    binding.mainRecCategory.adapter = adapter
-    adapter.notifyDataSetChanged()
-}
-    private fun initOfferedRv(data: ArrayList<Product>) {
-    val adapter = BestDealsAdapter(data)
-    binding.bestDealsRV.adapter = adapter
-    adapter.notifyDataSetChanged()
-}
+    private fun initMainCategoryRv(data: ArrayList<Category>) {
+        val adapter = MainCategoryAdapter(data)
+        binding.mainRecCategory.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun initBestDealsRv(data: ArrayList<Product>) {
+        val adapter = BestDealsAdapter(data, this)
+        binding.bestDealsRV.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun bestDealsOnClick(product: Product, img: View) {
+
+        val extras = FragmentNavigatorExtras(
+            img to Constant.BEST_DEALS_TRANSACTION_NAME
+        )
+        img.transitionName = Constant.BEST_DEALS_TRANSACTION_NAME
+        val action = ShoppingHomeFragmentDirections.actionHomeFragmentToProductDetailsFragment()
+        findNavController().navigate(action, extras)
+    }
+
+
 }
 
