@@ -1,7 +1,9 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -9,19 +11,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.data.model.Categories
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
+import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
+import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
+import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BannerRecAdapter
+import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BestDealsAdapter
+import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.MainCategoryAdapter
 import com.abdallah.ecommerce.utils.Constant
+import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
+import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -29,8 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
-    BestDealsAdapter.BestDealsOnClick {
+class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDealsAdapter.BestDealsOnClick , MainCategoryAdapter.MainCategoryOnClick{
 
     private lateinit var binding: FragmentShoppingHomeBinding
     private val viewModel by viewModels<ShoppingHomeViewModel>()
@@ -38,6 +47,9 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
     private var bannerCurrentPosition = 0
     private var scrollingRunnable: Runnable = Runnable {}
     private val handler: Handler by lazy { Handler() }
+    private var categoryList: ArrayList<Category> = ArrayList()
+    private var productsList: ArrayList<Product> = ArrayList()
+    private var bannersList: ArrayList<Uri> = ArrayList()
 
     @Inject
     lateinit var firestore: FirebaseFirestore
@@ -50,32 +62,41 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("test", "onViewCreated")
-
-        downloadBannerImages()
-        getCategories()
-        getBestDealsProducts()
         startBannerShimmer()
         startMainCategoryShimmer()
+        startDealsShimmer()
+        downloadBannerImages()
+        getCategories()
+        getProducts()
+        noInternetCallBack()
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun downloadBannerImages() {
-        viewModel.downloadAllImages()
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        if(bannersList.isEmpty().not()){
+            stopBannerShimmer()
+            createBanner(bannersList)
+            autoLoopBanner()
+            return
+        }
+
+
+        viewModel.downloadBannerImages()
+        lifecycleScope.launchWhenResumed {
                 viewModel.imageList.collect { result ->
                     when (result) {
                         is Resource.Success -> {
                             stopBannerShimmer()
                             result.data?.let {
-                                createBanner(it)
+                                bannersList.addAll(it)
+                                createBanner(bannersList)
                                 autoLoopBanner()
                             }
                         }
-
                         is Resource.Failure -> {
                             stopBannerShimmer()
 //                            showLongToast("Error occurred " + result.message)
@@ -92,21 +113,12 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
                         else -> {}
                     }
-
-
                 }
             }
-
-        }
     }
 
 
-    private fun createBanner(uriList: ArrayList<Uri>) {
-        var bannerAdapter = BannerRecAdapter(uriList)
-        binding.bannerHomeParent.adapter = bannerAdapter
-        bannerAdapter.notifyDataSetChanged()
 
-    }
 
 
     override fun onPause() {
@@ -139,51 +151,65 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
     }
 
 
+@RequiresApi(Build.VERSION_CODES.M)
 private fun getCategories() {
+    if(categoryList.isEmpty().not()) {
+        stopMainCategoryShimmer()
+        initMainCategoryRv(categoryList)
+        return
+    }
+
+
     viewModel.getCategories()
-    lifecycleScope.launch {
-        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+    lifecycleScope.launchWhenResumed {
             viewModel.categoryList.collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         stopMainCategoryShimmer()
-                        result.data?.let { initMainCategoryRv(it) }
+
+                        result.data?.let {
+                            initMainCategoryRv(it)
+                            categoryList.addAll(it)
+                        }
                     }
 
                     is Resource.Failure -> {
                         stopMainCategoryShimmer()
-//                            showLongToast("Error occurred " + result.message)
                         Toast.makeText(
                             context, "Error occured " + result.message,
                             Toast.LENGTH_LONG
                         ).show()
-
                     }
 
                     is Resource.Loading -> {
                         startMainCategoryShimmer()
                     }
-
                     else -> {}
                 }
-
-
             }
-        }
+
 
     }
 }
+@RequiresApi(Build.VERSION_CODES.M)
+private fun getProducts() {
+    if(productsList.isEmpty().not()){
+        stopDealsShimmer()
+        initOfferedRv(productsList)
+        return
+    }
 
-    private fun getBestDealsProducts() {
-        viewModel.getOfferedProducts()
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.offeredProducts.collect { result ->
-                    when (result) {
-                        is Resource.Success -> {
-                            stopDealsShimmer()
-                            result.data?.let { initBestDealsRv(it) }
+    viewModel.getOfferedProducts()
+    lifecycleScope.launchWhenResumed {
+            viewModel.offeredProducts.collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        stopDealsShimmer()
+                        result.data?.let {
+                            productsList.addAll(it)
+                            initOfferedRv(productsList)
                         }
+                    }
 
                     is Resource.Failure -> {
                         stopDealsShimmer()
@@ -191,21 +217,27 @@ private fun getCategories() {
                             context, "Error occured " + result.message,
                             Toast.LENGTH_LONG
                         ).show()
+                    Log.d("test" , "Firebase Err ${result.message}")
                     }
 
                     is Resource.Loading -> {
                         startMainCategoryShimmer()
                     }
-
                     else -> {}
-                }
-
-
             }
         }
 
     }
 }
+    private fun noInternetCallBack() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.noInternet.collect {
+                    Toast.makeText(context , "No Internet connection" , Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
 private fun startBannerShimmer() {
     binding.shimmerBanner.visibility = View.VISIBLE
@@ -233,38 +265,79 @@ private fun stopMainCategoryShimmer() {
     binding.shimmerCategoriesArea.visibility = View.INVISIBLE
 }
     private fun startDealsShimmer() {
-    binding.shimmerDealsArea.visibility = View.VISIBLE
-    binding.shimmerMainCategory.startShimmer()
+        binding.shimmerDealsArea.startShimmer()
+        binding.shimmerDealsTxt.startShimmer()
+        binding.shimmerDealsArea.visibility = View.VISIBLE
+        binding.shimmerDealsTxt.visibility = View.VISIBLE
+        binding.bestDealsContainer.visibility = View.INVISIBLE
 
 }
 
-    private fun stopDealsShimmer() {
-        binding.shimmerDealsArea.stopShimmer()
-        binding.shimmerDealsArea.visibility = View.INVISIBLE
-    }
+private fun stopDealsShimmer() {
+    binding.shimmerDealsArea.stopShimmer()
+    binding.shimmerDealsTxt.stopShimmer()
+    binding.shimmerDealsArea.visibility = View.INVISIBLE
+    binding.shimmerDealsTxt.visibility = View.INVISIBLE
+    binding.bestDealsContainer.visibility = View.VISIBLE
 
-    private fun initMainCategoryRv(data: ArrayList<Category>) {
-        val adapter = MainCategoryAdapter(data)
-        binding.mainRecCategory.adapter = adapter
+}
+
+private fun initMainCategoryRv(data: ArrayList<Category>) {
+    val adapter = MainCategoryAdapter(data , this)
+    binding.mainRecCategory.adapter = adapter
+    RecyclerAnimation.animateRecycler( binding.mainRecCategory)
+    adapter.notifyDataSetChanged()
+    binding.bannerHomeParent.scheduleLayoutAnimation()
+}
+    @SuppressLint("SuspiciousIndentation")
+    private fun initOfferedRv(data: ArrayList<Product>) {
+    val adapter = BestDealsAdapter(data , this)
+    binding.bestDealsRV.adapter = adapter
+        RecyclerAnimation.animateRecycler(binding.bestDealsRV)
         adapter.notifyDataSetChanged()
+        binding.bannerHomeParent.scheduleLayoutAnimation()
+}
+    private fun createBanner(uriList: ArrayList<Uri>) {
+        var bannerAdapter = BannerRecAdapter(uriList)
+        binding.bannerHomeParent.adapter = bannerAdapter
+        RecyclerAnimation.animateRecycler( binding.bannerHomeParent)
+        bannerAdapter.notifyDataSetChanged()
+        binding.bannerHomeParent.scheduleLayoutAnimation()
     }
 
-    private fun initBestDealsRv(data: ArrayList<Product>) {
-        val adapter = BestDealsAdapter(data, this)
-        binding.bestDealsRV.adapter = adapter
-        adapter.notifyDataSetChanged()
+    override fun mainCategoryOnClick(position: Int , categoryName : String) {
+        val categories  = Categories()
+        categories.addAll(categoryList)
+        val action = ShoppingHomeFragmentDirections.actionHomeFragmentToAllProducts(categories , categoryName , position)
+        findNavController().navigate(action)
     }
 
-    override fun bestDealsOnClick(product: Product, img: View) {
-
-        val extras = FragmentNavigatorExtras(
-            img to Constant.BEST_DEALS_TRANSACTION_NAME
-        )
-        img.transitionName = Constant.BEST_DEALS_TRANSACTION_NAME
-        val action = ShoppingHomeFragmentDirections.actionHomeFragmentToProductDetailsFragment()
-        findNavController().navigate(action, extras)
+    override fun itemOnClick(product: Product) {
     }
 
+    override fun cartOnClick(productId: String) {
+        if(SharedPreferencesHelper.getBoolean(Constant.IS_LOGGED_IN).not()){
+            val dialog = AppDialog()
+            dialog.showDialog(
+                "Couldn't add item to cart",
+                "Please login first to able to add items",
+                "LogIn",
+                "Not Now",
+                R.drawable.login,
+                {
+                    dialog.dismiss()
+                    context?.startActivity(Intent(context , LoginRegisterActivity::class.java))
+                },
+                {
+                    dialog.dismiss()
+                }
+
+            )
+            return
+        }
+
+
+    }
 
 }
 

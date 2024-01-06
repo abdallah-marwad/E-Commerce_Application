@@ -1,17 +1,18 @@
-package com.abdallah.ecommerce.ui.fragment.shopping.home
+package com.abdallah.ecommerce.ui.fragment.shopping.home.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.BestDealsItemBinding
+import com.abdallah.ecommerce.utils.CustomShimmerDrawable
+import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 import com.bumptech.glide.Glide
 
-class BestDealsAdapter(val data: ArrayList<Product>, val bestDealsOnClick: BestDealsOnClick) :
+class BestDealsAdapter(val data: ArrayList<Product> , val listener : BestDealsOnClick) :
     RecyclerView.Adapter<BestDealsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,35 +27,39 @@ class BestDealsAdapter(val data: ArrayList<Product>, val bestDealsOnClick: BestD
 
         Glide.with(holder.itemView.context)
                 .load(data[position].productMainImg)
-            .placeholder(R.drawable.err_banner)
-            .error(R.drawable.err_banner)
-            .into(holder.binding.bestDealsImg)
+                .placeholder(CustomShimmerDrawable().shimmerDrawable)
+                .error(R.drawable.err_banner)
+                .into(holder.binding.bestDealsImg)
         val newPrice = item.price!! - item.offerValue!!
-        holder.binding.itemOldPrice.paintFlags =
-            holder.binding.itemOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+        holder.binding.itemOldPrice.paintFlags = holder.binding.itemOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         holder.binding.itemOldPrice.text = item.price.toString()
         holder.binding.offerPercentage.text = "${item.offerPercentage}% Off"
-        holder.binding.itemNewPrice.text = "EGP " + newPrice
+        holder.binding.itemNewPrice.text = "EGP $newPrice"
         holder.binding.itemName.text = item.productName
 
-        holder.binding.bestDealsImg.setOnClickListener {
-            bestDealsOnClick.bestDealsOnClick(item, it)
+        holder.binding.parentArea.setOnClickListener {
+            listener.itemOnClick(item)
         }
+        holder.binding.cart.setOnClickListener {
+            listener.cartOnClick(item.id)
+        }
+        holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
+
+
 
     }
 
-    interface BestDealsOnClick {
-        fun bestDealsOnClick(product: Product, view: View)
+    interface BestDealsOnClick{
+        fun itemOnClick(product: Product)
+        fun cartOnClick(productId : String)
     }
 
     override fun getItemCount(): Int {
         return data.size
     }
 
-    inner class ViewHolder(itemView: BestDealsItemBinding) :
-        RecyclerView.ViewHolder(itemView.root) {
-        var binding: BestDealsItemBinding
-
+    inner class ViewHolder(itemView: BestDealsItemBinding) : RecyclerView.ViewHolder(itemView.root) {
+        var binding : BestDealsItemBinding
         init {
             binding = itemView
         }

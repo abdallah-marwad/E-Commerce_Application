@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <ImageView
+        android:id="@+id/imageView3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
@@ -124,49 +125,13 @@
         android:text="@string/g_log_in"
         android:textColor="@color/white"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="@+id/ed_password_login"
         app:layout_constraintTop_toBottomOf="@+id/forgetPassword"
         app:spinning_bar_color="@color/white" />
 
-    <ImageView
-        android:id="@+id/facebook_img_loginFrag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:src="@drawable/facebook_login"
-        app:layout_constraintStart_toStartOf="@+id/tv_app_name_Login"
-        app:layout_constraintTop_toBottomOf="@+id/btn_login_loginFrag" />
 
-    <TextView
-        android:id="@+id/facebook_loginBtn_loginFrag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/facebook"
-        app:layout_constraintBottom_toBottomOf="@+id/facebook_img_loginFrag"
-        app:layout_constraintEnd_toEndOf="@+id/facebook_img_loginFrag"
-        app:layout_constraintStart_toStartOf="@+id/facebook_img_loginFrag"
-        app:layout_constraintTop_toTopOf="@+id/facebook_img_loginFrag" />
-
-    <ImageView
-        android:id="@+id/gmail_img_loginFrag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/google_login"
-        android:layout_marginTop="@dimen/_10sdp"
-
-        app:layout_constraintEnd_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/btn_login_loginFrag" />
-
-    <TextView
-        android:id="@+id/gmail_loginBtn_loginFrag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/gmail"
-        app:layout_constraintBottom_toBottomOf="@+id/gmail_img_loginFrag"
-        app:layout_constraintEnd_toEndOf="@+id/gmail_img_loginFrag"
-        app:layout_constraintStart_toStartOf="@+id/gmail_img_loginFrag"
-        app:layout_constraintTop_toTopOf="@+id/gmail_img_loginFrag" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

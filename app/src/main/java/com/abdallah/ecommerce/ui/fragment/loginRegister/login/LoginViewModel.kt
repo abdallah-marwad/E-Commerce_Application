@@ -2,6 +2,7 @@ package com.abdallah.ecommerce.ui.fragment.loginRegister.login
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,14 +12,20 @@ import com.abdallah.ecommerce.utils.validation.ValidationEmailAndPass
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.abdallah.ecommerce.utils.validation.validateEmail
 import com.abdallah.ecommerce.utils.validation.validatePassword
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,7 +68,13 @@ class LoginViewModel @Inject constructor(
 
                 }.addOnFailureListener {
                     runBlocking {
-                        _loginResult.send(Resource.Failure(it.message.toString()))
+                        _loginResult.send(
+                            Resource.Failure(
+                                handleFireBaseException(
+                                    (it)
+                                )
+                            )
+                        )
                     }
                 }
             } else {
@@ -70,6 +83,15 @@ class LoginViewModel @Inject constructor(
                 _failedValidation.send(loginFailure)
             }
         }
+    }
+
+
+    private fun handleFireBaseException(exception: Exception): String {
+        Log.e("test", "$exception")
+        if (exception is FirebaseNetworkException) {
+            return "Please check your internet"
+        }
+        return exception.localizedMessage.toString()
     }
 
     private fun validData(email: String, password: String): Boolean {
@@ -87,17 +109,17 @@ class LoginViewModel @Inject constructor(
                 _noInternet.send(true)
                 return@launch
             }
-        firebaseAuth.sendPasswordResetEmail(email)
-            .addOnSuccessListener {
-                runBlocking {
-                    _resetPassword.send(Resource.Success("Email send successfully"))
+            firebaseAuth.sendPasswordResetEmail(email)
+                .addOnSuccessListener {
+                    runBlocking {
+                        _resetPassword.send(Resource.Success("Email send successfully"))
+                    }
                 }
-            }
-            .addOnFailureListener{
-                runBlocking {
-                    _resetPassword.send(Resource.Failure(it.message))
+                .addOnFailureListener {
+                    runBlocking {
+                        _resetPassword.send(Resource.Failure(it.message))
+                    }
                 }
-            }
         }
 
 

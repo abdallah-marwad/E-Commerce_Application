@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.abdallah.ecommerce.data.firebase.FirebaseManager
 import com.abdallah.ecommerce.utils.InternetConnection
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.RegisterValidation
@@ -17,9 +18,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithGoogle
 import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
+import com.abdallah.ecommerce.data.model.UserData
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -35,6 +38,7 @@ class RegisterViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val google: RegisterWithGoogle,
     private val phoneRegister: RegisterWithPhone,
+    private val fireStore: FirebaseFirestore,
     application: Application,
 
     ) : AndroidViewModel(application) {
@@ -49,6 +53,9 @@ class RegisterViewModel @Inject constructor(
 
     private val _register = MutableStateFlow<Resource<String>>(Resource.UnSpecified())
     val register: Flow<Resource<String>> = _register
+
+    private val _saveUserData = MutableStateFlow<Resource<Boolean>>(Resource.UnSpecified())
+    val saveUserData: Flow<Resource<Boolean>> = _saveUserData
 
     val googleRegister: Flow<Resource<String>> = google.googleRegister
 
@@ -122,6 +129,29 @@ class RegisterViewModel @Inject constructor(
 
          }
          return google.googleSignInRequest(activity)
+     }
+   @RequiresApi(Build.VERSION_CODES.M)
+     suspend fun saveUserData(userData : UserData)  =
+         viewModelScope.launch (Dispatchers.IO){
+
+         if(!InternetConnection().hasInternetConnection(getApplication())){
+                 _noInternet.send(true)
+                 return@launch
+         }
+       _saveUserData.emit(Resource.Loading())
+        FirebaseManager.saveUserData(
+            fireStore ,
+            userData
+        ).addOnSuccessListener {
+            runBlocking {
+                _saveUserData.emit(Resource.Success(true))
+            }
+
+        }.addOnFailureListener {
+            runBlocking {
+                _saveUserData.emit(Resource.Failure(it.message))
+            }
+        }
      }
 
 

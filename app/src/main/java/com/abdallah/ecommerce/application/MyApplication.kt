@@ -10,13 +10,16 @@ import dagger.hilt.android.HiltAndroidApp
 class MyApplication : Application() {
 
     private var currentAct: Activity? = null
-    lateinit var mMyApp: MyApplication
-        private set
+    companion object{
+        lateinit var myAppContext: MyApplication
+            private set
+    }
+
 
 
     override fun onCreate() {
         super.onCreate();
-        mMyApp = this.applicationContext as MyApplication
+        myAppContext = this.applicationContext as MyApplication
         actInstance()
 
     }

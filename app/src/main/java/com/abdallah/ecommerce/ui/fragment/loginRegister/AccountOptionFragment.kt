@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentAccountOptionsBinding
+import com.abdallah.ecommerce.utils.Constant
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -21,9 +23,12 @@ class AccountOptionFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         binding = FragmentAccountOptionsBinding.inflate(inflater)
-
+        if(SharedPreferencesHelper.getBoolean(Constant.NOT_FIRST_TIME)) {
+            findNavController().navigate(R.id.action_accountOptionFragment_to_loginFragment)
+            return null
+        }
         return binding.root
     }
 
