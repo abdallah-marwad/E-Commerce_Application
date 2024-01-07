@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -27,30 +28,30 @@ class AllProductsViewModel @Inject constructor(
     val fireStore : FirebaseFirestore
 ): ViewModel() {
 
-     var categoryName = ""
+    var categoryName = ""
     private val _products =
         MutableStateFlow<Resource<ArrayList<Product>>>(Resource.UnSpecified())
     val productsFlow: Flow<Resource<ArrayList<Product>>> = _products
 
 
+    private var job: Job? = null
+
     @RequiresApi(Build.VERSION_CODES.M)
-    fun getProductsByCategory(categoryName : String) =
-        viewModelScope.launch(Dispatchers.IO) {
+    fun getProductsByCategory(categoryName: String) {
+        job?.cancel()
+        job = viewModelScope.launch(Dispatchers.IO) {
             _products.emit(Resource.Loading())
-        try {
-            val products = ArrayList<Product>()
-            val querySnapshot = FirebaseManager.getProductsByCategory(fireStore , categoryName).await()
-            querySnapshot.documents.forEach {
-                it.toObject<Product>()?.let { product -> products.add(product) }
+            try {
+                val products = ArrayList<Product>()
+                val querySnapshot =
+                    FirebaseManager.getProductsByCategory(fireStore, categoryName).await()
+                querySnapshot.documents.forEach {
+                    it.toObject<Product>()?.let { product -> products.add(product) }
+                }
+                _products.emit(Resource.Success(products))
+            } catch (e: Exception) {
+                _products.emit(Resource.Failure(e.message))
             }
-            _products.emit(Resource.Success(products))
-        }catch (e: Exception) {
-            _products.emit(Resource.Failure(e.message))
         }
-
-
-
-
     }
-
 }

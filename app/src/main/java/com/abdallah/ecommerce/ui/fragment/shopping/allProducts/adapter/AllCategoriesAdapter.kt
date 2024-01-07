@@ -15,8 +15,9 @@ import com.abdallah.ecommerce.utils.CustomShimmerDrawable
 import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 import com.bumptech.glide.Glide
 
-class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick : AllCategoryOnClick) :
+class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick: AllCategoryOnClick) :
     RecyclerView.Adapter<AllCategoriesAdapter.ViewHolder>() {
+    var lastSelectedItem = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -27,28 +28,34 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick : AllC
     @SuppressLint("SuspiciousIndentation", "ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val category = data[position]
-        if(category.isSelected) {
+        if (category.isSelected) {
             holder.parentArea.setBackgroundResource(R.drawable.blue_background_80)
-            holder.txtCategory.setTextColor(MyApplication.myAppContext.getResources().getColor(R.color.white))
-        }
-        else {
+            holder.txtCategory.setTextColor(
+                MyApplication.myAppContext.getResources().getColor(R.color.white)
+            )
+        } else {
             holder.parentArea.setBackgroundResource(R.color.white)
-            holder.txtCategory.setTextColor(MyApplication.myAppContext.getResources().getColor(R.color.black))
+            holder.txtCategory.setTextColor(
+                MyApplication.myAppContext.getResources().getColor(R.color.black)
+            )
 
         }
-            Glide
-                .with(holder.itemView.context)
-                .load(category.image)
-                .placeholder(CustomShimmerDrawable().shimmerDrawable)
-                .error(R.drawable.err_banner)
-                .into(holder.imageCategory)
-            holder.txtCategory.text = category.categoryName
+        Glide
+            .with(holder.itemView.context)
+            .load(category.image)
+            .placeholder(CustomShimmerDrawable().shimmerDrawable)
+            .error(R.drawable.err_banner)
+            .into(holder.imageCategory)
+        holder.txtCategory.text = category.categoryName
         holder.parentArea.setOnTouchListener(RecyclerTouchEffect())
 
-        holder.parentArea.setOnClickListener{
-            data.forEach {
-                it.isSelected = it == category
-            }
+        holder.parentArea.setOnClickListener {
+            if (category.isSelected)
+                return@setOnClickListener
+
+            category.isSelected = true
+            data[lastSelectedItem].isSelected = false
+            lastSelectedItem = position
             notifyDataSetChanged()
 
             itemOnClick.allCategoryOnClick(category)
@@ -56,10 +63,10 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick : AllC
         }
 
     }
-    fun selectSpecificItem(position: Int){
-        for(i in 0 until  data.size){
-            data[i].isSelected = i == position
-        }
+
+    fun selectSpecificItem(position: Int) {
+        lastSelectedItem = position
+        data[position].isSelected = true
         notifyDataSetChanged()
     }
 
@@ -67,9 +74,10 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick : AllC
         return data.size
     }
 
-    interface AllCategoryOnClick{
-        fun allCategoryOnClick(category : Category)
+    interface AllCategoryOnClick {
+        fun allCategoryOnClick(category: Category)
     }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageCategory: ImageView
         val txtCategory: TextView

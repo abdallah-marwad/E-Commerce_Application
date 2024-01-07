@@ -98,9 +98,6 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
                                 binding.noProducts.visibility = View.VISIBLE
                             }
                             initAllProductsRv(result.data)
-
-
-
                         }
 
                         is Resource.Failure -> {
