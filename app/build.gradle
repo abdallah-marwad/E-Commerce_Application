@@ -134,6 +134,11 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
 
     implementation "androidx.paging:paging-runtime:3.2.1"
+    //custom indicator
+    implementation "com.tbuonomo:dotsindicator:4.3"
+
+    //lottie
+    implementation "com.airbnb.android:lottie:3.4.1"
 
 
 

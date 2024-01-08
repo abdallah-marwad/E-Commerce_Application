@@ -1,9 +1,12 @@
 package com.abdallah.ecommerce.data.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
 
 //@Entity(tableName = "products")
+@Parcelize
 data class Product (
 //    @PrimaryKey
     var id : String = "",
@@ -25,4 +28,4 @@ data class Product (
     var productMainImg: String? = null,
     var location: String? = null,
 
-)
+):Parcelable

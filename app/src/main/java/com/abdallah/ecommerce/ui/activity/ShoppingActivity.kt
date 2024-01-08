@@ -3,6 +3,7 @@ package com.abdallah.ecommerce.ui.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.abdallah.ecommerce.R
@@ -27,5 +28,12 @@ class ShoppingActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         binding.bottomNavigation.setupWithNavController(navHostFragment.navController)
+    }
+     fun hideNavBar() {
+         binding.bottomNavigation.visibility = View.GONE
+
+     }
+    fun showNavBar() {
+       binding.bottomNavigation.visibility = View.VISIBLE
     }
 }

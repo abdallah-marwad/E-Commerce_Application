@@ -53,7 +53,7 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick: AllCa
             if (category.isSelected)
                 return@setOnClickListener
 
-            category.isSelected = true
+            data[position].isSelected = true
             data[lastSelectedItem].isSelected = false
             lastSelectedItem = position
             notifyDataSetChanged()
@@ -67,6 +67,11 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick: AllCa
     fun selectSpecificItem(position: Int) {
         lastSelectedItem = position
         data[position].isSelected = true
+        notifyDataSetChanged()
+    }
+    fun removeSelectedItem() {
+        data[lastSelectedItem].isSelected = false
+
         notifyDataSetChanged()
     }
 

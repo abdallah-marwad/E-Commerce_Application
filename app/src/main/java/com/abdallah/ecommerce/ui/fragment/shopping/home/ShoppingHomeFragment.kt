@@ -17,6 +17,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.Categories
@@ -25,10 +27,12 @@ import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
 import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
+import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BannerRecAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BestDealsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.MainCategoryAdapter
 import com.abdallah.ecommerce.utils.Constant
+import com.abdallah.ecommerce.utils.Constant.PRODUCT_TRANSITION_NAME
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
@@ -59,6 +63,8 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDeals
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentShoppingHomeBinding.inflate(inflater)
+        val shoppingActivity = activity as ShoppingActivity
+        shoppingActivity.showNavBar()
         return binding.root
     }
 
@@ -72,7 +78,22 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDeals
         getCategories()
         getProducts()
         noInternetCallBack()
+        fragOnClick()
 
+
+    }
+
+    private fun fragOnClick() {
+        binding.seeMoreCategories.setOnClickListener {
+            if(categoryList.isEmpty()) {
+                Toast.makeText(requireContext() , "couldn't see more now..." , Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val categories  = Categories()
+            categories.addAll(categoryList)
+            val action = ShoppingHomeFragmentDirections.actionHomeFragmentToAllProducts(categories , categoryList[0].categoryName!! , 0)
+            findNavController().navigate(action)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -312,7 +333,12 @@ private fun initMainCategoryRv(data: ArrayList<Category>) {
         findNavController().navigate(action)
     }
 
-    override fun itemOnClick(product: Product) {
+    override fun itemOnClick(product: Product , img : View) {
+        val extras = FragmentNavigatorExtras(
+            img to PRODUCT_TRANSITION_NAME)
+        img.transitionName = PRODUCT_TRANSITION_NAME
+        val action = ShoppingHomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(product)
+        findNavController().navigate(action, extras)
     }
 
     override fun cartOnClick(productId: String) {

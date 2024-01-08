@@ -21,6 +21,7 @@ import androidx.transition.TransitionManager
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.FragmentAllProductsBinding
+import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllCategoriesAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllProductsAdapter
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
@@ -33,6 +34,8 @@ import kotlinx.coroutines.launch
 class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick {
 
     lateinit var binding: FragmentAllProductsBinding
+    var categoriesAdapter : AllCategoriesAdapter? = null
+
     private val args: AllProductsFragmentArgs by navArgs()
     private val viewModel by viewModels<AllProductsViewModel>()
 
@@ -42,6 +45,8 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAllProductsBinding.inflate(inflater)
+        val shoppingActivity = activity as ShoppingActivity
+        shoppingActivity.hideNavBar()
         return binding.root
     }
 
@@ -58,6 +63,8 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     private fun fragmentOnclick(){
         binding.toolbar.icBack.setOnClickListener {
             Navigation.findNavController(requireView()).popBackStack()
+            categoriesAdapter?.removeSelectedItem()
+
         }
     }
     private fun setAppbarTitle(){
@@ -66,13 +73,13 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initAllCategoriesRv() {
         args.categories ?: return
-        val categoriesAdapter = AllCategoriesAdapter(args.categories!!, this)
+         categoriesAdapter = AllCategoriesAdapter(args.categories!!, this)
         binding.categoriesRv.adapter = categoriesAdapter
         RecyclerAnimation.animateRecycler(binding.categoriesRv)
-        categoriesAdapter.notifyDataSetChanged()
+        categoriesAdapter?.notifyDataSetChanged()
         binding.categoriesRv.scheduleLayoutAnimation()
         binding.categoriesRv.smoothScrollToPosition(args.position)
-        categoriesAdapter.selectSpecificItem(args.position)
+        categoriesAdapter?.selectSpecificItem(args.position)
         getProduct(args.categoryName)
 
     }

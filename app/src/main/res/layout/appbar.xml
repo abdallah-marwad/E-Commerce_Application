@@ -2,7 +2,7 @@
 <FrameLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="@dimen/_55sdp"
+    android:layout_height="@dimen/_50sdp"
     android:layout_width="match_parent"
     android:background="@color/white"
     >
@@ -35,7 +35,7 @@
         android:layout_height="@dimen/_25sdp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginStart="@dimen/_12sdp"
         app:cardCornerRadius="@dimen/_6sdp"
 
         >

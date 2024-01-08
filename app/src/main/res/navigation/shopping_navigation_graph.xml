@@ -17,6 +17,13 @@
             app:exitAnim="@anim/to_right"
             app:popEnterAnim="@anim/from_right"
             app:popExitAnim="@anim/to_left" />
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -48,6 +55,21 @@
         <argument
             android:name="position"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_allProducts_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.abdallah.ecommerce.ui.fragment.shopping.productDetails.ProductDetailsFragment"
+        android:label="ProductDetailsFragment" >
+        <argument
+            android:name="productDetails"
+            app:argType="com.abdallah.ecommerce.data.model.Product" />
     </fragment>
 </navigation>

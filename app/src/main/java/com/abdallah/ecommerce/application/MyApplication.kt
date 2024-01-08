@@ -25,7 +25,7 @@ class MyApplication : Application() {
     }
 
     fun getCurrentAct(): Activity? {
-        return currentAct;
+        return currentAct
     }
 
 

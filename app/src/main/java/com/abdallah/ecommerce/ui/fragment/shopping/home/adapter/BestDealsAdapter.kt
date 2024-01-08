@@ -3,6 +3,7 @@ package com.abdallah.ecommerce.ui.fragment.shopping.home.adapter
 import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.R
@@ -38,7 +39,7 @@ class BestDealsAdapter(val data: ArrayList<Product> , val listener : BestDealsOn
         holder.binding.itemName.text = item.productName
 
         holder.binding.parentArea.setOnClickListener {
-            listener.itemOnClick(item)
+            listener.itemOnClick(item , holder.binding.bestDealsImg)
         }
         holder.binding.cart.setOnClickListener {
             listener.cartOnClick(item.id)
@@ -50,7 +51,7 @@ class BestDealsAdapter(val data: ArrayList<Product> , val listener : BestDealsOn
     }
 
     interface BestDealsOnClick{
-        fun itemOnClick(product: Product)
+        fun itemOnClick(product: Product , view : View)
         fun cartOnClick(productId : String)
     }
 

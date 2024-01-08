@@ -24,4 +24,8 @@
     <string name="best_deals">Best Deals</string>
     <string name="see_more">See More</string>
     <string name="otp">OTP</string>
+    <string name="color">Colors</string>
+    <string name="select_size">Select size</string>
+    <string name="size">Sizes</string>
+    <string name="select_color">Select color</string>
 </resources>
