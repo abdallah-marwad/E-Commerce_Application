@@ -20,7 +20,9 @@ import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 
 class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: ArrayList<SizesModel>?) :
     RecyclerView.Adapter<ColorsAdapter.ViewHolder>() {
-    var selectedItems = ArrayList<Int>()
+    var selectedColors = ArrayList<Int>()
+        private set
+    var selectedSizes = ArrayList<String>()
         private set
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,28 +42,47 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
             } else {
                 holder.binding.imgDone.visibility = View.GONE
             }
-            holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
             holder.binding.parentArea.setOnClickListener {
                 if (item!!.isSelected) {
                     item.isSelected = false
-                    selectedItems.remove(item.color)
+                    selectedColors.remove(item.color)
                     notifyDataSetChanged()
                     return@setOnClickListener
                 }
-                selectedItems.add(item.color)
+                selectedColors.add(item.color)
                 item.isSelected = true
                 notifyDataSetChanged()
             }
 
         } else {
-
+            val item = dataSizes!!.get(position)
+            if (item!!.isSelected) {
+                holder.binding.imgDone.visibility = View.VISIBLE
+            } else {
+                holder.binding.imgDone.visibility = View.GONE
+            }
+            holder.binding.parentArea.setOnClickListener {
+                if (item!!.isSelected) {
+                    item.isSelected = false
+                    selectedSizes.remove(item.size)
+                    notifyDataSetChanged()
+                    return@setOnClickListener
+                }
+                selectedSizes.add(item.size)
+                item.isSelected = true
+                notifyDataSetChanged()
+            }
             holder.binding.parentArea1.setCardBackgroundColor(
                 MyApplication.myAppContext.resources.getColor(
                     R.color.g_gray700
                 )
             )
             holder.binding.tvSize.text = dataSizes?.get(position)?.size ?: ""
+            holder.binding.tvSize.visibility = View.VISIBLE
         }
+
+
+        holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
 
 
     }

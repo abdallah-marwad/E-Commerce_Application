@@ -38,6 +38,10 @@ import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -145,30 +149,32 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDeals
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(scrollingRunnable)
+        job.cancel()
+        Log.d("test", "cancel called")
+
     }
 
     override fun onResume() {
         super.onResume()
         autoLoopBanner()
     }
+    var coroutine : CoroutineScope = CoroutineScope(Dispatchers.IO)
+    var job : Job = Job()
 
 
-    @SuppressLint("SuspiciousIndentation")
     private fun autoLoopBanner() {
-        handler.removeCallbacks(scrollingRunnable)
-        scrollingRunnable = Runnable {
-            handler.postDelayed(scrollingRunnable , 5000L)
-
-            val bannerLastItem =
-                binding.bannerHomeParent.adapter?.itemCount ?: return@Runnable
-            if (bannerCurrentPosition == bannerLastItem) {
-                bannerCurrentPosition = 0
+        job.cancel()
+        job = coroutine.launch() {
+            while (true) {
+                delay(5000L)
+                val bannerLastItem = binding.bannerHomeParent.adapter?.itemCount ?: return@launch
+                if (bannerCurrentPosition == bannerLastItem) {
+                    bannerCurrentPosition = 0
+                }
+                binding.bannerHomeParent.smoothScrollToPosition(bannerCurrentPosition)
+                bannerCurrentPosition++
             }
-            binding.bannerHomeParent.smoothScrollToPosition(bannerCurrentPosition)
-
-            bannerCurrentPosition++
         }
-        handler.post(scrollingRunnable)
     }
 
 

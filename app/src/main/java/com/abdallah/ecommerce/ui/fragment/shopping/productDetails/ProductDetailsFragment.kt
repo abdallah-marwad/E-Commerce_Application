@@ -64,10 +64,12 @@ class ProductDetailsFragment : Fragment() {
         }
     }
     private fun initViews(){
+        val newPrice = product.price!! - product.offerValue!!
+
         binding.toolbar.title.text = "Product Details"
         binding.tvProductName.text = product.productName
         binding.tvProductDescription.text = product.productdescription
-        binding.tvProductPrice.text = "EGP "+ product.price
+        binding.tvProductPrice.text = "EGP "+ newPrice
         binding.category.text = "Category : "+ product.categoryName
         binding.ratingNumber.text = "(${product.ratersNum})"
         binding.itemRatingBar.rating = if( product.rating <=0) 5F else  product.rating
@@ -111,7 +113,7 @@ class ProductDetailsFragment : Fragment() {
     }
     private fun handleProductOfferPrice(){
         if(product.offerValue!=null && product.offerValue!! > 0){
-            binding.tvProductOfferPrice.text = product.offerValue.toString()
+            binding.tvProductOfferPrice.text = product.price.toString()
             binding.tvProductOfferPrice.paintFlags = binding.tvProductOfferPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
 
