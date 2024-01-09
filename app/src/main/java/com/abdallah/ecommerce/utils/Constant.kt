@@ -7,6 +7,7 @@ object Constant {
     const val PLS_ENTER_VALID_PHONE = "Please enter valid phone number"
     const val PLS_ENTER_VALID_EMAIL = "Please enter valid email"
     const val NOT_FIRST_TIME = "not first time"
+    const val BEST_DEALS_TRANSACTION_NAME = "best deals transition"
     const val IS_LOGGED_IN = "is logged in"
     const val IS_SKIP = "is skip"
     const val HOME_LIMIT_ITEMS : Long= 8

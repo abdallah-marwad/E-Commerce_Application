@@ -6,7 +6,8 @@
     <string name="g_log_in">Login</string>
     <string name="g_register">Register</string>
     <string name="lets_login">Let\'s Login</string>
-    <string name="dont_have_account">"Don't have an account? Register "</string>
+    <string name="dont_have_account">"Don't have an account? "</string>
+    <string name="have_account">"have an account? "</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="forget_password">Forget Password?</string>

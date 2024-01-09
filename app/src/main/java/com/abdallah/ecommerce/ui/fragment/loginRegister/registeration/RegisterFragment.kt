@@ -17,7 +17,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
-import com.abdallah.ecommerce.data.firebase.FirebaseManager.saveUserData
 import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
@@ -127,10 +126,13 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 googleSignInRequest()
             }
 
-            skip.setOnClickListener{
-                SharedPreferencesHelper.addBoolean(IS_SKIP,true)
-                startActivity(Intent(context , ShoppingActivity::class.java))
+            skip.setOnClickListener {
+                SharedPreferencesHelper.addBoolean(IS_SKIP, true)
+                startActivity(Intent(context, ShoppingActivity::class.java))
                 requireActivity().finish()
+            }
+            login.setOnClickListener {
+                findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
             }
 
         }

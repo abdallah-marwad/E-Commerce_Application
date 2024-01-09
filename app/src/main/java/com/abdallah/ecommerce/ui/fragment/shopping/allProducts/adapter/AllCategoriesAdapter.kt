@@ -29,11 +29,11 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick : AllC
         val category = data[position]
         if(category.isSelected) {
             holder.parentArea.setBackgroundResource(R.drawable.blue_background_80)
-            holder.txtCategory.setTextColor(MyApplication.myAppContext.getResources().getColor(R.color.white))
+            holder.txtCategory.setTextColor(MyApplication.myAppContext.resources.getColor(R.color.white))
         }
         else {
             holder.parentArea.setBackgroundResource(R.color.white)
-            holder.txtCategory.setTextColor(MyApplication.myAppContext.getResources().getColor(R.color.black))
+            holder.txtCategory.setTextColor(MyApplication.myAppContext.resources.getColor(R.color.black))
 
         }
             Glide
@@ -45,7 +45,10 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick : AllC
             holder.txtCategory.text = category.categoryName
         holder.parentArea.setOnTouchListener(RecyclerTouchEffect())
 
-        holder.parentArea.setOnClickListener{
+        holder.parentArea.setOnClickListener {
+            if (category.isSelected)
+                return@setOnClickListener
+
             data.forEach {
                 it.isSelected = it == category
             }

@@ -66,11 +66,25 @@
         android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/poppins_light"
         android:gravity="start"
-        android:text="@string/dont_have_account"
+        android:text="@string/have_account"
         android:textColor="@color/g_gray700"
         android:textSize="@dimen/_13sdp"
         app:layout_constraintStart_toStartOf="@id/tv_lets_login_register"
         app:layout_constraintTop_toBottomOf="@id/tv_lets_login_register" />
+
+    <TextView
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_30sdp"
+        android:fontFamily="@font/poppins_light"
+        android:gravity="center_vertical"
+        android:text="@string/g_log_in"
+        android:textColor="@color/app_theme_color"
+        android:textStyle="bold"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_dont_have_account_register"
+        app:layout_constraintStart_toEndOf="@+id/tv_dont_have_account_register"
+        app:layout_constraintTop_toTopOf="@+id/tv_dont_have_account_register" />
 
     <EditText
         android:id="@+id/edFirstName"
