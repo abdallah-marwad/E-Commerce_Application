@@ -7,6 +7,7 @@ object Constant {
     const val PLS_ENTER_VALID_PHONE = "Please enter valid phone number"
     const val PLS_ENTER_VALID_EMAIL = "Please enter valid email"
     const val NOT_FIRST_TIME = "not first time"
+    const val BEST_DEALS_TRANSACTION_NAME = "best deals transition"
     const val IS_LOGGED_IN = "is logged in"
     const val PRODUCT_TRANSITION_NAME = "product details transition"
     const val COULDNOT_ADD_TO_CART = "Couldn't add item to cart"

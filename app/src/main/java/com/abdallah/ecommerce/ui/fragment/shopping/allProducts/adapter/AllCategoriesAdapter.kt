@@ -28,16 +28,13 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick: AllCa
     @SuppressLint("SuspiciousIndentation", "ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val category = data[position]
-        if (category.isSelected) {
+        if(category.isSelected) {
             holder.parentArea.setBackgroundResource(R.drawable.blue_background_80)
-            holder.txtCategory.setTextColor(
-                MyApplication.myAppContext.getResources().getColor(R.color.white)
-            )
-        } else {
+            holder.txtCategory.setTextColor(MyApplication.myAppContext.resources.getColor(R.color.white))
+        }
+        else {
             holder.parentArea.setBackgroundResource(R.color.white)
-            holder.txtCategory.setTextColor(
-                MyApplication.myAppContext.getResources().getColor(R.color.black)
-            )
+            holder.txtCategory.setTextColor(MyApplication.myAppContext.resources.getColor(R.color.black))
 
         }
         Glide
@@ -79,10 +76,9 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick: AllCa
         return data.size
     }
 
-    interface AllCategoryOnClick {
-        fun allCategoryOnClick(category: Category)
+    interface AllCategoryOnClick{
+        fun allCategoryOnClick(category : Category)
     }
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageCategory: ImageView
         val txtCategory: TextView

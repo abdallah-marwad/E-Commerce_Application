@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentLoginBinding
@@ -53,14 +54,17 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         loginCallBack()
         validationCallBack()
         resetPasswordCallBack()
-        skipOnClick()
+        fragOnClick()
     }
 
-    private fun skipOnClick() {
-        binding.skip.setOnClickListener{
-            SharedPreferencesHelper.addBoolean(Constant.IS_SKIP,true)
-            startActivity(Intent(context , ShoppingActivity::class.java))
+    private fun fragOnClick() {
+        binding.skip.setOnClickListener {
+            SharedPreferencesHelper.addBoolean(Constant.IS_SKIP, true)
+            startActivity(Intent(context, ShoppingActivity::class.java))
             requireActivity().finish()
+        }
+        binding.register.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
 
