@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/_10sdp"
     android:animateLayoutChanges="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:paddingBottom="@dimen/_10sdp">
+
     <include
         android:id="@+id/bottomSheetBar"
         android:layout_width="match_parent"
@@ -12,14 +13,15 @@
         layout="@layout/bottom_sheet_bar"
         app:layout_constraintTop_toTopOf="parent"
         />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_10sdp"
+        android:layout_margin="@dimen/_8sdp"
         android:fontFamily="@font/poppins_thin"
         android:gravity="center"
-        android:text="OTP VERIFICATION"
+        android:text="Review"
         android:textColor="@color/g_black"
         android:textSize="@dimen/_15sdp"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,45 +34,60 @@
         android:layout_marginTop="@dimen/_4sdp"
         android:fontFamily="@font/poppins_light"
         android:gravity="start"
-
-        android:text="Enter The Verification Otp "
+        android:text="Leave your review about this product"
         android:textColor="@color/g_black"
-        android:textSize="@dimen/_13sdp"
+        android:textSize="@dimen/_11sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@id/title" />
 
+    <RatingBar
+        android:id="@+id/itemRatingBar"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:isIndicator="false"
+        android:numStars="5"
+        android:progressTint="@color/g_orange_yellow"
+        android:rating="0"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:stepSize="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hint"
+        app:layout_constraintWidth_percent="0.4" />
+
+
     <EditText
         android:id="@+id/edOtp"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_45sdp"
-        android:gravity="start|center_vertical"
         style="@style/editText"
-        android:paddingStart="@dimen/_10sdp"
-        android:hint="@string/otp"
-        android:singleLine="true"
-        android:textStyle="bold"
-        android:inputType="number"
-        android:layout_marginTop="@dimen/_16sdp"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_100sdp"
+        android:layout_marginTop="@dimen/_12sdp"
         android:layout_marginEnd="@dimen/_10sdp"
+        android:gravity="start"
+        android:hint="Write a comment..."
+        android:padding="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/hint"
-        app:layout_constraintTop_toBottomOf="@+id/hint" />
-
+        app:layout_constraintTop_toBottomOf="@+id/itemRatingBar" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnCancel"
         style="@style/whiteButtonStyle"
         android:layout_width="0dp"
         android:layout_height="@dimen/_40sdp"
-        app:layout_constraintWidth_percent="0.43"
+        android:layout_marginTop="@dimen/_16sdp"
         android:fontFamily="@font/poppins_light"
         android:text="Cancel"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:layout_marginTop="@dimen/_16sdp"
         app:layout_constraintStart_toStartOf="@+id/edOtp"
         app:layout_constraintTop_toBottomOf="@+id/edOtp"
+        app:layout_constraintWidth_percent="0.43"
         app:spinning_bar_color="@color/white" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -80,7 +97,7 @@
         android:layout_height="@dimen/_40sdp"
         android:layout_marginTop="@dimen/_16sdp"
         android:fontFamily="@font/poppins_light"
-        android:text="Send"
+        android:text="Submit"
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/edOtp"
@@ -88,6 +105,17 @@
         app:layout_constraintWidth_percent="0.43"
         app:spinning_bar_color="@color/white" />
 
+    <ImageView
+        android:id="@+id/warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_error"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/itemRatingBar"
+        app:layout_constraintStart_toEndOf="@id/itemRatingBar"
+        app:layout_constraintTop_toTopOf="@id/itemRatingBar"
+        app:tint="@color/g_red" />
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/loader"
         android:layout_width="wrap_content"

@@ -47,7 +47,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDealsAdapter.BestDealsOnClick , MainCategoryAdapter.MainCategoryOnClick{
+class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
+    BestDealsAdapter.BestDealsOnClick, MainCategoryAdapter.MainCategoryOnClick {
 
     private lateinit var binding: FragmentShoppingHomeBinding
     private val viewModel by viewModels<ShoppingHomeViewModel>()
@@ -89,20 +90,25 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDeals
 
     private fun fragOnClick() {
         binding.seeMoreCategories.setOnClickListener {
-            if(categoryList.isEmpty()) {
-                Toast.makeText(requireContext() , "couldn't see more now..." , Toast.LENGTH_SHORT).show()
+            if (categoryList.isEmpty()) {
+                Toast.makeText(requireContext(), "couldn't see more now...", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
-            val categories  = Categories()
+            val categories = Categories()
             categories.addAll(categoryList)
-            val action = ShoppingHomeFragmentDirections.actionHomeFragmentToAllProducts(categories , categoryList[0].categoryName!! , 0)
+            val action = ShoppingHomeFragmentDirections.actionHomeFragmentToAllProducts(
+                categories,
+                categoryList[0].categoryName!!,
+                0
+            )
             findNavController().navigate(action)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun downloadBannerImages() {
-        if(bannersList.isEmpty().not()){
+        if (bannersList.isEmpty().not()) {
             stopBannerShimmer()
             createBanner(bannersList)
             autoLoopBanner()
@@ -112,38 +118,36 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDeals
 
         viewModel.downloadBannerImages()
         lifecycleScope.launchWhenResumed {
-                viewModel.imageList.collect { result ->
-                    when (result) {
-                        is Resource.Success -> {
-                            stopBannerShimmer()
-                            result.data?.let {
-                                bannersList.addAll(it)
-                                createBanner(bannersList)
-                                autoLoopBanner()
-                            }
+            viewModel.imageList.collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        stopBannerShimmer()
+                        result.data?.let {
+                            bannersList.addAll(it)
+                            createBanner(bannersList)
+                            autoLoopBanner()
                         }
-                        is Resource.Failure -> {
-                            stopBannerShimmer()
-//                            showLongToast("Error occurred " + result.message)
-                            Toast.makeText(
-                                context, "Error occured " + result.message,
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-
-                        is Resource.Loading -> {
-                            startBannerShimmer()
-
-                        }
-
-                        else -> {}
                     }
+
+                    is Resource.Failure -> {
+                        stopBannerShimmer()
+//                            showLongToast("Error occurred " + result.message)
+                        Toast.makeText(
+                            context, "Error occured " + result.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    is Resource.Loading -> {
+                        startBannerShimmer()
+
+                    }
+
+                    else -> {}
                 }
             }
+        }
     }
-
-
-
 
 
     override fun onPause() {
@@ -158,8 +162,9 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDeals
         super.onResume()
         autoLoopBanner()
     }
-    var coroutine : CoroutineScope = CoroutineScope(Dispatchers.IO)
-    var job : Job = Job()
+
+    var coroutine: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    var job: Job = Job()
 
 
     private fun autoLoopBanner() {
@@ -178,17 +183,17 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),BestDeals
     }
 
 
-@RequiresApi(Build.VERSION_CODES.M)
-private fun getCategories() {
-    if(categoryList.isEmpty().not()) {
-        stopMainCategoryShimmer()
-        initMainCategoryRv(categoryList)
-        return
-    }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getCategories() {
+        if (categoryList.isEmpty().not()) {
+            stopMainCategoryShimmer()
+            initMainCategoryRv(categoryList)
+            return
+        }
 
 
-    viewModel.getCategories()
-    lifecycleScope.launchWhenResumed {
+        viewModel.getCategories()
+        lifecycleScope.launchWhenResumed {
             viewModel.categoryList.collect { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -211,23 +216,25 @@ private fun getCategories() {
                     is Resource.Loading -> {
                         startMainCategoryShimmer()
                     }
+
                     else -> {}
                 }
             }
 
 
-    }
-}
-@RequiresApi(Build.VERSION_CODES.M)
-private fun getProducts() {
-    if(productsList.isEmpty().not()){
-        stopDealsShimmer()
-        initOfferedRv(productsList)
-        return
+        }
     }
 
-    viewModel.getOfferedProducts()
-    lifecycleScope.launchWhenResumed {
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getProducts() {
+        if (productsList.isEmpty().not()) {
+            stopDealsShimmer()
+            initOfferedRv(productsList)
+            return
+        }
+
+        viewModel.getOfferedProducts()
+        lifecycleScope.launchWhenResumed {
             viewModel.offeredProducts.collect { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -244,53 +251,56 @@ private fun getProducts() {
                             context, "Error occured " + result.message,
                             Toast.LENGTH_LONG
                         ).show()
-                    Log.d("test" , "Firebase Err ${result.message}")
+                        Log.d("test", "Firebase Err ${result.message}")
                     }
 
                     is Resource.Loading -> {
                         startMainCategoryShimmer()
                     }
-                    else -> {}
-            }
-        }
 
+                    else -> {}
+                }
+            }
+
+        }
     }
-}
+
     private fun noInternetCallBack() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.noInternet.collect {
-                    Toast.makeText(context , "No Internet connection" , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No Internet connection", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-private fun startBannerShimmer() {
-    binding.shimmerBanner.visibility = View.VISIBLE
-    binding.shimmerBanner.startShimmer()
-}
+    private fun startBannerShimmer() {
+        binding.shimmerBanner.visibility = View.VISIBLE
+        binding.shimmerBanner.startShimmer()
+    }
 
-private fun stopBannerShimmer() {
-    binding.shimmerBanner.stopShimmer()
-    binding.shimmerBanner.visibility = View.INVISIBLE
-}
+    private fun stopBannerShimmer() {
+        binding.shimmerBanner.stopShimmer()
+        binding.shimmerBanner.visibility = View.INVISIBLE
+    }
 
-private fun startMainCategoryShimmer() {
-    binding.shimmerMainCategory.visibility = View.VISIBLE
-    binding.shimmerMainCategory.startShimmer()
-    binding.categoriesArea.visibility = View.INVISIBLE
-    binding.shimmerCategoriesArea.visibility = View.VISIBLE
-    binding.shimmerCategoriesArea.startShimmer()
-}
+    private fun startMainCategoryShimmer() {
+        binding.shimmerMainCategory.visibility = View.VISIBLE
+        binding.shimmerMainCategory.startShimmer()
+        binding.categoriesArea.visibility = View.INVISIBLE
+        binding.shimmerCategoriesArea.visibility = View.VISIBLE
+        binding.shimmerCategoriesArea.startShimmer()
+    }
 
-private fun stopMainCategoryShimmer() {
-    binding.shimmerMainCategory.stopShimmer()
-    binding.shimmerMainCategory.visibility = View.INVISIBLE
-    binding.categoriesArea.visibility = View.VISIBLE
-    binding.shimmerCategoriesArea.stopShimmer()
-    binding.shimmerCategoriesArea.visibility = View.INVISIBLE
-}
+    private fun stopMainCategoryShimmer() {
+        binding.shimmerMainCategory.stopShimmer()
+        binding.shimmerMainCategory.visibility = View.INVISIBLE
+        binding.categoriesArea.visibility = View.VISIBLE
+        binding.shimmerCategoriesArea.stopShimmer()
+        binding.shimmerCategoriesArea.visibility = View.INVISIBLE
+    }
+
     private fun startDealsShimmer() {
         binding.shimmerDealsArea.startShimmer()
         binding.shimmerDealsTxt.startShimmer()
@@ -298,78 +308,73 @@ private fun stopMainCategoryShimmer() {
         binding.shimmerDealsTxt.visibility = View.VISIBLE
         binding.bestDealsContainer.visibility = View.INVISIBLE
 
-}
+    }
 
-private fun stopDealsShimmer() {
-    binding.shimmerDealsArea.stopShimmer()
-    binding.shimmerDealsTxt.stopShimmer()
-    binding.shimmerDealsArea.visibility = View.INVISIBLE
-    binding.shimmerDealsTxt.visibility = View.INVISIBLE
-    binding.bestDealsContainer.visibility = View.VISIBLE
+    private fun stopDealsShimmer() {
+        binding.shimmerDealsArea.stopShimmer()
+        binding.shimmerDealsTxt.stopShimmer()
+        binding.shimmerDealsArea.visibility = View.INVISIBLE
+        binding.shimmerDealsTxt.visibility = View.INVISIBLE
+        binding.bestDealsContainer.visibility = View.VISIBLE
 
-}
+    }
 
-private fun initMainCategoryRv(data: ArrayList<Category>) {
-    val adapter = MainCategoryAdapter(data , this)
-    binding.mainRecCategory.adapter = adapter
-    RecyclerAnimation.animateRecycler( binding.mainRecCategory)
-    adapter.notifyDataSetChanged()
-    binding.bannerHomeParent.scheduleLayoutAnimation()
-}
+    private fun initMainCategoryRv(data: ArrayList<Category>) {
+        val adapter = MainCategoryAdapter(data, this)
+        binding.mainRecCategory.adapter = adapter
+        RecyclerAnimation.animateRecycler(binding.mainRecCategory)
+        adapter.notifyDataSetChanged()
+        binding.bannerHomeParent.scheduleLayoutAnimation()
+    }
+
     @SuppressLint("SuspiciousIndentation")
     private fun initOfferedRv(data: ArrayList<Product>) {
-    val adapter = BestDealsAdapter(data , this)
-    binding.bestDealsRV.adapter = adapter
+        val adapter = BestDealsAdapter(data, this)
+        binding.bestDealsRV.adapter = adapter
         RecyclerAnimation.animateRecycler(binding.bestDealsRV)
         adapter.notifyDataSetChanged()
         binding.bannerHomeParent.scheduleLayoutAnimation()
-}
+    }
+
     private fun createBanner(uriList: ArrayList<Uri>) {
         var bannerAdapter = BannerRecAdapter(uriList)
         binding.bannerHomeParent.adapter = bannerAdapter
-        RecyclerAnimation.animateRecycler( binding.bannerHomeParent)
+        RecyclerAnimation.animateRecycler(binding.bannerHomeParent)
         bannerAdapter.notifyDataSetChanged()
         binding.bannerHomeParent.scheduleLayoutAnimation()
     }
 
-    override fun mainCategoryOnClick(position: Int , categoryName : String) {
-        val categories  = Categories()
+    override fun mainCategoryOnClick(position: Int, categoryName: String) {
+        val categories = Categories()
         categories.addAll(categoryList)
-        val action = ShoppingHomeFragmentDirections.actionHomeFragmentToAllProducts(categories , categoryName , position)
+        val action = ShoppingHomeFragmentDirections.actionHomeFragmentToAllProducts(
+            categories,
+            categoryName,
+            position
+        )
         findNavController().navigate(action)
     }
 
-    override fun itemOnClick(product: Product , img : View) {
+    override fun itemOnClick(product: Product, img: View) {
         val extras = FragmentNavigatorExtras(
-            img to PRODUCT_TRANSITION_NAME)
+            img to PRODUCT_TRANSITION_NAME
+        )
         img.transitionName = PRODUCT_TRANSITION_NAME
-        val action = ShoppingHomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(product)
+        val action =
+            ShoppingHomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(product)
         findNavController().navigate(action, extras)
     }
 
     override fun cartOnClick(productId: String) {
-        if(SharedPreferencesHelper.getBoolean(Constant.IS_LOGGED_IN).not()){
-            val dialog = AppDialog()
-            dialog.showDialog(
-                "Couldn't add item to cart",
-                "Please login first to able to add items",
-                "LogIn",
-                "Not Now",
-                R.drawable.login,
-                {
-                    dialog.dismiss()
-                    context?.startActivity(Intent(context , LoginRegisterActivity::class.java))
-                },
-                {
-                    dialog.dismiss()
-                }
-
-            )
+        if (AppDialog().showingRegisterDialogIfNotRegister(
+                Constant.COULDNOT_ADD_TO_CART,
+                Constant.PLS_LOGIN
+            ).not()
+        ) {
             return
         }
-
-
     }
+
 
 }
 

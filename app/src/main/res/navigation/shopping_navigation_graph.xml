@@ -66,7 +66,7 @@
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
-        android:name="com.abdallah.ecommerce.ui.fragment.shopping.productDetails.ProductDetailsFragment"
+        android:name="com.abdallah.ecommerce.ui.fragment.shopping.productDetails.fragment.ProductDetailsFragment"
         android:label="ProductDetailsFragment" >
         <argument
             android:name="productDetails"

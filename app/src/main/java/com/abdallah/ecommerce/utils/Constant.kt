@@ -9,6 +9,8 @@ object Constant {
     const val NOT_FIRST_TIME = "not first time"
     const val IS_LOGGED_IN = "is logged in"
     const val PRODUCT_TRANSITION_NAME = "product details transition"
+    const val COULDNOT_ADD_TO_CART = "Couldn't add item to cart"
+    const val PLS_LOGIN = "Please login first before taking this action"
     const val IS_SKIP = "is skip"
     const val HOME_LIMIT_ITEMS : Long= 8
     const val PAGE_SIZE : Long= 10

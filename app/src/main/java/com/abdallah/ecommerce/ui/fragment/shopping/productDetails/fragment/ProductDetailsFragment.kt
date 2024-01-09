@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.ui.fragment.shopping.productDetails
+package com.abdallah.ecommerce.ui.fragment.shopping.productDetails.fragment
 
 import android.graphics.Paint
 import android.os.Bundle
@@ -15,13 +15,15 @@ import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.data.model.SizesModel
 import com.abdallah.ecommerce.databinding.FragmentProductDetailsBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
-import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllProductsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.ColorsAdapter
+import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.ReviewsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.ViewPagerAdapter
+import com.abdallah.ecommerce.utils.BottomSheets.RatingDialog
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.CustomShimmerDrawable
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.animation.ZoomOutPageTransformer
+import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.bumptech.glide.Glide
 
 
@@ -29,6 +31,7 @@ class ProductDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentProductDetailsBinding
     private lateinit var product: Product
+    private lateinit var ratingDialog: RatingDialog
     private val args: ProductDetailsFragmentArgs by navArgs()
 
 
@@ -36,6 +39,8 @@ class ProductDetailsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         product = args.productDetails
         sharedElementEnterTransition =
+            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
+        sharedElementReturnTransition =
             TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
     }
 
@@ -60,7 +65,21 @@ class ProductDetailsFragment : Fragment() {
     private fun fragmentOnclick(){
         binding.toolbar.icBack.setOnClickListener {
             Navigation.findNavController(requireView()).popBackStack()
+        }
+        binding.btnAddToCart.setOnClickListener {
+            if (AppDialog().showingRegisterDialogIfNotRegister(
+                    Constant.COULDNOT_ADD_TO_CART,
+                    Constant.PLS_LOGIN
+                ).not()
+            ) {
+                return@setOnClickListener
+            }
+        }
+        binding.addReview.setOnClickListener {
+            ratingDialog = RatingDialog()
+            ratingDialog.showDialog { s, fl ->
 
+            }
         }
     }
     private fun initViews(){
@@ -77,6 +96,7 @@ class ProductDetailsFragment : Fragment() {
         setupViewPager()
         initColorsRv()
         initSizesRv()
+        initReviewsRv()
     }
     private fun initColorsRv(){
         val colorsList = product.productColors
@@ -89,6 +109,18 @@ class ProductDetailsFragment : Fragment() {
         RecyclerAnimation.animateRecycler(binding.rvColors)
         colorsAdapter.notifyDataSetChanged()
         binding.rvColors.scheduleLayoutAnimation()
+    }
+    private fun initReviewsRv(){
+        val reviewsList = product.ratingList
+        if(reviewsList.isEmpty()){
+            binding.reviewArae.visibility = View.GONE
+            return
+        }
+        val reviewsAdapter = ReviewsAdapter(reviewsList)
+        binding.reviewsRV.adapter = reviewsAdapter
+        RecyclerAnimation.animateRecycler(binding.reviewsRV)
+        reviewsAdapter.notifyDataSetChanged()
+        binding.reviewsRV.scheduleLayoutAnimation()
 
     }
     private fun initSizesRv(){
@@ -99,7 +131,7 @@ class ProductDetailsFragment : Fragment() {
         }
         val sizesAdapter = ColorsAdapter(null , sizesModelList)
         binding.rvSizes.adapter = sizesAdapter
-        RecyclerAnimation.animateRecycler(binding.rvColors)
+        RecyclerAnimation.animateRecycler(binding.rvSizes)
         sizesAdapter.notifyDataSetChanged()
         binding.rvSizes.scheduleLayoutAnimation()
 

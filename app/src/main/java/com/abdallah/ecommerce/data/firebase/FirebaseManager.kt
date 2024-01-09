@@ -1,6 +1,7 @@
 package com.abdallah.ecommerce.data.firebase
 
 import com.abdallah.ecommerce.data.model.Product
+import com.abdallah.ecommerce.data.model.RatingModel
 import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.utils.Constant
 
@@ -40,6 +41,12 @@ fun saveUserData(
     )=
          firestore.collection("users").document(userData.email).set(userData)
 
+    fun addReview(
+        firestore: FirebaseFirestore,
+        rating : RatingModel,
+        docID : String
+    )=
+        firestore.collection("products").document(docID).update("ratingList",rating)
 
 
 

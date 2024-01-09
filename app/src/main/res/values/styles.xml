@@ -13,14 +13,14 @@
         <item name="android:textSize">@dimen/h2TextSize</item>
     </style>
     <style name="titleTxtStyle">
-        <item name="android:fontFamily">@font/poppins_light</item>
+        <item name="android:fontFamily">@font/poppins_thin</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/_14ssp</item>
     </style>
     <style name="seeMoreTxtStyle">
         <item name="android:fontFamily">@font/poppins_light</item>
         <item name="android:textColor">@color/app_theme_color</item>
-        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:textSize">@dimen/_13ssp</item>
         <item name="android:textStyle">bold</item>
     </style>
 

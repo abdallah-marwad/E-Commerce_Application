@@ -3,6 +3,7 @@ package com.abdallah.ecommerce.utils.dialogs
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
@@ -11,6 +12,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.application.MyApplication
+import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
+import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
+import com.abdallah.ecommerce.utils.Constant
 import java.util.Objects
 
 class AppDialog {
@@ -53,5 +57,30 @@ class AppDialog {
             if(customDialog?.isShowing == true)
                 customDialog?.dismiss()
         }
+    fun showingRegisterDialogIfNotRegister(title: String , message : String) : Boolean {
+        if(SharedPreferencesHelper.getBoolean(Constant.IS_LOGGED_IN).not()) {
+            showDialog(
+                title,
+                message,
+                "LogIn",
+                "Not Now",
+                R.drawable.login,
+                {
+                    dismiss()
+                    MyApplication.myAppContext.getCurrentAct()!!.startActivity(
+                        Intent(
+                            MyApplication.myAppContext.getCurrentAct(),
+                            LoginRegisterActivity::class.java
+                        )
+                    )
+                },
+                {
+                    dismiss()
+                }
+            )
+            return false
+        }
+        return true
+    }
     }
 

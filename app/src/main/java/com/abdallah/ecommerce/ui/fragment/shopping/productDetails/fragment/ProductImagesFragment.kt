@@ -1,4 +1,4 @@
-package com.abdallah.ecommerce.ui.fragment.shopping.productDetails
+package com.abdallah.ecommerce.ui.fragment.shopping.productDetails.fragment
 
 import android.net.Uri
 import android.os.Bundle

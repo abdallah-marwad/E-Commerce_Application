@@ -33,7 +33,7 @@ class BestDealsAdapter(val data: ArrayList<Product> , val listener : BestDealsOn
                 .into(holder.binding.bestDealsImg)
         val newPrice = item.price!! - item.offerValue!!
         holder.binding.itemOldPrice.paintFlags = holder.binding.itemOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-        holder.binding.itemOldPrice.text = item.price.toString()
+        holder.binding.itemOldPrice.text ="EGP "+item.price.toString()
         holder.binding.offerPercentage.text = "${item.offerPercentage}% Off"
         holder.binding.itemNewPrice.text = "EGP $newPrice"
         holder.binding.itemName.text = item.productName

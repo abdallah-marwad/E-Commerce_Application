@@ -20,9 +20,10 @@ import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 
 class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: ArrayList<SizesModel>?) :
     RecyclerView.Adapter<ColorsAdapter.ViewHolder>() {
-    var selectedColors = ArrayList<Int>()
+    var selectedColors = -1
+    var lastSelectedItem = -1
         private set
-    var selectedSizes = ArrayList<String>()
+    var selectedSizes = ""
         private set
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,7 +33,7 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
     }
 
     @SuppressLint("SuspiciousIndentation", "ClickableViewAccessibility")
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
         if (dataColors != null) {
             val item = dataColors[position]
 
@@ -43,19 +44,19 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
                 holder.binding.imgDone.visibility = View.GONE
             }
             holder.binding.parentArea.setOnClickListener {
-                if (item!!.isSelected) {
-                    item.isSelected = false
-                    selectedColors.remove(item.color)
-                    notifyDataSetChanged()
+                if (item.isSelected) {
                     return@setOnClickListener
                 }
-                selectedColors.add(item.color)
                 item.isSelected = true
+                if(lastSelectedItem!= -1)
+                     dataColors[lastSelectedItem].isSelected = false
+                lastSelectedItem = position
+                selectedColors = item.color
                 notifyDataSetChanged()
             }
 
         } else {
-            val item = dataSizes!!.get(position)
+            val item = dataSizes!![position]
             if (item!!.isSelected) {
                 holder.binding.imgDone.visibility = View.VISIBLE
             } else {
@@ -63,13 +64,13 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
             }
             holder.binding.parentArea.setOnClickListener {
                 if (item!!.isSelected) {
-                    item.isSelected = false
-                    selectedSizes.remove(item.size)
-                    notifyDataSetChanged()
                     return@setOnClickListener
                 }
-                selectedSizes.add(item.size)
                 item.isSelected = true
+                if(lastSelectedItem!= -1)
+                     dataSizes[lastSelectedItem].isSelected = false
+                lastSelectedItem = position
+                selectedSizes = item.size
                 notifyDataSetChanged()
             }
             holder.binding.parentArea1.setCardBackgroundColor(
@@ -81,17 +82,11 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
             holder.binding.tvSize.visibility = View.VISIBLE
         }
 
-
         holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
 
 
     }
 
-    fun removeSelectedItem() {
-        dataColors!!.forEach {
-            it.isSelected = false
-        }
-    }
 
     override fun getItemCount(): Int {
         return dataColors?.size ?: dataSizes!!.size
