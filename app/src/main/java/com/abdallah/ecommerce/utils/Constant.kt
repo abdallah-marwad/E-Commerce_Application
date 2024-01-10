@@ -13,6 +13,7 @@ object Constant {
     const val COULDNOT_ADD_TO_CART = "Couldn't add item to cart"
     const val PLS_LOGIN = "Please login first before taking this action"
     const val IS_SKIP = "is skip"
+    const val USER_DATA = "user data"
     const val HOME_LIMIT_ITEMS : Long= 8
     const val PAGE_SIZE : Long= 10
 

@@ -79,8 +79,6 @@ class RegisterWithPhone @Inject constructor() {
                 } else if (e is FirebaseTooManyRequestsException) {
 
                 }
-
-
             }
 
             override fun onCodeSent(

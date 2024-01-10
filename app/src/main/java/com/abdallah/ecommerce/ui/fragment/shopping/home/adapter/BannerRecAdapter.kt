@@ -16,7 +16,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
-class BannerRecAdapter(val data: ArrayList<Uri> ) :
+class BannerRecAdapter(val data: ArrayList<Uri>? = null, val localImages : ArrayList<Int>? = null ) :
     RecyclerView.Adapter<BannerRecAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,42 +26,26 @@ class BannerRecAdapter(val data: ArrayList<Uri> ) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if(data!=null)
             Glide
                 .with(holder.itemView.context)
                 .load(data[position])
-                .listener(object : RequestListener<Drawable>{
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.d("test", e?.message +"")
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.d("test", "position from rec is $position with data ${data[position]}")
-                        return false
-                    }
-                })
                 .placeholder(CustomShimmerDrawable().shimmerDrawable)
                 .error(R.drawable.err_banner)
                 .into(holder.imageBanner)
-
-        Log.d("test", "position from rec is $position with data ${data[position]}")
+        else
+            Glide
+                .with(holder.itemView.context)
+                .load(localImages!![position])
+                .placeholder(CustomShimmerDrawable().shimmerDrawable)
+                .error(R.drawable.err_banner)
+                .into(holder.imageBanner)
 
 
     }
 
     override fun getItemCount(): Int {
-        return data.size
+        return data?.size ?: localImages?.size ?: 0
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

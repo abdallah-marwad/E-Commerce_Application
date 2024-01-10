@@ -54,8 +54,8 @@ class RegisterViewModel @Inject constructor(
     private val _register = MutableStateFlow<Resource<String>>(Resource.UnSpecified())
     val register: Flow<Resource<String>> = _register
 
-    private val _saveUserData = MutableStateFlow<Resource<Boolean>>(Resource.UnSpecified())
-    val saveUserData: Flow<Resource<Boolean>> = _saveUserData
+    private val _saveUserData = MutableStateFlow<Resource<String>>(Resource.UnSpecified())
+    val saveUserData: Flow<Resource<String>> = _saveUserData
 
     val googleRegister: Flow<Resource<String>> = google.googleRegister
 
@@ -131,7 +131,7 @@ class RegisterViewModel @Inject constructor(
          return google.googleSignInRequest(activity)
      }
    @RequiresApi(Build.VERSION_CODES.M)
-     suspend fun saveUserData(userData : UserData)  =
+      fun saveUserData(userData : UserData)  =
          viewModelScope.launch (Dispatchers.IO){
 
          if(!InternetConnection().hasInternetConnection(getApplication())){
@@ -144,7 +144,7 @@ class RegisterViewModel @Inject constructor(
             userData
         ).addOnSuccessListener {
             runBlocking {
-                _saveUserData.emit(Resource.Success(true))
+                _saveUserData.emit(Resource.Success(userData.email))
             }
 
         }.addOnFailureListener {

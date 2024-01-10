@@ -20,7 +20,7 @@ import com.abdallah.ecommerce.databinding.ColorsAndSizesBinding
 import com.abdallah.ecommerce.databinding.RatingCommentItemBinding
 import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 
-class ReviewsAdapter(private val list: ArrayList<RatingModel>?) : RecyclerView.Adapter<ReviewsAdapter.ViewHolder>() {
+class ReviewsAdapter( var list: ArrayList<RatingModel>?) : RecyclerView.Adapter<ReviewsAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,8 +33,12 @@ class ReviewsAdapter(private val list: ArrayList<RatingModel>?) : RecyclerView.A
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list!![position]
         holder.binding.reviewerName.text = item.raterName
+        if(item.comment == "")
+            holder.binding.revieweTxt.visibility = View.GONE
         holder.binding.itemRatingBar.rating = item.rating
         holder.binding.revieweTxt.text = item.comment
+        holder.binding.dateTxt.text = item.date
+
     }
 
 

@@ -70,6 +70,8 @@
         android:gravity="start"
         android:hint="Write a comment..."
         android:padding="@dimen/_10sdp"
+        android:textSize="@dimen/_12ssp"
+        android:textColorHint="@color/g_blue_gray200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/hint"

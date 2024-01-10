@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.abdallah.ecommerce.data.firebase.AddProductToCart
 import com.abdallah.ecommerce.data.firebase.FirebaseManager
 import com.abdallah.ecommerce.data.firebase.FirebasePagingSource
 import com.abdallah.ecommerce.data.model.Product
@@ -25,15 +26,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
-    val fireStore : FirebaseFirestore
+    val fireStore : FirebaseFirestore,
+    val addProductToCart : AddProductToCart
 ): ViewModel() {
 
+    val addToCartFlow = addProductToCart.addToCartFlow
     var categoryName = ""
     private val _products =
         MutableStateFlow<Resource<ArrayList<Product>>>(Resource.UnSpecified())
     val productsFlow: Flow<Resource<ArrayList<Product>>> = _products
-
-
     private var job: Job? = null
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -54,4 +55,22 @@ class AllProductsViewModel @Inject constructor(
             }
         }
     }
+    fun addProductToCart(
+        docID: String,
+        product: Product,
+        selectedColor: Int,
+        selectedSize: String
+
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addProductToCart.addProductToCartNew(
+                docID,
+                product,
+                selectedColor,
+                selectedSize,
+                fireStore
+            )
+        }
+    }
+
 }

@@ -18,7 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.User
+import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
+import com.abdallah.ecommerce.data.sharedPreferences.UserDataHelper
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.SingleInputBottomSheet
@@ -28,6 +30,7 @@ import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.abdallah.ecommerce.utils.validation.isPhoneNumberValid
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -59,6 +62,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         googleSignInCallBack()
         fragOnClicks()
         validationState()
+
 
     }
 
@@ -140,6 +144,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("SuspiciousIndentation")
     private fun showOtpBottomSheet() {
 
@@ -158,17 +163,14 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             observeOtpState(bottomSheet)
         }
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun observeOtpState(bottomSheet : SingleInputBottomSheet) {
         viewModel.sendOtpState.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
                     bottomSheet.dismiss()
-                    this.saveUserData(true)
-                    Toast.makeText(requireContext(), "successful sign in", Toast.LENGTH_LONG)
-                        .show()
-                    SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
-                    startActivity(Intent(context , ShoppingActivity::class.java))
-                    activity?.finish()
+                    this.saveUserData( "")
+                    observeUserData()
                 }
 
                 is Resource.Failure -> {
@@ -185,10 +187,43 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
     }
 
-    private fun saveUserData(isLoggedIn: Boolean) {
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveUserData( email : String) {
+      viewModel.saveUserData(UserData(email ,null , null))
+    }
+    private fun observeUserData(goToLogin : Boolean = false) {
+        lifecycleScope.launchWhenResumed {
+            viewModel.saveUserData.collect{
+                when(it){
+                    is Resource.Success -> {
 
+                        if(goToLogin){
+                            hideLoader()
+                            Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
+                                .show()
+                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                            return@collect
+                        }
+                        UserDataHelper().saveUserDataInShared(UserData(it.data!!,null , null))
+                        hideLoader()
+                        Toast.makeText(requireContext(), "successful sign in", Toast.LENGTH_LONG)
+                        startActivity(Intent(context, ShoppingActivity::class.java))
+                        requireActivity().finish()
+
+                    }
+                    is Resource.Failure -> {
+                        hideLoader()
+                    }
+                    is Resource.Loading -> {
+                        showLoader()
+                    }
+                    else ->{}
+                }
+            }
+        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun showRegisterPhoneBottomSheet() {
 
         val phoneBottomSheet = SingleInputBottomSheet()
@@ -208,6 +243,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
         }
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun observeRegisterPhone(bottomSheet : SingleInputBottomSheet) {
         viewModel.phoneRegisterState.observe(viewLifecycleOwner) {
 
@@ -233,6 +269,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun userAndPassRegisterCallBack() {
 
         lifecycleScope.launchWhenStarted {
@@ -244,10 +281,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
                     is Resource.Success -> {
                         binding.btnRegister.revertAnimation()
-                        saveUserData(false)
-                        Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
-                            .show()
-                        findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                        saveUserData( resource.data!!)
+                        observeUserData(true)
 
                     }
 
@@ -279,6 +314,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun googleSignInCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.googleRegister.collect{
@@ -287,13 +323,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         showLoader()
                     }
                     is Resource.Success -> {
-                        saveUserData(true)
-                        Toast.makeText(context , "Successful signin" , Toast.LENGTH_SHORT).show()
-                        hideLoader()
-                        SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
-
-                        startActivity(Intent(context , ShoppingActivity::class.java))
-                        activity?.finish()
+                        saveUserData( it.data ?:"")
+                        observeUserData()
                     }
                     is Resource.Failure -> {
                         Toast.makeText(context , "fail to signin " , Toast.LENGTH_SHORT).show()

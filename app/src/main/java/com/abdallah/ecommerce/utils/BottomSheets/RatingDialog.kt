@@ -5,12 +5,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.fragment.app.Fragment
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.application.MyApplication
-import com.abdallah.ecommerce.utils.validation.ValidationState
-import com.abdallah.ecommerce.utils.validation.validateEmail
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.wang.avi.AVLoadingIndicatorView
@@ -20,8 +16,12 @@ class RatingDialog{
     lateinit var  btnCancel : AppCompatButton
     lateinit var  btnSend : AppCompatButton
     lateinit var  dialog : BottomSheetDialog
+    lateinit var  warning : ImageView
 fun showDialog(
-    onSendClick: (String, Float) -> Unit
+    canEditReview: Boolean = true,
+    comment: String = "",
+    ratingParm: Float = 0f,
+    onSendClick: ((String, Float) -> Unit)? = null
 ) {
      dialog =
         BottomSheetDialog(MyApplication.myAppContext.getCurrentAct()!!, R.style.DialogStyle)
@@ -38,13 +38,18 @@ fun showDialog(
      btnCancel = view.findViewById(R.id.btnCancel)
      btnSend = view.findViewById(R.id.btnSend)
      loader = view.findViewById(R.id.loader)
-    val warning = view.findViewById<ImageView>(R.id.warning)
+     warning = view.findViewById<ImageView>(R.id.warning)
     var rating = -1f
 
     btnCancel.setOnClickListener {
         dialog.dismiss()
     }
-
+    if(canEditReview.not()){
+        btnSend.isEnabled = false
+        edComment.setText(comment)
+        itemRatingBar.rating = ratingParm
+        return
+    }
     itemRatingBar.setOnRatingBarChangeListener { p0, p1, p2 ->
         warning.visibility = View.GONE
         rating = p1
@@ -55,9 +60,12 @@ fun showDialog(
             warning.visibility = View.VISIBLE
             return@setOnClickListener
         }
-        onSendClick(edComment.text.toString(), rating)
-        dialog.dismiss()
+        if (onSendClick != null) {
+            onSendClick(edComment.text.toString(), rating)
+        }
     }
+
+}
     fun showLoader(){
         warning.visibility = View.GONE
         loader.visibility= View.VISIBLE
@@ -75,6 +83,4 @@ fun showDialog(
         if(dialog!=null && dialog.isShowing)
             dialog.dismiss()
     }
-
-}
 }

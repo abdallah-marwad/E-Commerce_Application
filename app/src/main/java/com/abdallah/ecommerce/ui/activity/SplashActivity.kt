@@ -10,12 +10,17 @@ import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.LangHelper
 import com.abdallah.ecommerce.utils.LangHelper.makeLangEn
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
-
+    @Inject
+    lateinit var firebaseAuth : FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -27,7 +32,7 @@ class SplashActivity : AppCompatActivity() {
         }
 
 
-        if(SharedPreferencesHelper.getBoolean(Constant.IS_LOGGED_IN) or
+        if((firebaseAuth.currentUser!=null) or
             SharedPreferencesHelper.getBoolean(Constant.IS_SKIP)) {
             startActivity(Intent(this , ShoppingActivity::class.java))
             finish()

@@ -71,5 +71,12 @@
         <argument
             android:name="productDetails"
             app:argType="com.abdallah.ecommerce.data.model.Product" />
+        <action
+            android:id="@+id/action_productDetailsFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
     </fragment>
 </navigation>

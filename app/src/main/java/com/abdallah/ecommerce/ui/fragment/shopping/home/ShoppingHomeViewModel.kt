@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.abdallah.ecommerce.data.firebase.AddProductToCart
 import com.abdallah.ecommerce.data.firebase.DownloadImage
 import com.abdallah.ecommerce.data.firebase.FirebaseManager
 import com.abdallah.ecommerce.data.model.Category
@@ -32,10 +33,13 @@ import javax.inject.Inject
 class ShoppingHomeViewModel @Inject constructor(
     application: Application,
     val downloadImage: DownloadImage,
-    val firestore: FirebaseFirestore
+    val firestore: FirebaseFirestore,
+    val addProductToCart : AddProductToCart
 
 ) : AndroidViewModel(application) {
 
+
+    val addToCartFlow = addProductToCart.addToCartFlow
     private val _imageList = MutableStateFlow<Resource<ArrayList<Uri>>>(Resource.UnSpecified())
     val imageList: Flow<Resource<ArrayList<Uri>>> = _imageList
     private val _categoryList =
@@ -133,10 +137,22 @@ class ShoppingHomeViewModel @Inject constructor(
         }catch (e: Exception) {
             _offeredProducts.emit(Resource.Failure(e.message))
         }
-
-
-
-
+    }
+    fun addProductToCart(
+        docID: String,
+        product: Product,
+        selectedColor: Int,
+        selectedSize: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addProductToCart.addProductToCartNew(
+                docID,
+                product,
+                selectedColor,
+                selectedSize,
+                firestore
+            )
+        }
     }
 
 }

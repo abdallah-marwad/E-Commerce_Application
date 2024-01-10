@@ -3,6 +3,7 @@ package com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter
 import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.R
@@ -13,7 +14,7 @@ import com.abdallah.ecommerce.utils.CustomShimmerDrawable
 import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 import com.bumptech.glide.Glide
 
-class AllProductsAdapter(val data: ArrayList<Product> ) :
+class AllProductsAdapter( val data: ArrayList<Product> ,val listener: AllProductsOnClick ) :
     RecyclerView.Adapter<AllProductsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,11 +45,19 @@ class AllProductsAdapter(val data: ArrayList<Product> ) :
         }
         holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
 
-
+        holder.binding.parentArea.setOnClickListener {
+            listener.itemOnClick(item , holder.binding.productImage)
+        }
+        holder.binding.cart.setOnClickListener {
+            listener.cartOnClick(item.id , item)
+        }
 
     }
 
-
+    interface AllProductsOnClick{
+        fun itemOnClick(product: Product , view : View)
+        fun cartOnClick(productId : String , product: Product)
+    }
     override fun getItemCount(): Int {
         return data.size
     }

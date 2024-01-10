@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/nestedParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -25,17 +26,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/_16sdp">
+
             <RatingBar
                 android:id="@+id/itemRatingBar"
                 style="?android:attr/ratingBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:numStars="5"
-                android:rating="5"
-                android:progressTint="@color/g_orange_yellow"
                 android:layout_marginEnd="@dimen/_4sdp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/ratingNumber" />
+                android:numStars="5"
+                android:progressTint="@color/g_orange_yellow"
+                android:rating="5"
+                app:layout_constraintEnd_toStartOf="@+id/ratingNumber"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/ratingNumber"
                 android:layout_width="wrap_content"
@@ -51,9 +54,9 @@
                 android:id="@+id/category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_thin"
                 android:textColor="@color/secondary_color"
                 android:textSize="@dimen/_10sdp"
-                android:fontFamily="@font/poppins_thin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tool:text="category : watches" />
@@ -177,7 +180,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/linear_product_description" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/linear"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -188,14 +191,17 @@
                 app:layout_constraintTop_toBottomOf="@id/line">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    app:layout_constraintWidth_percent="0.47"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
                         android:orientation="horizontal">
 
                         <TextView
@@ -205,8 +211,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp"
                             android:text="@string/color"
-                            android:textColor="@color/black"
-                             />
+                            android:textColor="@color/black" />
 
                         <TextView
                             android:id="@+id/tv_color_error"
@@ -217,7 +222,7 @@
                             android:text="@string/select_color"
                             android:textColor="@color/g_red"
                             android:textSize="@dimen/_9ssp"
-                            android:visibility="invisible" />
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -234,24 +239,26 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    app:layout_constraintWidth_percent="0.47"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
                         android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/tv_size"
+                            style="@style/titleTxtStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp"
-                            style="@style/titleTxtStyle"
-                            android:text="@string/size"
-                            />
+                            android:text="@string/size" />
 
                         <TextView
                             android:id="@+id/tv_size_unit"
@@ -270,7 +277,7 @@
                             android:text="@string/select_size"
                             android:textColor="@color/g_red"
                             android:textSize="@dimen/_9ssp"
-                            android:visibility="invisible" />
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -284,7 +291,7 @@
 
 
                 </LinearLayout>
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:id="@+id/view"
@@ -319,21 +326,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_4sdp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                     />
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/addReview"
+                style="@style/whiteButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:text="@string/add_review"
-                app:layout_constraintTop_toBottomOf="@+id/reviewArae"
-                style="@style/whiteButtonStyle"
                 android:textSize="@dimen/_11ssp"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/reviewArae" />
+
             <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
                 android:id="@+id/dotsIndicator"
                 android:layout_width="wrap_content"
@@ -356,7 +362,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cartArea"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -370,19 +376,26 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/_40sdp"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_6sdp"
             android:layout_weight="1"
             android:background="@drawable/blue_background"
             android:text="Add to card"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:visibility="visible" />
+            app:spinning_bar_color="@color/white"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@id/priceArea"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/priceArea"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            >
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
             <TextView
                 android:id="@+id/tv_product_price"
                 android:layout_width="wrap_content"
@@ -394,6 +407,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_15ssp"
                 android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/tv_product_offer_price"
                 android:layout_width="wrap_content"
@@ -410,6 +424,5 @@
         </LinearLayout>
 
 
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

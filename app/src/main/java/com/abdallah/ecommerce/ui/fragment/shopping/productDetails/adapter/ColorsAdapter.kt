@@ -18,7 +18,7 @@ import com.abdallah.ecommerce.data.model.SizesModel
 import com.abdallah.ecommerce.databinding.ColorsAndSizesBinding
 import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 
-class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: ArrayList<SizesModel>?) :
+class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: ArrayList<SizesModel>? , val listener:SelectedColorAndSize) :
     RecyclerView.Adapter<ColorsAdapter.ViewHolder>() {
     var selectedColors = -1
     var lastSelectedItem = -1
@@ -51,7 +51,7 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
                 if(lastSelectedItem!= -1)
                      dataColors[lastSelectedItem].isSelected = false
                 lastSelectedItem = position
-                selectedColors = item.color
+                listener.selectedColor(item.color)
                 notifyDataSetChanged()
             }
 
@@ -70,7 +70,7 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
                 if(lastSelectedItem!= -1)
                      dataSizes[lastSelectedItem].isSelected = false
                 lastSelectedItem = position
-                selectedSizes = item.size
+                listener.selectedSize(item.size)
                 notifyDataSetChanged()
             }
             holder.binding.parentArea1.setCardBackgroundColor(
@@ -88,6 +88,10 @@ class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: Array
     }
 
 
+    interface SelectedColorAndSize{
+        fun selectedColor(color : Int)
+        fun selectedSize(size : String)
+    }
     override fun getItemCount(): Int {
         return dataColors?.size ?: dataSizes!!.size
     }

@@ -28,7 +28,7 @@ class RegisterWithGoogle @Inject constructor(private var auth: FirebaseAuth) {
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
                 runBlocking(){
-                    _googleRegister.value = (Resource.Success(""))
+                    _googleRegister.value = (Resource.Success(it.user?.email))
                 }
 
 

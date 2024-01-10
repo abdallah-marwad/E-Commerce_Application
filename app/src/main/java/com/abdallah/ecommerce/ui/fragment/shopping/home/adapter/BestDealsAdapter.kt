@@ -42,7 +42,7 @@ class BestDealsAdapter(val data: ArrayList<Product> , val listener : BestDealsOn
             listener.itemOnClick(item , holder.binding.bestDealsImg)
         }
         holder.binding.cart.setOnClickListener {
-            listener.cartOnClick(item.id)
+            listener.cartOnClick(item.id , item)
         }
         holder.binding.parentArea.setOnTouchListener(RecyclerTouchEffect())
 
@@ -52,7 +52,7 @@ class BestDealsAdapter(val data: ArrayList<Product> , val listener : BestDealsOn
 
     interface BestDealsOnClick{
         fun itemOnClick(product: Product , view : View)
-        fun cartOnClick(productId : String)
+        fun cartOnClick(productId : String , product: Product)
     }
 
     override fun getItemCount(): Int {

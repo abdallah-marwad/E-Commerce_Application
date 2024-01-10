@@ -1,7 +1,7 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.home
 
 import android.annotation.SuppressLint
-import android.content.Intent
+import android.app.ProgressDialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,16 +17,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.Categories
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
-import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
-import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BannerRecAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BestDealsAdapter
@@ -36,6 +33,7 @@ import com.abdallah.ecommerce.utils.Constant.PRODUCT_TRANSITION_NAME
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -56,12 +54,15 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
     private var bannerCurrentPosition = 0
     private var scrollingRunnable: Runnable = Runnable {}
     private val handler: Handler by lazy { Handler() }
+    private val appDialog by lazy { AppDialog() }
     private var categoryList: ArrayList<Category> = ArrayList()
     private var productsList: ArrayList<Product> = ArrayList()
     private var bannersList: ArrayList<Uri> = ArrayList()
 
     @Inject
     lateinit var firestore: FirebaseFirestore
+    @Inject
+    lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,10 +81,12 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         startMainCategoryShimmer()
         startDealsShimmer()
         downloadBannerImages()
+        downloadBannerImagesCallBack()
         getCategories()
         getProducts()
         noInternetCallBack()
         fragOnClick()
+        addProductToCartCallback()
 
 
     }
@@ -109,33 +112,35 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
     @RequiresApi(Build.VERSION_CODES.M)
     private fun downloadBannerImages() {
         if (bannersList.isEmpty().not()) {
+            return
+        }
+        viewModel.downloadBannerImages()
+    }
+
+    private fun downloadBannerImagesCallBack() {
+        if (bannersList.isEmpty().not()) {
             stopBannerShimmer()
             createBanner(bannersList)
             autoLoopBanner()
             return
         }
-
-
-        viewModel.downloadBannerImages()
         lifecycleScope.launchWhenResumed {
             viewModel.imageList.collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         stopBannerShimmer()
                         result.data?.let {
+                            bannersList.clear()
                             bannersList.addAll(it)
                             createBanner(bannersList)
                             autoLoopBanner()
                         }
                     }
-
                     is Resource.Failure -> {
                         stopBannerShimmer()
-//                            showLongToast("Error occurred " + result.message)
-                        Toast.makeText(
-                            context, "Error occured " + result.message,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        val localImgList =
+                            arrayListOf(R.drawable.home_banner_1, R.drawable.home_banner_2)
+                        createBanner(null, localImgList)
                     }
 
                     is Resource.Loading -> {
@@ -148,6 +153,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
             }
         }
     }
+
 
 
     override fun onPause() {
@@ -201,6 +207,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
                         result.data?.let {
                             initMainCategoryRv(it)
+                            categoryList.clear()
                             categoryList.addAll(it)
                         }
                     }
@@ -209,7 +216,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
                         stopMainCategoryShimmer()
                         Toast.makeText(
                             context, "Error occured " + result.message,
-                            Toast.LENGTH_LONG
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
 
@@ -240,6 +247,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
                     is Resource.Success -> {
                         stopDealsShimmer()
                         result.data?.let {
+                            productsList.clear()
                             productsList.addAll(it)
                             initOfferedRv(productsList)
                         }
@@ -249,7 +257,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
                         stopDealsShimmer()
                         Toast.makeText(
                             context, "Error occured " + result.message,
-                            Toast.LENGTH_LONG
+                            Toast.LENGTH_SHORT
                         ).show()
                         Log.d("test", "Firebase Err ${result.message}")
                     }
@@ -336,8 +344,13 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         binding.bannerHomeParent.scheduleLayoutAnimation()
     }
 
-    private fun createBanner(uriList: ArrayList<Uri>) {
-        var bannerAdapter = BannerRecAdapter(uriList)
+    private fun createBanner(uriList: ArrayList<Uri>? = null, localImages: ArrayList<Int>? = null) {
+        var bannerAdapter: BannerRecAdapter =
+            if (uriList != null)
+                BannerRecAdapter(uriList)
+            else
+                BannerRecAdapter(null, localImages)
+
         binding.bannerHomeParent.adapter = bannerAdapter
         RecyclerAnimation.animateRecycler(binding.bannerHomeParent)
         bannerAdapter.notifyDataSetChanged()
@@ -365,16 +378,51 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         findNavController().navigate(action, extras)
     }
 
-    override fun cartOnClick(productId: String) {
-        if (AppDialog().showingRegisterDialogIfNotRegister(
+    override fun cartOnClick(productId: String , product: Product) {
+        if(firebaseAuth.currentUser == null){
+            AppDialog().showingRegisterDialogIfNotRegister(
                 Constant.COULDNOT_ADD_TO_CART,
                 Constant.PLS_LOGIN
-            ).not()
-        ) {
+            )
             return
         }
+        addProductToCart(product)
+
+    }
+    private fun addProductToCart(product : Product) {
+        viewModel.addProductToCart(
+            firebaseAuth.currentUser?.email ?: "",
+            product,
+            -1 ,
+            ""
+        )
     }
 
+    private fun addProductToCartCallback() {
+        lifecycleScope.launchWhenResumed {
+            viewModel.addToCartFlow.collect{
+                when (it) {
+                    is Resource.Success -> {
+                        appDialog.dismissProgress()
+                        Toast.makeText(context, "Product added successfully", Toast.LENGTH_SHORT).show()
+                    }
+
+                    is Resource.Loading -> {
+                        appDialog.showProgressDialog()
+                    }
+
+                    is Resource.Failure -> {
+                        appDialog.dismissProgress()
+                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                        Log.d("test" , "addProductToCartCallback "+it.message)
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+
+    }
 
 }
 

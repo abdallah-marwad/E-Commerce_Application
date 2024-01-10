@@ -1,5 +1,6 @@
 package com.abdallah.ecommerce.data.firebase
 
+import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.data.model.RatingModel
 import com.abdallah.ecommerce.data.model.UserData
@@ -43,10 +44,31 @@ fun saveUserData(
 
     fun addReview(
         firestore: FirebaseFirestore,
-        rating : RatingModel,
+        hashMap :HashMap<String , Any>,
         docID : String
     )=
-        firestore.collection("products").document(docID).update("ratingList",rating)
+        firestore.collection("products").document(docID).update(hashMap)
+fun addProductToCart(
+        firestore: FirebaseFirestore,
+        cartList :ArrayList<String>,
+        docID : String
+    )=
+        firestore.collection("users").document(docID).update("cartProducts" , cartList)
+
+    fun addProductToCart(
+        firestore: FirebaseFirestore,
+        docID : String,
+        cartProduct : CartProduct
+    )=
+        firestore.collection("users").document(docID).collection("cart").document(cartProduct.product.id).set(cartProduct)
+
+fun addProductToCart(
+        firestore: FirebaseFirestore,
+        docID : String,
+        productId : String
+    )=
+        firestore.collection("users").document(docID).collection("cart").document(productId)
+
 
 
 

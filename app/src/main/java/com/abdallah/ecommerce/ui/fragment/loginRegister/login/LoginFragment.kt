@@ -15,7 +15,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.data.firebase.FirebaseManager.saveUserData
+import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
+import com.abdallah.ecommerce.data.sharedPreferences.UserDataHelper
 import com.abdallah.ecommerce.databinding.FragmentLoginBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.showResetPasswordDialog
@@ -23,6 +26,7 @@ import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -40,7 +44,7 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
     ): View {
         Log.d("screen", "screen is LoginFragment ")
         binding = FragmentLoginBinding.inflate(inflater)
-        SharedPreferencesHelper.addBoolean(Constant.NOT_FIRST_TIME,true)
+        SharedPreferencesHelper.addBoolean(Constant.NOT_FIRST_TIME, true)
         return binding.root
     }
 
@@ -70,7 +74,6 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
 
     private fun loginCallBack() {
         lifecycleScope.launchWhenStarted {
-
             viewModel.loginResult.collect { loginResult ->
                 when (loginResult) {
                     is Resource.Loading -> {
@@ -78,16 +81,17 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
                     }
 
                     is Resource.Success -> {
+                        this@LoginFragment.saveUserData()
                         binding.btnLoginLoginFrag.revertAnimation()
                         makeText(requireContext(), "successful login", Toast.LENGTH_LONG).show()
-                        SharedPreferencesHelper.addBoolean(Constant.IS_LOGGED_IN,true)
-                        // get user data
-                        startActivity(Intent(context , ShoppingActivity::class.java))
-                        activity?.finish()                    }
+                        startActivity(Intent(context, ShoppingActivity::class.java))
+                        activity?.finish()
+                    }
 
                     is Resource.Failure -> {
                         binding.btnLoginLoginFrag.revertAnimation()
-                        Toast.makeText(requireContext(), loginResult.message, Toast.LENGTH_LONG).show()
+                        makeText(requireContext(), loginResult.message, Toast.LENGTH_LONG)
+                            .show()
 
                     }
 
@@ -97,6 +101,15 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         }
     }
 
+    private fun saveUserData(){
+        UserDataHelper().saveUserDataInShared(
+            UserData(
+                binding.edEmailLogin.text.toString(),
+                null,
+                null
+            )
+        )
+    }
     private fun validationCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.failedValidation.collect {
