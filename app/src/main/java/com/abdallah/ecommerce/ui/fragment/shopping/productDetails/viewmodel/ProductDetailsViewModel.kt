@@ -1,5 +1,7 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.productDetails.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdallah.ecommerce.data.firebase.AddProductToCart
@@ -25,11 +27,10 @@ class ProductDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     val addToCartFlow = addProductToCart.addToCartFlow
+    val noInternet = addProductToCart.noInternet
     val review by lazy {
         MutableStateFlow<Resource<HashMap<String, Any>>>(Resource.UnSpecified())
     }
-    var favouriteList: ArrayList<String>? = null
-    var productCartList: ArrayList<String>? = null
     var email: String = ""
 
 
@@ -52,8 +53,9 @@ class ProductDetailsViewModel @Inject constructor(
             email,
             name
         )
-        viewModelScope.launch(Dispatchers.IO) {
+        runBlocking {
             review.emit(Resource.Loading())
+        }
             FirebaseManager.addReview(fireStore, ratingModel, docID)
                 .addOnSuccessListener {
                     runBlocking {
@@ -63,7 +65,7 @@ class ProductDetailsViewModel @Inject constructor(
                     runBlocking {
                         review.emit(Resource.Failure(it.message))
                     }
-                }
+
         }
     }
 
@@ -94,18 +96,15 @@ class ProductDetailsViewModel @Inject constructor(
             "rating" to overallRating,
             "ratingList" to mutableListRating,
             "ratersNum" to totalRatings
-
-
         )
-
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     fun addProductToCart(
         docID: String,
         product: Product,
         selectedColor: Int,
         selectedSize: String
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
             addProductToCart.addProductToCartNew(
                 docID,
                 product,
@@ -113,7 +112,6 @@ class ProductDetailsViewModel @Inject constructor(
                 selectedSize,
                 fireStore
             )
-        }
-    }
 
+    }
 }

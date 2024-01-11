@@ -2,6 +2,7 @@ package com.abdallah.ecommerce.ui.fragment.shopping.allProducts
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -31,6 +32,7 @@ class AllProductsViewModel @Inject constructor(
 ): ViewModel() {
 
     val addToCartFlow = addProductToCart.addToCartFlow
+    val noInternet = addProductToCart.noInternet
     var categoryName = ""
     private val _products =
         MutableStateFlow<Resource<ArrayList<Product>>>(Resource.UnSpecified())
@@ -55,6 +57,7 @@ class AllProductsViewModel @Inject constructor(
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     fun addProductToCart(
         docID: String,
         product: Product,
@@ -62,7 +65,6 @@ class AllProductsViewModel @Inject constructor(
         selectedSize: String
 
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
             addProductToCart.addProductToCartNew(
                 docID,
                 product,
@@ -70,7 +72,7 @@ class AllProductsViewModel @Inject constructor(
                 selectedSize,
                 fireStore
             )
-        }
+
     }
 
 }

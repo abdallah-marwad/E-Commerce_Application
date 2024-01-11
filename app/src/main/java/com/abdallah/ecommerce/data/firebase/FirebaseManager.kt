@@ -68,6 +68,17 @@ fun addProductToCart(
         productId : String
     )=
         firestore.collection("users").document(docID).collection("cart").document(productId)
+fun getCartProducts(
+        firestore: FirebaseFirestore,
+        docID : String,
+    )=
+        firestore.collection("users").document(docID).collection("cart").get()
+fun deleteCartItem(
+        firestore: FirebaseFirestore,
+        docID : String,
+        productID : String,
+    )=
+        firestore.collection("users").document(docID).collection("cart").document(productID).delete()
 
 
 

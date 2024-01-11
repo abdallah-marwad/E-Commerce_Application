@@ -18,9 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.User
-import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
-import com.abdallah.ecommerce.data.sharedPreferences.UserDataHelper
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.SingleInputBottomSheet
@@ -30,7 +28,7 @@ import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.abdallah.ecommerce.utils.validation.isPhoneNumberValid
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.gson.Gson
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,7 +55,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arlInitial()
-        userAndPassRegisterCallBack()
+        registerStateCallBack()
         noInternetCallBack()
         googleSignInCallBack()
         fragOnClicks()
@@ -169,8 +167,10 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             when (it) {
                 is Resource.Success -> {
                     bottomSheet.dismiss()
-                    this.saveUserData( "")
-                    observeUserData()
+                    hideLoader()
+                    Toast.makeText(context , "Successful sign in" , Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(context , ShoppingActivity::class.java))
+                    activity?.finish()
                 }
 
                 is Resource.Failure -> {
@@ -187,41 +187,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun saveUserData( email : String) {
-      viewModel.saveUserData(UserData(email ,null , null))
-    }
-    private fun observeUserData(goToLogin : Boolean = false) {
-        lifecycleScope.launchWhenResumed {
-            viewModel.saveUserData.collect{
-                when(it){
-                    is Resource.Success -> {
-
-                        if(goToLogin){
-                            hideLoader()
-                            Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
-                                .show()
-                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-                            return@collect
-                        }
-                        UserDataHelper().saveUserDataInShared(UserData(it.data!!,null , null))
-                        hideLoader()
-                        Toast.makeText(requireContext(), "successful sign in", Toast.LENGTH_LONG)
-                        startActivity(Intent(context, ShoppingActivity::class.java))
-                        requireActivity().finish()
-
-                    }
-                    is Resource.Failure -> {
-                        hideLoader()
-                    }
-                    is Resource.Loading -> {
-                        showLoader()
-                    }
-                    else ->{}
-                }
-            }
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun showRegisterPhoneBottomSheet() {
@@ -269,8 +234,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun userAndPassRegisterCallBack() {
+    private fun registerStateCallBack() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.register.collect { resource ->
@@ -280,10 +244,11 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     }
 
                     is Resource.Success -> {
-                        binding.btnRegister.revertAnimation()
-                        saveUserData( resource.data!!)
-                        observeUserData(true)
-
+                        hideLoader()
+                        Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
+                            .show()
+                        findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                        return@collect
                     }
 
                     is Resource.Failure -> {
@@ -308,8 +273,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         lifecycleScope.launchWhenStarted {
             viewModel.noInternet.collect {
                 hideLoader()
-                Toast.makeText(requireContext(), "No Internet connection", Toast.LENGTH_LONG)
-                    .show()
+                Snackbar.make(binding.imageView , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+
 
             }
         }
@@ -323,8 +288,10 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         showLoader()
                     }
                     is Resource.Success -> {
-                        saveUserData( it.data ?:"")
-                        observeUserData()
+                        hideLoader()
+                        Toast.makeText(context , "Successful sign in" , Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(context , ShoppingActivity::class.java))
+                        activity?.finish()
                     }
                     is Resource.Failure -> {
                         Toast.makeText(context , "fail to signin " , Toast.LENGTH_SHORT).show()
@@ -337,8 +304,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     }
 
     private fun showLoader() {
-        binding.loader.visibility = View.VISIBLE
         binding.linearLayout.visibility = View.INVISIBLE
+        binding.loader.visibility = View.VISIBLE
+
     }
     private fun hideLoader() {
         binding.loader.visibility = View.INVISIBLE

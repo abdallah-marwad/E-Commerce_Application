@@ -12,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -33,6 +35,7 @@ import com.abdallah.ecommerce.utils.Constant.PRODUCT_TRANSITION_NAME
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,8 +53,9 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
     private lateinit var binding: FragmentShoppingHomeBinding
     private val viewModel by viewModels<ShoppingHomeViewModel>()
-
+    private var parent: NestedScrollView? = null
     private var bannerCurrentPosition = 0
+    private var registerCallback = true
     private var scrollingRunnable: Runnable = Runnable {}
     private val handler: Handler by lazy { Handler() }
     private val appDialog by lazy { AppDialog() }
@@ -277,9 +281,12 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.noInternet.collect {
-                    Toast.makeText(context, "No Internet connection", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(binding.nestedParent , "No Internet connection", Snackbar.LENGTH_SHORT).show()
                 }
             }
+        }
+        viewModel.noInternetAddProduct.observe(viewLifecycleOwner){
+            Snackbar.make(binding.nestedParent , "No Internet connection", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -378,7 +385,8 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         findNavController().navigate(action, extras)
     }
 
-    override fun cartOnClick(productId: String , product: Product) {
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun cartOnClick(productId: String, product: Product) {
         if(firebaseAuth.currentUser == null){
             AppDialog().showingRegisterDialogIfNotRegister(
                 Constant.COULDNOT_ADD_TO_CART,
@@ -389,9 +397,10 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         addProductToCart(product)
 
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun addProductToCart(product : Product) {
         viewModel.addProductToCart(
-            firebaseAuth.currentUser?.email ?: "",
+            firebaseAuth.currentUser?.uid ?: "",
             product,
             -1 ,
             ""
@@ -399,6 +408,9 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
     }
 
     private fun addProductToCartCallback() {
+        if (registerCallback.not())
+            return
+        registerCallback = false
         lifecycleScope.launchWhenResumed {
             viewModel.addToCartFlow.collect{
                 when (it) {
@@ -422,6 +434,12 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
             }
         }
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        parent =binding.nestedParent
+        parent = null
     }
 
 }

@@ -130,29 +130,6 @@ class RegisterViewModel @Inject constructor(
          }
          return google.googleSignInRequest(activity)
      }
-   @RequiresApi(Build.VERSION_CODES.M)
-      fun saveUserData(userData : UserData)  =
-         viewModelScope.launch (Dispatchers.IO){
-
-         if(!InternetConnection().hasInternetConnection(getApplication())){
-                 _noInternet.send(true)
-                 return@launch
-         }
-       _saveUserData.emit(Resource.Loading())
-        FirebaseManager.saveUserData(
-            fireStore ,
-            userData
-        ).addOnSuccessListener {
-            runBlocking {
-                _saveUserData.emit(Resource.Success(userData.email))
-            }
-
-        }.addOnFailureListener {
-            runBlocking {
-                _saveUserData.emit(Resource.Failure(it.message))
-            }
-        }
-     }
 
 
 
@@ -160,7 +137,6 @@ class RegisterViewModel @Inject constructor(
      fun googleAuthWithFireBase(account: GoogleSignInAccount) {
          viewModelScope.launch {
              google.googleAuthWithFireBase(account)
-
          }
 
     }

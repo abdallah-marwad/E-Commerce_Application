@@ -13,9 +13,10 @@ import com.abdallah.ecommerce.databinding.FragmentProfileBinding
 import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
 import com.abdallah.ecommerce.utils.Constant
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     @Inject

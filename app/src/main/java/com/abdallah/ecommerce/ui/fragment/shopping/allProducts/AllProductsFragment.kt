@@ -9,9 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -32,6 +35,7 @@ import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.animation.ViewAnimation
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,7 +45,9 @@ import javax.inject.Inject
 class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick , AllProductsAdapter.AllProductsOnClick{
 
     lateinit var binding: FragmentAllProductsBinding
+    private var parent: ConstraintLayout? = null
     var categoriesAdapter : AllCategoriesAdapter? = null
+    var registerCallback = true
     private val appDialog by lazy { AppDialog() }
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
@@ -67,14 +73,20 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
         fragmentOnclick()
         setAppbarTitle()
         addProductToCartCallback()
+        noInternetCallback()
 
+    }
+
+    private fun noInternetCallback() {
+        viewModel.noInternet.observe(viewLifecycleOwner){
+            Snackbar.make(binding.productRv , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun fragmentOnclick(){
         binding.toolbar.icBack.setOnClickListener {
             Navigation.findNavController(requireView()).popBackStack()
             categoriesAdapter?.removeSelectedItem()
-
         }
     }
     private fun setAppbarTitle(){
@@ -167,9 +179,11 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
         val action =
             AllProductsFragmentDirections.actionAllProductsToProductDetailsFragment(product)
         findNavController().navigate(action, extras)
+        categoriesAdapter?.removeSelectedItem()
     }
 
-    override fun cartOnClick(productId: String , product: Product) {
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun cartOnClick(productId: String, product: Product) {
         if(firebaseAuth.currentUser == null){
             AppDialog().showingRegisterDialogIfNotRegister(
                 Constant.COULDNOT_ADD_TO_CART,
@@ -179,9 +193,10 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
         }
         addProductToCart(product)
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun addProductToCart(product : Product) {
         viewModel.addProductToCart(
-            firebaseAuth.currentUser?.email ?: "",
+            firebaseAuth.currentUser?.uid ?: "",
             product,
             -1 ,
             ""
@@ -189,6 +204,9 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     }
 
     private fun addProductToCartCallback() {
+        if (registerCallback.not())
+            return
+        registerCallback = false
         lifecycleScope.launchWhenResumed {
             viewModel.addToCartFlow.collect{
                 when (it) {
@@ -214,6 +232,11 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
 
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        parent = binding.parentArea
+        parent = null
 
+    }
 
 }

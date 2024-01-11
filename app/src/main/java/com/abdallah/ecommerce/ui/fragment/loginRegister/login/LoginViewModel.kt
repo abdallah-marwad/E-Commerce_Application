@@ -56,7 +56,6 @@ class LoginViewModel @Inject constructor(
                 return@launch
 
             }
-
             if (validData(email, password)) {
                 _loginResult.send(Resource.Loading())
                 firebaseAuth.signInWithEmailAndPassword(

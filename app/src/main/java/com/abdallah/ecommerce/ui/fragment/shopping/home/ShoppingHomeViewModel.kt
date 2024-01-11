@@ -40,6 +40,7 @@ class ShoppingHomeViewModel @Inject constructor(
 
 
     val addToCartFlow = addProductToCart.addToCartFlow
+    val noInternetAddProduct = addProductToCart.noInternet
     private val _imageList = MutableStateFlow<Resource<ArrayList<Uri>>>(Resource.UnSpecified())
     val imageList: Flow<Resource<ArrayList<Uri>>> = _imageList
     private val _categoryList =
@@ -54,9 +55,9 @@ class ShoppingHomeViewModel @Inject constructor(
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun downloadBannerImages() =
+    fun downloadBannerImages() {
         viewModelScope.launch(Dispatchers.IO) {
-            _imageList.emit(Resource.Loading())
+            _imageList.emit(Resource.Loading())}
             downloadImage.downloadAllImages(Constant.HOME_BANNER_BATH)
                 .addOnSuccessListener { result ->
                     result?.let {
@@ -95,8 +96,10 @@ class ShoppingHomeViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun getCategories() = viewModelScope.launch(Dispatchers.IO) {
-        _categoryList.emit(Resource.Loading())
+    fun getCategories() {
+        runBlocking {
+            _categoryList.emit(Resource.Loading())
+        }
 
         val collectionReference = firestore.collection("category")
         collectionReference.get()
@@ -138,13 +141,13 @@ class ShoppingHomeViewModel @Inject constructor(
             _offeredProducts.emit(Resource.Failure(e.message))
         }
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     fun addProductToCart(
         docID: String,
         product: Product,
         selectedColor: Int,
         selectedSize: String
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
             addProductToCart.addProductToCartNew(
                 docID,
                 product,
@@ -152,7 +155,7 @@ class ShoppingHomeViewModel @Inject constructor(
                 selectedSize,
                 firestore
             )
-        }
+
     }
 
 }

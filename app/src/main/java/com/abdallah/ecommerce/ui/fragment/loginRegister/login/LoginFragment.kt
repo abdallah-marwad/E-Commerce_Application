@@ -15,10 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
-import com.abdallah.ecommerce.data.firebase.FirebaseManager.saveUserData
-import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
-import com.abdallah.ecommerce.data.sharedPreferences.UserDataHelper
 import com.abdallah.ecommerce.databinding.FragmentLoginBinding
 import com.abdallah.ecommerce.ui.activity.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.showResetPasswordDialog
@@ -26,7 +23,6 @@ import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -81,7 +77,6 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
                     }
 
                     is Resource.Success -> {
-                        this@LoginFragment.saveUserData()
                         binding.btnLoginLoginFrag.revertAnimation()
                         makeText(requireContext(), "successful login", Toast.LENGTH_LONG).show()
                         startActivity(Intent(context, ShoppingActivity::class.java))
@@ -101,15 +96,7 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         }
     }
 
-    private fun saveUserData(){
-        UserDataHelper().saveUserDataInShared(
-            UserData(
-                binding.edEmailLogin.text.toString(),
-                null,
-                null
-            )
-        )
-    }
+
     private fun validationCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.failedValidation.collect {
@@ -127,8 +114,8 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
     private fun noInternetCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.noInternet.collect {
-                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG)
-                    .show()
+                Snackbar.make(binding.imageView3 , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+
 
             }
         }

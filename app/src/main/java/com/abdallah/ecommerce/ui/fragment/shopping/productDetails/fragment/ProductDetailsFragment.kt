@@ -1,12 +1,14 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.productDetails.fragment
 
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -78,6 +80,7 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.bestDealsImg.transitionName = Constant.PRODUCT_TRANSITION_NAME
@@ -85,10 +88,9 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         initViews()
         addProductToCartCallback()
         showProductMainImage()
-
+        noInternetCallback()
     }
-
-
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun fragmentOnclick() {
         binding.toolbar.icBack.setOnClickListener {
             if (updateWhenBack) {
@@ -96,15 +98,6 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
                 return@setOnClickListener
             }
             Navigation.findNavController(requireView()).popBackStack()
-        }
-        binding.btnAddToCart.setOnClickListener {
-            if (firebaseAuth.currentUser == null) {
-                AppDialog().showingRegisterDialogIfNotRegister(
-                    Constant.COULDNOT_ADD_TO_CART,
-                    Constant.PLS_LOGIN
-                )
-                return@setOnClickListener
-            }
         }
         binding.addReview.setOnClickListener {
             val list =
@@ -150,9 +143,10 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         }
         return isSelected
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun addProductToCart() {
         viewModel.addProductToCart(
-            firebaseAuth.currentUser?.email ?: "",
+            firebaseAuth.currentUser?.uid ?: "",
             product,
             selectedColor ,
             selectedSize
@@ -341,4 +335,9 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
 
     }
 
+    private fun noInternetCallback() {
+        viewModel.noInternet.observe(viewLifecycleOwner){
+            Snackbar.make(binding.nestedParent , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+        }
+    }
 }
