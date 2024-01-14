@@ -35,16 +35,22 @@ fun showDialog(
 
     val itemRatingBar = view.findViewById<RatingBar>(R.id.itemRatingBar)
     val edComment = view.findViewById<EditText>(R.id.edOtp)
-     btnCancel = view.findViewById(R.id.btnCancel)
-     btnSend = view.findViewById(R.id.btnSend)
-     loader = view.findViewById(R.id.loader)
-     warning = view.findViewById<ImageView>(R.id.warning)
+    btnCancel = view.findViewById(R.id.btnCancel)
+    btnSend = view.findViewById(R.id.btnSend)
+    loader = view.findViewById(R.id.loader)
+    warning = view.findViewById<ImageView>(R.id.warning)
     var rating = -1f
-
+    dialog.apply {
+        setOnShowListener {
+            val bottomSheet =
+                findViewById<View?>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.setBackgroundResource(android.R.color.transparent)
+        }
+    }
     btnCancel.setOnClickListener {
         dialog.dismiss()
     }
-    if(canEditReview.not()){
+    if (canEditReview.not()) {
         btnSend.isEnabled = false
         edComment.setText(comment)
         itemRatingBar.rating = ratingParm

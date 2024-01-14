@@ -138,10 +138,10 @@ dependencies {
 
     //lottie
     implementation "com.airbnb.android:lottie:3.4.1"
-
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:3.0-alpha-1'
+//
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:3.0-alpha-1'
     // Draw On Swipe RV
-    implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
+//    implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
 
 
 }

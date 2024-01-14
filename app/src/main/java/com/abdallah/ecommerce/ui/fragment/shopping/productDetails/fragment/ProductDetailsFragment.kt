@@ -101,7 +101,7 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         }
         binding.addReview.setOnClickListener {
             val list =
-                product.ratingList.filter { (it.raterId == firebaseAuth.currentUser!!.email) }
+                product.ratingList.filter { (it.raterId == firebaseAuth.currentUser?.email) }
             if (list.isNotEmpty()) {
                 ratingDialog.showDialog(
                     canEditReview = false,

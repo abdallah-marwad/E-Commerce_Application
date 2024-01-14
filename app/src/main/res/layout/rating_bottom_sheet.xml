@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
+    android:background="@android:color/transparent"
     android:paddingBottom="@dimen/_10sdp">
 
     <include
@@ -14,119 +15,129 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_8sdp"
-        android:fontFamily="@font/poppins_thin"
-        android:gravity="center"
-        android:text="Review"
-        android:textColor="@color/g_black"
-        android:textSize="@dimen/_15sdp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bottomSheetBar" />
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetBar"
 
-    <TextView
-        android:id="@+id/hint"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_4sdp"
-        android:fontFamily="@font/poppins_light"
-        android:gravity="start"
-        android:text="Leave your review about this product"
-        android:textColor="@color/g_black"
-        android:textSize="@dimen/_11sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        >
 
-    <RatingBar
-        android:id="@+id/itemRatingBar"
-        style="?android:attr/ratingBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:isIndicator="false"
-        android:numStars="5"
-        android:progressTint="@color/g_orange_yellow"
-        android:rating="0"
-        android:scaleX="2"
-        android:scaleY="2"
-        android:stepSize="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/hint"
-        app:layout_constraintWidth_percent="0.4" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_8sdp"
+            android:fontFamily="@font/poppins_thin"
+            android:gravity="center"
+            android:text="Review"
+            android:textColor="@color/g_black"
+            android:textSize="@dimen/_15sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/hint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:fontFamily="@font/poppins_light"
+            android:gravity="start"
+            android:text="Leave your review about this product"
+            android:textColor="@color/g_black"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@id/title" />
+
+        <RatingBar
+            android:id="@+id/itemRatingBar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:isIndicator="false"
+            android:numStars="5"
+            android:progressTint="@color/g_orange_yellow"
+            android:rating="0"
+            android:scaleX="2"
+            android:scaleY="2"
+            android:stepSize="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/hint"
+            app:layout_constraintWidth_percent="0.4" />
 
 
-    <EditText
-        android:id="@+id/edOtp"
-        style="@style/editText"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_100sdp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:gravity="start"
-        android:hint="Write a comment..."
-        android:padding="@dimen/_10sdp"
-        android:textSize="@dimen/_12ssp"
-        android:textColorHint="@color/g_blue_gray200"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/hint"
-        app:layout_constraintTop_toBottomOf="@+id/itemRatingBar" />
+        <EditText
+            android:id="@+id/edOtp"
+            style="@style/editText"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_100sdp"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:gravity="start"
+            android:hint="Write a comment..."
+            android:padding="@dimen/_10sdp"
+            android:textSize="@dimen/_12ssp"
+            android:textColorHint="@color/g_blue_gray200"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/hint"
+            app:layout_constraintTop_toBottomOf="@+id/itemRatingBar" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnCancel"
-        style="@style/whiteButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_marginTop="@dimen/_16sdp"
-        android:fontFamily="@font/poppins_light"
-        android:text="Cancel"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/edOtp"
-        app:layout_constraintTop_toBottomOf="@+id/edOtp"
-        app:layout_constraintWidth_percent="0.43"
-        app:spinning_bar_color="@color/white" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancel"
+            style="@style/whiteButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:fontFamily="@font/poppins_light"
+            android:text="Cancel"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/edOtp"
+            app:layout_constraintTop_toBottomOf="@+id/edOtp"
+            app:layout_constraintWidth_percent="0.43"
+            app:spinning_bar_color="@color/white" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSend"
-        style="@style/blueButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_marginTop="@dimen/_16sdp"
-        android:fontFamily="@font/poppins_light"
-        android:text="Submit"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/edOtp"
-        app:layout_constraintTop_toBottomOf="@+id/edOtp"
-        app:layout_constraintWidth_percent="0.43"
-        app:spinning_bar_color="@color/white" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSend"
+            style="@style/blueButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:fontFamily="@font/poppins_light"
+            android:text="Submit"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/edOtp"
+            app:layout_constraintTop_toBottomOf="@+id/edOtp"
+            app:layout_constraintWidth_percent="0.43"
+            app:spinning_bar_color="@color/white" />
 
-    <ImageView
-        android:id="@+id/warning"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_error"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/itemRatingBar"
-        app:layout_constraintStart_toEndOf="@id/itemRatingBar"
-        app:layout_constraintTop_toTopOf="@id/itemRatingBar"
-        app:tint="@color/g_red" />
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/loader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:indicatorColor="@color/app_theme_color"
-        app:indicatorName="BallPulseIndicator"
-        app:layout_constraintBottom_toBottomOf="@+id/btnCancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnCancel" />
+        <ImageView
+            android:id="@+id/warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/itemRatingBar"
+            app:layout_constraintStart_toEndOf="@id/itemRatingBar"
+            app:layout_constraintTop_toTopOf="@id/itemRatingBar"
+            app:tint="@color/g_red" />
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:indicatorColor="@color/app_theme_color"
+            app:indicatorName="BallPulseIndicator"
+            app:layout_constraintBottom_toBottomOf="@+id/btnCancel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnCancel" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,21 +1,15 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.cart
 
-import android.R
-import android.graphics.Canvas
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.databinding.FragmentCartBinding
 import com.abdallah.ecommerce.utils.Resource
@@ -60,9 +54,20 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
     }
 
     private fun getProductData() {
+        if (firebaseAuth.currentUser == null) {
+            showEmptyCartViews()
+            return
+        }
         viewModel.getCartProduct(
             firebaseAuth.currentUser?.uid ?: ""
         )
+    }
+
+    private fun showEmptyCartViews() {
+        binding.rvCart.visibility = View.GONE
+        binding.imgEmptyBox.visibility = View.VISIBLE
+        binding.imgEmptyBoxTexture.visibility = View.VISIBLE
+        binding.tvEmptyCart.visibility = View.VISIBLE
     }
 
     private fun getProductDataCallback() {
@@ -75,6 +80,10 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
                     when (it) {
                         is Resource.Success -> {
                             appDialog.dismissProgress()
+                            if (it.data?.isEmpty() == true) {
+                                showEmptyCartViews()
+                                return@collect
+                            }
                             initCartRV(it.data!!)
                         }
 
@@ -101,33 +110,33 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
         RecyclerAnimation.animateRecycler(binding.rvCart)
         adapter.notifyDataSetChanged()
         binding.rvCart.scheduleLayoutAnimation()
-        val itemTouchHelper = ItemTouchHelper(onSwipe(adapter))
-        itemTouchHelper.attachToRecyclerView(binding.rvCart)
+//        val itemTouchHelper = ItemTouchHelper(onSwipe(adapter))
+//        itemTouchHelper.attachToRecyclerView(binding.rvCart)
     }
 
 
-    private fun onSwipe(adapter: CartRVAdapter): ItemTouchHelper.SimpleCallback {
-        val itemTouchHelper = object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                posToDelete = viewHolder.absoluteAdapterPosition
-                val productID = adapter.data.get(posToDelete)
-
-                viewModel.deleteProduct(
-                    firebaseAuth.currentUser!!.uid,
-                    productID.product.id
-                )
-            }
+//    private fun onSwipe(adapter: CartRVAdapter): ItemTouchHelper.SimpleCallback {
+//        val itemTouchHelper = object :
+//            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+//            override fun onMove(
+//                recyclerView: RecyclerView,
+//                viewHolder: RecyclerView.ViewHolder,
+//                target: RecyclerView.ViewHolder
+//            ): Boolean {
+//                return false
+//            }
 //
+//            @RequiresApi(Build.VERSION_CODES.M)
+//            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+//                posToDelete = viewHolder.absoluteAdapterPosition
+//                val productID = adapter.data.get(posToDelete)
+//
+//                viewModel.deleteProduct(
+//                    firebaseAuth.currentUser!!.uid,
+//                    productID.product.id
+//                )
+//            }
+////
 //            fun onChildDraw(
 //                c: Canvas?,
 //                recyclerView: RecyclerView?,
@@ -147,9 +156,9 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
 //                )
 //            }
 
-        }
-        return itemTouchHelper
-    }
+    //        }
+//        return itemTouchHelper
+//    }
     private fun deleteProductCallback() {
         if (registerdeleteProduct.not())
             return
