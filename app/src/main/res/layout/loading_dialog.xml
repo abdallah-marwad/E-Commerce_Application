@@ -24,7 +24,7 @@
             android:textColor="@color/g_gray700"
             android:textSize="@dimen/_13ssp"
             android:gravity="center_vertical"
-            android:layout_marginStart="@dimen/_6sdp"
+            android:layout_marginStart="@dimen/_12sdp"
             />
     </LinearLayout>
 

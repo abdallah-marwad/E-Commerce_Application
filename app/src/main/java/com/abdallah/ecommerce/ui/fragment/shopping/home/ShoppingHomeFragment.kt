@@ -1,7 +1,6 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.home
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,11 +20,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.data.firebase.FirebaseManager.addProductToCart
 import com.abdallah.ecommerce.data.model.Categories
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
-import com.abdallah.ecommerce.ui.activity.ShoppingActivity
+import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BannerRecAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BestDealsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.MainCategoryAdapter
@@ -49,13 +48,16 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
-    BestDealsAdapter.BestDealsOnClick, MainCategoryAdapter.MainCategoryOnClick {
+    BestDealsAdapter.BestDealsTestOnClick, MainCategoryAdapter.MainCategoryOnClick {
 
     private lateinit var binding: FragmentShoppingHomeBinding
     private val viewModel by viewModels<ShoppingHomeViewModel>()
     private var parent: NestedScrollView? = null
     private var bannerCurrentPosition = 0
     private var registerCallback = true
+    private var registerForCategoriesCallback = true
+    private var registerForProductsCallback = true
+    private var registerForBannerCallback = true
     private var scrollingRunnable: Runnable = Runnable {}
     private val handler: Handler by lazy { Handler() }
     private val appDialog by lazy { AppDialog() }
@@ -65,6 +67,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
     @Inject
     lateinit var firestore: FirebaseFirestore
+
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
 
@@ -87,7 +90,9 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         downloadBannerImages()
         downloadBannerImagesCallBack()
         getCategories()
+        getCategoriesCallBack()
         getProducts()
+        getProductsCallBack()
         noInternetCallBack()
         fragOnClick()
         addProductToCartCallback()
@@ -115,20 +120,16 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun downloadBannerImages() {
-        if (bannersList.isEmpty().not()) {
-            return
-        }
         viewModel.downloadBannerImages()
     }
 
     private fun downloadBannerImagesCallBack() {
-        if (bannersList.isEmpty().not()) {
-            stopBannerShimmer()
-            createBanner(bannersList)
-            autoLoopBanner()
+        if (registerForBannerCallback.not()) {
             return
         }
-        lifecycleScope.launchWhenResumed {
+        registerForBannerCallback = false  // this for not registering twice with the same lifecycle
+        lifecycleScope.launchWhenStarted {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
             viewModel.imageList.collect { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -140,6 +141,7 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
                             autoLoopBanner()
                         }
                     }
+
                     is Resource.Failure -> {
                         stopBannerShimmer()
                         val localImgList =
@@ -154,10 +156,9 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
                     else -> {}
                 }
-            }
-        }
+//            }
+        }}
     }
-
 
 
     override fun onPause() {
@@ -192,88 +193,90 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         }
     }
 
-
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getCategories() {
-        if (categoryList.isEmpty().not()) {
-            stopMainCategoryShimmer()
-            initMainCategoryRv(categoryList)
+    fun getCategories(){
+        viewModel.getCategories()
+    }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getCategoriesCallBack() {
+        if (registerForCategoriesCallback.not()) {
             return
         }
+        registerForCategoriesCallback = false   // this for not registering twice with the same lifecycle
 
+        lifecycleScope.launchWhenStarted {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.categoryList.collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            stopMainCategoryShimmer()
 
-        viewModel.getCategories()
-        lifecycleScope.launchWhenResumed {
-            viewModel.categoryList.collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        stopMainCategoryShimmer()
-
-                        result.data?.let {
-                            initMainCategoryRv(it)
-                            categoryList.clear()
-                            categoryList.addAll(it)
+                            result.data?.let {
+                                initMainCategoryRv(it)
+                                categoryList.clear()
+                                categoryList= it
+                            }
                         }
-                    }
 
-                    is Resource.Failure -> {
-                        stopMainCategoryShimmer()
-                        Toast.makeText(
-                            context, "Error occured " + result.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                        is Resource.Failure -> {
+                            stopMainCategoryShimmer()
+                            Toast.makeText(
+                                context, "Error occured " + result.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                    is Resource.Loading -> {
-                        startMainCategoryShimmer()
-                    }
+                        is Resource.Loading -> {
+                            startMainCategoryShimmer()
+                        }
 
-                    else -> {}
+                        else -> {}
+//                    }
                 }
             }
-
-
         }
     }
-
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getProducts() {
-        if (productsList.isEmpty().not()) {
-            stopDealsShimmer()
-            initOfferedRv(productsList)
+        viewModel.getOfferedProducts()
+    }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getProductsCallBack() {
+        if (registerForProductsCallback.not()) {
             return
         }
+        registerForProductsCallback = false
 
-        viewModel.getOfferedProducts()
-        lifecycleScope.launchWhenResumed {
-            viewModel.offeredProducts.collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        stopDealsShimmer()
-                        result.data?.let {
-                            productsList.clear()
-                            productsList.addAll(it)
-                            initOfferedRv(productsList)
+        lifecycleScope.launchWhenStarted {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.offeredProducts.collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            stopDealsShimmer()
+                            result.data?.let {
+                                productsList.clear()
+                                productsList.addAll(it)
+                                initOfferedRv(productsList)
+                            }
                         }
-                    }
 
-                    is Resource.Failure -> {
-                        stopDealsShimmer()
-                        Toast.makeText(
-                            context, "Error occured " + result.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.d("test", "Firebase Err ${result.message}")
-                    }
+                        is Resource.Failure -> {
+                            stopDealsShimmer()
+                            Toast.makeText(
+                                context, "Error occured " + result.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Log.d("test", "Firebase Err ${result.message}")
+                        }
 
-                    is Resource.Loading -> {
-                        startMainCategoryShimmer()
-                    }
+                        is Resource.Loading -> {
+                            startDealsShimmer()
+                        }
 
-                    else -> {}
-                }
+                        else -> {}
+                    }
+//                }
             }
-
         }
     }
 
@@ -281,12 +284,17 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.noInternet.collect {
-                    Snackbar.make(binding.nestedParent , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        binding.nestedParent,
+                        "No Internet connection",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
-        viewModel.noInternetAddProduct.observe(viewLifecycleOwner){
-            Snackbar.make(binding.nestedParent , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+        viewModel.noInternetAddProduct.observe(viewLifecycleOwner) {
+            Snackbar.make(binding.nestedParent, "No Internet connection", Snackbar.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -344,10 +352,11 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
     @SuppressLint("SuspiciousIndentation")
     private fun initOfferedRv(data: ArrayList<Product>) {
-        val adapter = BestDealsAdapter(data, this)
-        binding.bestDealsRV.adapter = adapter
+        val bestDealsAdapter = BestDealsAdapter()
+        bestDealsAdapter.differ.submitList(data)
+        bestDealsAdapter.listener = this
+        binding.bestDealsRV.adapter = bestDealsAdapter
         RecyclerAnimation.animateRecycler(binding.bestDealsRV)
-        adapter.notifyDataSetChanged()
         binding.bannerHomeParent.scheduleLayoutAnimation()
     }
 
@@ -387,9 +396,9 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun cartOnClick(productId: String, product: Product) {
-        if(firebaseAuth.currentUser == null){
+        if (firebaseAuth.currentUser == null) {
             AppDialog().showingRegisterDialogIfNotRegister(
-                Constant.COULDNOT_ADD_TO_CART,
+                Constant.COULDNOT_DO_THIS_ACTON,
                 Constant.PLS_LOGIN
             )
             return
@@ -397,12 +406,13 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
         addProductToCart(product)
 
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun addProductToCart(product : Product) {
+    private fun addProductToCart(product: Product) {
         viewModel.addProductToCart(
             firebaseAuth.currentUser?.uid ?: "",
             product,
-            -1 ,
+            -1,
             ""
         )
     }
@@ -412,11 +422,12 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
             return
         registerCallback = false
         lifecycleScope.launchWhenResumed {
-            viewModel.addToCartFlow.collect{
+            viewModel.addToCartFlow.collect {
                 when (it) {
                     is Resource.Success -> {
                         appDialog.dismissProgress()
-                        Toast.makeText(context, "Product added successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Product added successfully", Toast.LENGTH_SHORT)
+                            .show()
                     }
 
                     is Resource.Loading -> {
@@ -426,19 +437,16 @@ class ShoppingHomeFragment : Fragment(R.layout.fragment_shopping_home),
                     is Resource.Failure -> {
                         appDialog.dismissProgress()
                         Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                        Log.d("test" , "addProductToCartCallback "+it.message)
+                        Log.d("test", "addProductToCartCallback " + it.message)
                     }
-
                     else -> {}
                 }
             }
         }
-
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        parent =binding.nestedParent
+        parent = binding.nestedParent
         parent = null
     }
 

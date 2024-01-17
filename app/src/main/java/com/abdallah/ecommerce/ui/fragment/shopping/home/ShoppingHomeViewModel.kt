@@ -61,7 +61,7 @@ class ShoppingHomeViewModel @Inject constructor(
             downloadImage.downloadAllImages(Constant.HOME_BANNER_BATH)
                 .addOnSuccessListener { result ->
                     result?.let {
-                        runBlocking {
+                        viewModelScope.launch(Dispatchers.IO) {
                             _imageList.emit(
                                 Resource.Success(
                                     downloadImagesFromListResult(
@@ -97,7 +97,7 @@ class ShoppingHomeViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun getCategories() {
-        runBlocking {
+        viewModelScope.launch(Dispatchers.IO) {
             _categoryList.emit(Resource.Loading())
         }
 
@@ -106,20 +106,14 @@ class ShoppingHomeViewModel @Inject constructor(
             .addOnSuccessListener { document ->
 
                 if (!document.isEmpty) {
-                    val dataCat = ArrayList<Category>()
-                    document.forEach {
-                        val data = it.data
-                        val categoryName = data["categoryName"] as String?
-                        val categoryImage = data["image"] as String?
-                        dataCat.add(Category( categoryName = categoryName, image = categoryImage))
-                    }
-                    runBlocking {
+                    var dataCat: ArrayList<Category> = document.toObjects(Category::class.java) as ArrayList<Category>
+                    viewModelScope.launch(Dispatchers.IO) {
                         _categoryList.emit(Resource.Success(dataCat))
                     }
                 }
             }
             .addOnFailureListener { exception ->
-                runBlocking {
+                viewModelScope.launch(Dispatchers.IO) {
                     _categoryList.emit(Resource.Failure(exception.message))
                 }
             }

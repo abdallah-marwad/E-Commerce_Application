@@ -96,26 +96,58 @@
         android:fontFamily="@font/poppins_light"
         android:gravity="center"
         android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:autofillHints="username"
         android:singleLine="true"
-        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="@+id/tv_app_name_Login"
         app:layout_constraintTop_toBottomOf="@+id/tv_dont_have_account" />
 
-    <EditText
-        android:id="@+id/ed_password_login"
+<!--    <EditText-->
+<!--        android:id="@+id/ed_password_login"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="@dimen/_45sdp"-->
+<!--        android:layout_marginTop="@dimen/_10sdp"-->
+<!--        android:background="@drawable/white_background"-->
+<!--        android:fontFamily="@font/poppins_light"-->
+<!--        android:gravity="center"-->
+<!--        android:inputType="textPassword"-->
+<!--        android:hint="Password"-->
+<!--        android:autofillHints="password,new-password"-->
+<!--        android:singleLine="true"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/guideline"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/ed_email_login"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/ed_email_login" />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/filledTextField"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         android:layout_width="0dp"
         android:layout_height="@dimen/_45sdp"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:background="@drawable/white_background"
-        android:fontFamily="@font/poppins_light"
-        android:gravity="center"
-        android:hint="@string/password"
-        android:singleLine="true"
+        android:inputType="textPassword"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:boxStrokeWidth="0dp"
+        app:hintEnabled="false"
+        app:boxStrokeWidthFocused="0dp"
+        app:layout_constraintEnd_toEndOf="@+id/ed_email_login"
         app:layout_constraintStart_toStartOf="@+id/ed_email_login"
-        app:layout_constraintTop_toBottomOf="@+id/ed_email_login" />
+        app:layout_constraintTop_toBottomOf="@+id/ed_email_login"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_password_login"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:background="@android:color/transparent"
+            android:inputType="textPassword"
+            android:hint="@string/password"
+            android:gravity="center"
+
+
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/forgetPassword"
@@ -128,7 +160,7 @@
         android:textColor="@color/g_black"
         android:textSize="@dimen/_13sdp"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/ed_password_login" />
+        app:layout_constraintTop_toBottomOf="@+id/filledTextField" />
 
     <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:id="@+id/btn_login_loginFrag"
@@ -141,7 +173,7 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="@+id/ed_password_login"
+        app:layout_constraintStart_toStartOf="@+id/filledTextField"
         app:layout_constraintTop_toBottomOf="@+id/forgetPassword"
         app:spinning_bar_color="@color/white" />
 

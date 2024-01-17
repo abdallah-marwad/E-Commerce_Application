@@ -20,7 +20,7 @@ import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentRegisterBinding
-import com.abdallah.ecommerce.ui.activity.ShoppingActivity
+import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.SingleInputBottomSheet
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Constant.IS_SKIP
@@ -245,7 +245,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
                     is Resource.Success -> {
                         hideLoader()
-                        Toast.makeText(requireContext(), "successful register", Toast.LENGTH_LONG)
+                        Toast.makeText(requireContext(), "successful register", Toast.LENGTH_SHORT)
                             .show()
                         findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
                         return@collect

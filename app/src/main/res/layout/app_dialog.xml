@@ -14,16 +14,17 @@
 
         <ImageView
             android:id="@+id/imgDialog"
-            android:layout_width="@dimen/_90sdp"
-            android:layout_height="@dimen/_90sdp"
+            android:layout_width="@dimen/_105sdp"
+            android:layout_height="@dimen/_105sdp"
             android:layout_marginTop="@dimen/_6sdp"
-            android:src="@drawable/login" />
+            android:scaleType="centerInside"
+            android:src="@drawable/delete_vector" />
 
         <TextView
             android:id="@+id/dialogTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:text="Payment Failed"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"

@@ -31,6 +31,7 @@
 
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardImage"
         android:layout_width="@dimen/_25sdp"
         android:layout_height="@dimen/_25sdp"
         android:layout_alignParentStart="true"

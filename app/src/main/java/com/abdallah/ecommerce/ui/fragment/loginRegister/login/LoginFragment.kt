@@ -17,7 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentLoginBinding
-import com.abdallah.ecommerce.ui.activity.ShoppingActivity
+import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.showResetPasswordDialog
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
@@ -78,7 +78,7 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
 
                     is Resource.Success -> {
                         binding.btnLoginLoginFrag.revertAnimation()
-                        makeText(requireContext(), "successful login", Toast.LENGTH_LONG).show()
+                        makeText(requireContext(), "successful login", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(context, ShoppingActivity::class.java))
                         activity?.finish()
                     }
@@ -115,8 +115,6 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         lifecycleScope.launchWhenStarted {
             viewModel.noInternet.collect {
                 Snackbar.make(binding.imageView3 , "No Internet connection", Snackbar.LENGTH_SHORT).show()
-
-
             }
         }
 

@@ -133,22 +133,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edLastName" />
 
-    <EditText
-        android:id="@+id/edpassword"
-        style="@style/editText"
+<!--    <EditText-->
+<!--        android:id="@+id/edpassword"-->
+<!--        style="@style/editText"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginHorizontal="@dimen/_20sdp"-->
+<!--        android:layout_marginTop="@dimen/_10sdp"-->
+<!--        android:hint="@string/password"-->
+<!--        android:singleLine="true"-->
+<!--        android:maxLines="1"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/imageView"-->
+<!--        app:layout_constraintHeight_percent="0.07"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/ed_email" />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/filledTextField"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_10sdp"
-        android:hint="@string/password"
         android:singleLine="true"
         android:maxLines="1"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        android:background="@drawable/white_background"
+        android:inputType="textPassword"
+        android:textStyle="bold"
+        app:boxStrokeWidth="0dp"
+        app:hintEnabled="false"
+        app:boxStrokeWidthFocused="0dp"
         app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/ed_email" />
+        app:layout_constraintTop_toBottomOf="@+id/ed_email"
+        app:passwordToggleEnabled="true">
 
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/edpassword"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/_5sdp"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:hint="@string/password"
 
+        android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
     <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:id="@+id/btn_Register"
         style="@style/blueButtonStyle"
@@ -163,7 +192,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.07"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edpassword"
+        app:layout_constraintTop_toBottomOf="@+id/filledTextField"
         app:spinning_bar_color="@color/white" />
 
     <View

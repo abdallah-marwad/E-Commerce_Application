@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.abdallah.ecommerce.application.MyApplication
 import com.abdallah.ecommerce.data.firebase.FirebaseManager
 import com.abdallah.ecommerce.data.model.CartProduct
+import com.abdallah.ecommerce.data.model.PlusAndMinus
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.utils.InternetConnection
 import com.abdallah.ecommerce.utils.Resource
@@ -31,6 +32,9 @@ class CartViewModel @Inject constructor(
 
     private val _deleteProduct by lazy {   Channel<Resource<Boolean>>()}
     val deleteProduct: Flow<Resource<Boolean>> = _deleteProduct.receiveAsFlow()
+
+    private val _changeCartProductCount by lazy {   Channel<Resource<PlusAndMinus>>()}
+    val changeCartProductCount: Flow<Resource<PlusAndMinus>> = _changeCartProductCount.receiveAsFlow()
 
     private val _noInternet by lazy {   Channel<Boolean>()}
     val noInternet: Flow<Boolean> = _noInternet.receiveAsFlow()
@@ -66,6 +70,31 @@ class CartViewModel @Inject constructor(
             viewModelScope.launch { _deleteProduct.send(Resource.Success(true))}
         }.addOnFailureListener {
             viewModelScope.launch {_deleteProduct.send(Resource.Failure(it.message))}
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun changeCartProductCount(
+        docID: String,
+        productID: String,
+        newValue : Int,
+        state : PlusAndMinus
+    ) {
+        if(!InternetConnection().hasInternetConnection(MyApplication.myAppContext)){
+            viewModelScope.launch {_noInternet.send(true)}
+            return
+        }
+        viewModelScope.launch { _changeCartProductCount.send(Resource.Loading())}
+        val hashMap = HashMap<String , Any>()
+        hashMap["quantity"] = newValue
+        FirebaseManager.changeCartProductCount(
+            fireStore,
+            hashMap,
+            docID,
+            productID
+            ).addOnSuccessListener {
+            viewModelScope.launch { _changeCartProductCount.send(Resource.Success(state))}
+        }.addOnFailureListener {
+            viewModelScope.launch {_changeCartProductCount.send(Resource.Failure(it.message))}
         }
     }
 

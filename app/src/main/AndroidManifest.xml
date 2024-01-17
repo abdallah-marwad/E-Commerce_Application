@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.ShoppingActivity"
+            android:name=".ui.activity.shopping.ShoppingActivity"
             android:exported="true"
             android:screenOrientation="portrait">
         </activity>

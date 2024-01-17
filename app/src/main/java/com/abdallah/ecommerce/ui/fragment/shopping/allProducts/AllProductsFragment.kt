@@ -10,26 +10,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.transition.Fade
-import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.FragmentAllProductsBinding
-import com.abdallah.ecommerce.ui.activity.ShoppingActivity
+import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllCategoriesAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllProductsAdapter
-import com.abdallah.ecommerce.ui.fragment.shopping.home.ShoppingHomeFragmentDirections
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
@@ -38,14 +30,12 @@ import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick , AllProductsAdapter.AllProductsOnClick{
 
     lateinit var binding: FragmentAllProductsBinding
-    private var parent: ConstraintLayout? = null
     var categoriesAdapter : AllCategoriesAdapter? = null
     var registerCallback = true
     private val appDialog by lazy { AppDialog() }
@@ -186,7 +176,7 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     override fun cartOnClick(productId: String, product: Product) {
         if(firebaseAuth.currentUser == null){
             AppDialog().showingRegisterDialogIfNotRegister(
-                Constant.COULDNOT_ADD_TO_CART,
+                Constant.COULDNOT_DO_THIS_ACTON,
                 Constant.PLS_LOGIN
             )
             return
@@ -232,11 +222,6 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
 
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        parent = binding.parentArea
-        parent = null
 
-    }
 
 }

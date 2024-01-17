@@ -7,14 +7,13 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
+import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.utils.Constant
-import com.abdallah.ecommerce.utils.LangHelper
 import com.abdallah.ecommerce.utils.LangHelper.makeLangEn
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint

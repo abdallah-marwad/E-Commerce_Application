@@ -10,7 +10,7 @@ object Constant {
     const val BEST_DEALS_TRANSACTION_NAME = "best deals transition"
     const val IS_LOGGED_IN = "is logged in"
     const val PRODUCT_TRANSITION_NAME = "product details transition"
-    const val COULDNOT_ADD_TO_CART = "Couldn't add item to cart"
+    const val COULDNOT_DO_THIS_ACTON = "Couldn't do this action"
     const val PLS_LOGIN = "Please login first before taking this action"
     const val IS_SKIP = "is skip"
     const val USER_DATA = "user data"

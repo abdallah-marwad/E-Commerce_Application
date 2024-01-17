@@ -1,20 +1,22 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.productDetails.fragment
 
-import android.net.Uri
+import android.media.Image
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.application.MyApplication
 import com.abdallah.ecommerce.databinding.FragmentProductImagesBinding
-import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
 import com.abdallah.ecommerce.utils.CustomShimmerDrawable
 import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
+import com.stfalcon.imageviewer.StfalconImageViewer
 
 class ProductImagesFragment() : Fragment() {
 
-    lateinit var imgUri : String
+    lateinit var imgUri: String
     private lateinit var binding: FragmentProductImagesBinding
 
     constructor(imgUri: String) : this() {
@@ -37,6 +39,13 @@ class ProductImagesFragment() : Fragment() {
             .error(R.drawable.err_banner)
             .into(binding.productImages)
 
+        binding.productImages.setOnClickListener {
+            val listimages = listOf(imgUri)
+            StfalconImageViewer.Builder(context, listimages) { view, image ->
+                Picasso.get().load(image)
+                    .into(view)
+            }.show()
+        }
     }
 
 }

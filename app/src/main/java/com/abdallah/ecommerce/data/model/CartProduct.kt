@@ -2,9 +2,10 @@ package com.abdallah.ecommerce.data.model
 
 class CartProduct(
     val product: Product,
-    val quantity: Int,
+    var quantity: Int,
     val color: Int,
-    val size: String
+    val size: String,
+    var isChecked: Boolean = false
 ){
     constructor() : this(Product() , 1 , 1 , "")
 }

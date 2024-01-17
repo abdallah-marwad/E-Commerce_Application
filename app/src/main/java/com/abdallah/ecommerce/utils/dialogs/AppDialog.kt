@@ -97,8 +97,9 @@ class AppDialog {
         progressDialog.show()
     }
     fun dismissProgress(){
-        if (progressDialog?.isShowing == true)
-            progressDialog?.dismiss()
+        if (progressDialog != null )
+            if( progressDialog.isShowing )
+                progressDialog.dismiss()
     }
 
 }

@@ -140,8 +140,10 @@ dependencies {
     implementation "com.airbnb.android:lottie:3.4.1"
 //
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:3.0-alpha-1'
-    // Draw On Swipe RV
-//    implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
+//     Draw On Swipe RV
+    implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
+    // img viewer
+    implementation 'com.github.stfalcon-studio:StfalconImageViewer:v1.0.1'
 
 
 }

@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+<include
+    android:id="@+id/appbar"
+    android:layout_height="@dimen/_50sdp"
+    android:layout_width="match_parent"
+    layout="@layout/appbar"/>
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
     android:fillViewport="true"
     android:padding="@dimen/_12sdp">
 
@@ -12,54 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_cart"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-             >
-                <ImageView
-                    android:id="@+id/img_close_cart"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:src="@drawable/ic_close"
-                    android:scaleType="centerInside"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:fontFamily="@font/poppins_thin"
-                    android:text="My Cart"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_20ssp"
-                    app:layout_constraintBottom_toBottomOf="@id/img_close_cart"
-                    app:layout_constraintStart_toEndOf="@id/img_close_cart"
-                    app:layout_constraintTop_toTopOf="@id/img_close_cart" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.appcompat.widget.Toolbar>
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminateTint="@color/g_gray500"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_cart" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_cart"
@@ -67,11 +30,11 @@
             android:layout_height="0dp"
             tools:listitem="@layout/cart_product_item"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:layout_marginVertical="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toTopOf="@+id/linear"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progress_plus_minus" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/total_box_background"
+            android:animateLayoutChanges="true"
             app:layout_constraintBottom_toTopOf="@+id/btn_checkout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,9 +73,9 @@
                 android:layout_marginTop="@dimen/_15sdp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="@dimen/_15sdp"
-                android:fontFamily="@font/sf_pro_display"
+                android:fontFamily="@font/poppins_thin"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_16ssp"
+                android:textSize="@dimen/_14ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -147,7 +111,7 @@
             android:gravity="center"
             android:text="Your Shopping Cart Is Empty"
             android:textColor="@color/black"
-            android:textSize="@dimen/_15ssp"
+            android:textSize="@dimen/_12ssp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/img_empty_box_texture"
             app:layout_constraintStart_toStartOf="@id/img_empty_box_texture"
@@ -162,8 +126,8 @@
             app:layout_constraintBottom_toBottomOf="@id/img_empty_box"
             app:layout_constraintEnd_toEndOf="@id/img_empty_box"
             app:layout_constraintStart_toStartOf="@id/img_empty_box"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_cart"
-            app:layout_constraintTop_toTopOf="@id/img_empty_box" />
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <ImageView
             android:id="@+id/img_empty_box"
@@ -174,21 +138,11 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_cart" />
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progress_plus_minus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_cart" />
-
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.core.widget.NestedScrollView>
+</LinearLayout>
