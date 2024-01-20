@@ -35,7 +35,6 @@ class ShoppingHomeViewModel @Inject constructor(
     val downloadImage: DownloadImage,
     val firestore: FirebaseFirestore,
     val addProductToCart : AddProductToCart
-
 ) : AndroidViewModel(application) {
 
 
@@ -100,14 +99,13 @@ class ShoppingHomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _categoryList.emit(Resource.Loading())
         }
-
         val collectionReference = firestore.collection("category")
         collectionReference.get()
             .addOnSuccessListener { document ->
-
                 if (!document.isEmpty) {
                     var dataCat: ArrayList<Category> = document.toObjects(Category::class.java) as ArrayList<Category>
                     viewModelScope.launch(Dispatchers.IO) {
+                        Log.d("test", " _categoryList.emit(Resource.Success(dataCat))")
                         _categoryList.emit(Resource.Success(dataCat))
                     }
                 }

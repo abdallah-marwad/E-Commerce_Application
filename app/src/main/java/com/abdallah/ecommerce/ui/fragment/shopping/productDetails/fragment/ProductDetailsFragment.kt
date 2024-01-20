@@ -11,7 +11,9 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -38,6 +40,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -47,11 +50,11 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
     private lateinit var binding: FragmentProductDetailsBinding
     private lateinit var product: Product
 
-    private val ratingDialog by lazy {RatingDialog()}
+    private val ratingDialog by lazy { RatingDialog() }
     private lateinit var reviewsAdapter: ReviewsAdapter
     private var updateWhenBack = false
     private var selectedColor = -2
-    private var selectedSize = ""
+    private var selectedSize: String? = null
     private lateinit var colorsAdapter: ColorsAdapter
 
     @Inject
@@ -90,6 +93,7 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         showProductMainImage()
         noInternetCallback()
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     private fun fragmentOnclick() {
         binding.toolbar.icBack.setOnClickListener {
@@ -122,7 +126,7 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
                 )
                 return@setOnClickListener
             }
-           if (validateColorAndSizeSelections())
+            if (validateColorAndSizeSelections())
                 addProductToCart()
         }
     }
@@ -135,7 +139,7 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
                 .show()
             isSelected = false
         }
-        if (selectedSize == "") {
+        if (selectedSize == null) {
             binding.tvSizeError.visibility = View.VISIBLE
             Snackbar.make(binding.nestedParent, "Select size", Toast.LENGTH_SHORT)
                 .show()
@@ -143,39 +147,57 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         }
         return isSelected
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     private fun addProductToCart() {
         viewModel.addProductToCart(
             firebaseAuth.currentUser?.uid ?: "",
             product,
-            selectedColor ,
-            selectedSize
+            selectedColor,
+            selectedSize!!
         )
     }
+
     private fun addProductToCartCallback() {
-        lifecycleScope.launchWhenResumed {
-            viewModel.addToCartFlow.collect{
-                when (it) {
-                    is Resource.Success -> {
-                        binding.btnAddToCart.revertAnimation()
-                        Toast.makeText(context, "Product added successfully", Toast.LENGTH_LONG).show()
-                    }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.addToCartFlow.collect {
+                    when (it) {
+                        is Resource.Success -> {
+                            binding.btnAddToCart.revertAnimation()
+                            Toast.makeText(context, "Product added successfully", Toast.LENGTH_LONG)
+                                .show()
+                        }
 
-                    is Resource.Loading -> {
-                       binding.btnAddToCart.startAnimation()
-                    }
+                        is Resource.Loading -> {
+                            binding.btnAddToCart.startAnimation()
+                        }
 
-                    is Resource.Failure -> {
-                        binding.btnAddToCart.revertAnimation()
-                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                        Log.d("test" , "addProductToCartCallback "+it.message)
-                    }
+                        is Resource.Failure -> {
+                            binding.btnAddToCart.revertAnimation()
+                            Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                            Log.d("test", "addProductToCartCallback " + it.message)
+                        }
 
-                    else -> {}
+                        else -> {}
+                    }
                 }
             }
         }
+    }
 
+    private fun noInternetCallback() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.noInternet.collect {
+                    Snackbar.make(
+                        binding.nestedParent,
+                        "No Internet connection",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun addReview(comment: String, rating: Float) {
@@ -290,6 +312,8 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         sizesList?.forEach {
             sizesModelList.add(SizesModel(it, false))
         }
+        if (sizesModelList.isEmpty())
+            selectedSize = ""
         val sizesAdapter = ColorsAdapter(null, sizesModelList, this)
         binding.rvSizes.adapter = sizesAdapter
         RecyclerAnimation.animateRecycler(binding.rvSizes)
@@ -335,9 +359,4 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
 
     }
 
-    private fun noInternetCallback() {
-        viewModel.noInternet.observe(viewLifecycleOwner){
-            Snackbar.make(binding.nestedParent , "No Internet connection", Snackbar.LENGTH_SHORT).show()
-        }
-    }
 }

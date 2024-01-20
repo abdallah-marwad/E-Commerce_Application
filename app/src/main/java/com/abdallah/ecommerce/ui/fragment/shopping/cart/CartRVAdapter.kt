@@ -2,7 +2,6 @@ package com.abdallah.ecommerce.ui.fragment.shopping.cart
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,7 +59,13 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
             binding.imageCartProductColor.setImageDrawable(
                 ColorDrawable(item.color)
             )
-            binding.tvCartProductSize.text = item.size
+            if (item.size.isEmpty())
+                binding.tvCartProductSize.visibility = View.GONE
+            else {
+                binding.tvCartProductSize.text = item.size
+                binding.tvCartProductSize.visibility = View.VISIBLE
+
+            }
             binding.tvCartProductQuantity.text = item.quantity.toString()
             binding.tvProductCartPrice.text = newPrice.toString()
             binding.checkBox.isChecked = item.isChecked

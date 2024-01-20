@@ -3,15 +3,16 @@ package com.abdallah.ecommerce.ui.fragment.shopping.allProducts
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
@@ -23,22 +24,25 @@ import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllCategoriesAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllProductsAdapter
 import com.abdallah.ecommerce.utils.Constant
-import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.Resource
+import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.animation.ViewAnimation
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick , AllProductsAdapter.AllProductsOnClick{
+class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick,
+    AllProductsAdapter.AllProductsOnClick {
 
     lateinit var binding: FragmentAllProductsBinding
-    var categoriesAdapter : AllCategoriesAdapter? = null
+    var categoriesAdapter: AllCategoriesAdapter? = null
     var registerCallback = true
     private val appDialog by lazy { AppDialog() }
+
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
     private val args: AllProductsFragmentArgs by navArgs()
@@ -68,24 +72,34 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     }
 
     private fun noInternetCallback() {
-        viewModel.noInternet.observe(viewLifecycleOwner){
-            Snackbar.make(binding.productRv , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.noInternet.collect {
+                    Snackbar.make(
+                        binding.productRv,
+                        "No Internet connection",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
-    private fun fragmentOnclick(){
+    private fun fragmentOnclick() {
         binding.toolbar.icBack.setOnClickListener {
             Navigation.findNavController(requireView()).popBackStack()
             categoriesAdapter?.removeSelectedItem()
         }
     }
-    private fun setAppbarTitle(){
+
+    private fun setAppbarTitle() {
         binding.toolbar.title.text = "All Products"
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initAllCategoriesRv() {
         args.categories ?: return
-         categoriesAdapter = AllCategoriesAdapter(args.categories!!, this)
+        categoriesAdapter = AllCategoriesAdapter(args.categories!!, this)
         binding.categoriesRv.adapter = categoriesAdapter
         RecyclerAnimation.animateRecycler(binding.categoriesRv)
         categoriesAdapter?.notifyDataSetChanged()
@@ -97,7 +111,7 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     }
 
     private fun initAllProductsRv(data: ArrayList<Product>) {
-        val allProductsAdapter = AllProductsAdapter(data , this)
+        val allProductsAdapter = AllProductsAdapter(data, this)
         binding.productRv.adapter = allProductsAdapter
         RecyclerAnimation.animateRecycler(binding.productRv)
         allProductsAdapter.notifyDataSetChanged()
@@ -107,13 +121,17 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getProduct(categoryName: String) {
         viewModel.getProductsByCategory(categoryName)
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productsFlow.collect { result ->
                     when (result) {
                         is Resource.Success -> {
                             stopProductShimmer()
                             if (result.data!!.isEmpty()) {
-                                ViewAnimation().viewAnimation(binding.noProducts ,binding.parentArea)
+                                ViewAnimation().viewAnimation(
+                                    binding.noProducts,
+                                    binding.parentArea
+                                )
                                 binding.noProducts.visibility = View.VISIBLE
                             }
                             initAllProductsRv(result.data)
@@ -138,7 +156,7 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
                 }
             }
         }
-
+    }
 
 
     private fun stopProductShimmer() {
@@ -174,7 +192,7 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun cartOnClick(productId: String, product: Product) {
-        if(firebaseAuth.currentUser == null){
+        if (firebaseAuth.currentUser == null) {
             AppDialog().showingRegisterDialogIfNotRegister(
                 Constant.COULDNOT_DO_THIS_ACTON,
                 Constant.PLS_LOGIN
@@ -183,45 +201,47 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick 
         }
         addProductToCart(product)
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun addProductToCart(product : Product) {
+    private fun addProductToCart(product: Product) {
         viewModel.addProductToCart(
             firebaseAuth.currentUser?.uid ?: "",
             product,
-            -1 ,
+            -1,
             ""
         )
     }
 
     private fun addProductToCartCallback() {
-        if (registerCallback.not())
-            return
-        registerCallback = false
-        lifecycleScope.launchWhenResumed {
-            viewModel.addToCartFlow.collect{
-                when (it) {
-                    is Resource.Success -> {
-                        appDialog.dismissProgress()
-                        Toast.makeText(context, "Product added successfully", Toast.LENGTH_SHORT).show()
-                    }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.addToCartFlow.collect {
+                    when (it) {
+                        is Resource.Success -> {
+                            appDialog.dismissProgress()
+                            Toast.makeText(
+                                context,
+                                "Product added successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                    is Resource.Loading -> {
-                        appDialog.showProgressDialog()
-                    }
+                        is Resource.Loading -> {
+                            appDialog.showProgressDialog()
+                        }
 
-                    is Resource.Failure -> {
-                        appDialog.dismissProgress()
-                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                        Log.d("test" , "addProductToCartCallback "+it.message)
-                    }
+                        is Resource.Failure -> {
+                            appDialog.dismissProgress()
+                            Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                            Log.d("test", "addProductToCartCallback " + it.message)
+                        }
 
-                    else -> {}
+                        else -> {}
+                    }
                 }
             }
         }
-
     }
-
 
 
 }

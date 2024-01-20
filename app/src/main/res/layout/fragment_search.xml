@@ -22,31 +22,56 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/_45sdp"
         android:layout_marginHorizontal="@dimen/_10sdp"
-        app:endIconMode="clear_text"
         android:layout_marginTop="@dimen/_8sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:startIconDrawable="@drawable/ic_search"
-        app:boxCornerRadiusBottomStart="@dimen/_8sdp"
         app:boxCornerRadiusBottomEnd="@dimen/_8sdp"
+        app:boxCornerRadiusBottomStart="@dimen/_8sdp"
         app:boxCornerRadiusTopEnd="@dimen/_8sdp"
         app:boxCornerRadiusTopStart="@dimen/_8sdp"
-        >
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toStartOf="@+id/cardView2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:startIconDrawable="@drawable/ic_search">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/searchEd"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40sdp"
+            android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:hint="Search"
-            android:singleLine="true"
-            android:maxLines="1"
-            android:ellipsize="end"
             android:imeOptions="actionSearch"
             android:inputType="text"
-            />
+            android:maxLines="1"
+            android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/filledTextField"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:background="@drawable/btn_bg_ripple"
+        android:backgroundTint="@color/secondary_color"
+
+        android:layout_marginTop="@dimen/_4sdp"
+        app:cardCornerRadius="@dimen/_8sdp"
+        app:layout_constraintTop_toTopOf="@+id/filledTextField"
+        app:layout_constraintWidth_percent="0.13">
+
+        <ImageView
+            android:id="@+id/img_mic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/_10sdp"
+            app:tint="@color/white"
+            android:src="@drawable/ic_microphone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintWidth_percent="0.13" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/recyclerTitle"
@@ -67,7 +92,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recyclerTitle"
-        tools:listitem="@layout/all_products_item"
+        tools:listitem="@layout/search_history_item"
         />
 
     <ImageView
@@ -94,4 +119,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/noProductsImg" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

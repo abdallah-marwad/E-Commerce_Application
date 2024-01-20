@@ -1,28 +1,22 @@
 package com.abdallah.ecommerce.utils.dialogs
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
-import android.view.Window
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.application.MyApplication
-import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
-import com.abdallah.ecommerce.utils.Constant
-import java.util.Objects
 
 class AppDialog {
     private lateinit var customDialog: AlertDialog
-    private lateinit var progressDialog: Dialog
+    lateinit var progressDialog: Dialog
 
     fun showDialog(
         title: String,

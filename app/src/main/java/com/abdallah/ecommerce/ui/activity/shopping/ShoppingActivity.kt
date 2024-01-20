@@ -1,12 +1,10 @@
 package com.abdallah.ecommerce.ui.activity.shopping
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.fragment.app.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -14,7 +12,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.databinding.ActivityShoppingBinding
-import com.abdallah.ecommerce.ui.fragment.shopping.home.ShoppingHomeViewModel
 import com.abdallah.ecommerce.utils.LangHelper
 import com.abdallah.ecommerce.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
@@ -59,20 +56,20 @@ class ShoppingActivity : AppCompatActivity() {
                     when (it) {
                         is Resource.Success -> {
                             binding.bottomNavigation.getOrCreateBadge(R.id.cartFragment).apply {
-                                backgroundColor = resources.getColor(R.color.g_dark_blue)
-                                number = it.data?:0
+                                backgroundColor = resources.getColor(R.color.secondary_color)
+                                number = it.data ?: 0
                             }
                         }
 
                         is Resource.Failure -> {
                             binding.bottomNavigation.getOrCreateBadge(R.id.cartFragment).apply {
-                                backgroundColor = resources.getColor(R.color.g_dark_blue)
+                                backgroundColor = resources.getColor(R.color.secondary_color)
                             }
                         }
 
                         is Resource.Loading -> {
                             binding.bottomNavigation.getOrCreateBadge(R.id.cartFragment).apply {
-                                backgroundColor = resources.getColor(R.color.g_dark_blue)
+                                backgroundColor = resources.getColor(R.color.secondary_color)
                             }
                         }
 

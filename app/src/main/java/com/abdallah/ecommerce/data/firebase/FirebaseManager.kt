@@ -1,17 +1,9 @@
 package com.abdallah.ecommerce.data.firebase
 
 import com.abdallah.ecommerce.data.model.CartProduct
-import com.abdallah.ecommerce.data.model.Product
-import com.abdallah.ecommerce.data.model.RatingModel
 import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.utils.Constant
-
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import javax.inject.Inject
 
 object FirebaseManager {
 
@@ -104,17 +96,7 @@ object FirebaseManager {
     ) =
         firestore.collection("users").document(docID).collection("cart")
 
-    fun getProductFromSearch(
+    fun getAllProducts(
         firestore: FirebaseFirestore,
-        searchWord: String,
-    ) = firestore.collection("products").whereIn("productName", listOf(searchWord)).get()
-
-    fun searchProducts(
-        firestore: FirebaseFirestore,
-        searchQuery: String
-    ) = firestore.collection("products")
-        .orderBy("productName")
-        .startAt(searchQuery)
-        .endAt("\u03A9+$searchQuery")
-        .get()
+    ) = firestore.collection("products").get()
 }
