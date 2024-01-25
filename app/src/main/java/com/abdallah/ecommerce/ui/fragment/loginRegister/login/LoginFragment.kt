@@ -1,6 +1,7 @@
 package com.abdallah.ecommerce.ui.fragment.loginRegister.login
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +13,9 @@ import android.widget.Toast.makeText
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
@@ -21,9 +24,12 @@ import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.utils.BottomSheets.showResetPasswordDialog
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
+import com.abdallah.ecommerce.utils.SmsBroadcastReceiver
 import com.abdallah.ecommerce.utils.validation.ValidationState
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -56,7 +62,6 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
         resetPasswordCallBack()
         fragOnClick()
     }
-
     private fun fragOnClick() {
         binding.skip.setOnClickListener {
             SharedPreferencesHelper.addBoolean(Constant.IS_SKIP, true)
@@ -75,21 +80,17 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
                     is Resource.Loading -> {
                         binding.btnLoginLoginFrag.startAnimation()
                     }
-
                     is Resource.Success -> {
                         binding.btnLoginLoginFrag.revertAnimation()
                         makeText(requireContext(), "successful login", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(context, ShoppingActivity::class.java))
                         activity?.finish()
                     }
-
                     is Resource.Failure -> {
                         binding.btnLoginLoginFrag.revertAnimation()
                         makeText(requireContext(), loginResult.message, Toast.LENGTH_LONG)
                             .show()
-
                     }
-
                     else -> {}
                 }
             }
@@ -114,34 +115,36 @@ class LoginFragment : Fragment(R.layout.fragment_login), View.OnClickListener {
     private fun noInternetCallBack() {
         lifecycleScope.launchWhenStarted {
             viewModel.noInternet.collect {
-                Snackbar.make(binding.imageView3 , "No Internet connection", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.imageView3, "No Internet connection", Snackbar.LENGTH_SHORT)
+                    .show()
             }
         }
 
     }
 
     private fun resetPasswordCallBack() {
-        lifecycleScope.launchWhenStarted {
-            viewModel.resetPassword.collect { state ->
-                when (state) {
-                    is Resource.Success -> {
-                        state.data?.let {
-                            Snackbar.make(binding.forgetPassword, it, Toast.LENGTH_LONG)
-                                .show()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.resetPassword.collect { state ->
+                    when (state) {
+                        is Resource.Success -> {
+                            state.data?.let {
+                                Snackbar.make(binding.forgetPassword, it, Snackbar.LENGTH_SHORT)
+                                    .show()
+                            }
                         }
-                    }
 
-                    is Resource.UnSpecified -> {}
-                    is Resource.Loading -> {}
-                    is Resource.Failure -> {
-                        state.message?.let {
-                            Snackbar.make(binding.forgetPassword, it, Toast.LENGTH_LONG)
-                                .show()
+                        is Resource.UnSpecified -> {}
+                        is Resource.Loading -> {}
+                        is Resource.Failure -> {
+                            state.message?.let {
+                                Snackbar.make(binding.forgetPassword, it, Snackbar.LENGTH_SHORT)
+                                    .show()
+                            }
                         }
-                    }
 
+                    }
                 }
-
             }
         }
 

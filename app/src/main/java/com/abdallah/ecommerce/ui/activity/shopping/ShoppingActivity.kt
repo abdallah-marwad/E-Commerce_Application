@@ -42,10 +42,7 @@ class ShoppingActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         binding.bottomNavigation.setupWithNavController(navHostFragment.navController)
     }
-     fun hideNavBar() {
-         binding.bottomNavigation.visibility = View.GONE
 
-     }
     fun showNavBar() {
        binding.bottomNavigation.visibility = View.VISIBLE
     }

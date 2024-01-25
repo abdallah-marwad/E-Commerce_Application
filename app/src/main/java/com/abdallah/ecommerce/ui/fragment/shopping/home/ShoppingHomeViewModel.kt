@@ -40,14 +40,14 @@ class ShoppingHomeViewModel @Inject constructor(
 
     val addToCartFlow = addProductToCart.addToCartFlow
     val noInternetAddProduct = addProductToCart.noInternet
-    private val _imageList = MutableStateFlow<Resource<ArrayList<Uri>>>(Resource.UnSpecified())
-    val imageList: Flow<Resource<ArrayList<Uri>>> = _imageList
+    private val _imageList = Channel<Resource<ArrayList<Uri>>>()
+    val imageList: Flow<Resource<ArrayList<Uri>>> = _imageList.receiveAsFlow()
     private val _categoryList =
-        MutableStateFlow<Resource<ArrayList<Category>>>(Resource.UnSpecified())
-    val categoryList: Flow<Resource<ArrayList<Category>>> = _categoryList
+        Channel<Resource<ArrayList<Category>>>()
+    val categoryList: Flow<Resource<ArrayList<Category>>> = _categoryList.receiveAsFlow()
     private val _offeredProducts =
-        MutableStateFlow<Resource<ArrayList<Product>>>(Resource.UnSpecified())
-    val offeredProducts: Flow<Resource<ArrayList<Product>>> = _offeredProducts
+        Channel<Resource<ArrayList<Product>>>()
+    val offeredProducts: Flow<Resource<ArrayList<Product>>> = _offeredProducts.receiveAsFlow()
 
     private val _noInternet = Channel<Boolean>()
     val noInternet = _noInternet.receiveAsFlow()
@@ -56,12 +56,12 @@ class ShoppingHomeViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.M)
     fun downloadBannerImages() {
         viewModelScope.launch(Dispatchers.IO) {
-            _imageList.emit(Resource.Loading())}
+            _imageList.send(Resource.Loading())}
             downloadImage.downloadAllImages(Constant.HOME_BANNER_BATH)
                 .addOnSuccessListener { result ->
                     result?.let {
                         viewModelScope.launch(Dispatchers.IO) {
-                            _imageList.emit(
+                            _imageList.send(
                                 Resource.Success(
                                     downloadImagesFromListResult(
                                         it
@@ -72,7 +72,7 @@ class ShoppingHomeViewModel @Inject constructor(
                     }
                 }
                 .addOnFailureListener {
-                    runBlocking { _imageList.emit(Resource.Failure(
+                    runBlocking { _imageList.send(Resource.Failure(
                         handleFireBaseException(it)
                     )) }
                 }
@@ -97,7 +97,7 @@ class ShoppingHomeViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.M)
     fun getCategories() {
         viewModelScope.launch(Dispatchers.IO) {
-            _categoryList.emit(Resource.Loading())
+            _categoryList.send(Resource.Loading())
         }
         val collectionReference = firestore.collection("category")
         collectionReference.get()
@@ -105,14 +105,13 @@ class ShoppingHomeViewModel @Inject constructor(
                 if (!document.isEmpty) {
                     var dataCat: ArrayList<Category> = document.toObjects(Category::class.java) as ArrayList<Category>
                     viewModelScope.launch(Dispatchers.IO) {
-                        Log.d("test", " _categoryList.emit(Resource.Success(dataCat))")
-                        _categoryList.emit(Resource.Success(dataCat))
+                        _categoryList.send(Resource.Success(dataCat))
                     }
                 }
             }
             .addOnFailureListener { exception ->
                 viewModelScope.launch(Dispatchers.IO) {
-                    _categoryList.emit(Resource.Failure(exception.message))
+                    _categoryList.send(Resource.Failure(exception.message))
                 }
             }
 
@@ -121,16 +120,16 @@ class ShoppingHomeViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun getOfferedProducts() = viewModelScope.launch(Dispatchers.IO) {
-        _offeredProducts.emit(Resource.Loading())
+        _offeredProducts.send(Resource.Loading())
         try {
             val products = ArrayList<Product>()
             val querySnapshot = FirebaseManager.getOfferedProducts(firestore).await()
             querySnapshot.documents.forEach {
                 it.toObject<Product>()?.let { product -> products.add(product) }
             }
-            _offeredProducts.emit(Resource.Success(products))
+            _offeredProducts.send(Resource.Success(products))
         }catch (e: Exception) {
-            _offeredProducts.emit(Resource.Failure(e.message))
+            _offeredProducts.send(Resource.Failure(e.message))
         }
     }
     @RequiresApi(Build.VERSION_CODES.M)

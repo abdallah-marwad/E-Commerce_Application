@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -23,13 +24,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import com.abdallah.ecommerce.application.core.BaseFragment
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentSearchBinding
+import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllProductsAdapter
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
+import com.abdallah.ecommerce.utils.animation.RvSwipe
 import com.abdallah.ecommerce.utils.animation.ViewAnimation
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.android.material.snackbar.Snackbar
@@ -41,14 +46,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 import java.util.Objects
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
+class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter.AllProductsOnClick,
     RecentSearchAdapter.HistoryOnClick {
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
@@ -56,28 +63,18 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
     private val RECENT_SEARCH = "Recent Search"
     private val PRODUCTS = "Products"
     private val REQUEST_CODE_SPEECH_INPUT = 10
-    private var registerCallback = true
+    private var edCallback:TextWatcher ? = null
+    private var enableSearchHistory = true
     private var recentSearch: MutableSet<String>? = null
-    private lateinit var binding: FragmentSearchBinding
-    private val appDialog by lazy { AppDialog() }
 
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentSearchBinding.inflate(inflater)
-        return binding.root
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        getAllProducts()
         searchCallBack()
         noInternetCallBack()
+        initEdCallback()
         fragOnClick()
         addProductToCartCallback()
     }
@@ -86,11 +83,14 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
     override fun onStart() {
         super.onStart()
         if (binding.searchEd.text.toString().isNotEmpty()) {
-            hideKeyboardAutomatically()
-            searchWithFilter(binding.searchEd.text.toString())
             return
         }
         getRecentSearch()?.let { initHistoryRv(ArrayList(it)) }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        enableSearchHistory = false
     }
 
     private fun initViews() {
@@ -110,12 +110,14 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
         binding.noProductsTxt.text = label
         binding.noProductsTxt.visibility = View.VISIBLE
         binding.noProductsImg.visibility = View.VISIBLE
+        binding.recyclerViewProducts.visibility = View.INVISIBLE
+        binding.recyclerViewHistory.visibility = View.INVISIBLE
+
     }
 
     private fun hideFailImgWithLabel() {
         binding.noProductsTxt.visibility = View.GONE
         binding.noProductsImg.visibility = View.GONE
-        binding.recyclerView.visibility = View.VISIBLE
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -148,70 +150,87 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
         val toJson = Gson().toJson(recentSearch)
         SharedPreferencesHelper.addString(RECENT_SEARCH, toJson)
         return
-
-
     }
 
     private fun initHistoryRv(data: ArrayList<String>) {
         if (data.isEmpty()) {
-            binding.recyclerView.visibility = View.GONE
+            binding.recyclerViewProducts.visibility = View.GONE
+            binding.recyclerViewHistory.visibility = View.GONE
             showFailImgWithLabel("Not Found History Search")
+            binding.recyclerTitle.text = RECENT_SEARCH
+
             return
+        }else{
+            binding.recyclerViewHistory.visibility = View.VISIBLE
+            binding.recyclerViewProducts.visibility = View.GONE
+            binding.recyclerTitle.text = RECENT_SEARCH
+
         }
         hideFailImgWithLabel()
         val adapter = RecentSearchAdapter(data, this)
-        binding.recyclerView.adapter = adapter
-        RecyclerAnimation.animateRecycler(binding.recyclerView)
+        binding.recyclerViewHistory.adapter = adapter
+        val itemTouchHelper = ItemTouchHelper(onSwipe(adapter))
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewHistory)
         adapter.notifyDataSetChanged()
-        binding.recyclerView.scheduleLayoutAnimation()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun searchCallBack() {
-        if (registerCallback.not())
-            return
-        registerCallback = false
-        viewModel.searchProducts.observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is Resource.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    viewModel.products = result.data
-                    if (binding.searchEd.text.toString().isNotEmpty()) {
-                        hideKeyboardAutomatically()
-                        searchWithFilter(binding.searchEd.text.toString())
-                        return@observe
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchProducts.collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            binding.progressBar.visibility = View.GONE
+                            viewModel.products = result.data
+                            if (binding.searchEd.text.toString().isNotEmpty()) {
+                                hideKeyboardAutomatically()
+                                searchProductsWithFilter(binding.searchEd.text.toString())
+                                return@collect
+                            }
+                        }
+
+                        is Resource.Failure -> {
+                            binding.progressBar.visibility = View.GONE
+                            Toast.makeText(
+                                context, "Error occured " + result.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                        is Resource.Loading -> {
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.recyclerViewHistory.visibility = View.GONE
+                            binding.recyclerViewProducts.visibility = View.GONE
+
+                        }
+
+                        else -> {}
                     }
                 }
-
-                is Resource.Failure -> {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(
-                        context, "Error occured " + result.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                is Resource.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-
-                else -> {}
             }
         }
     }
 
     private fun initProductsRv(data: ArrayList<Product>) {
         if (data.isEmpty()) {
-            binding.recyclerView.visibility = View.GONE
+            binding.recyclerViewProducts.visibility = View.GONE
+            binding.recyclerViewHistory.visibility = View.GONE
             showFailImgWithLabel("No products founded")
+            binding.recyclerTitle.text = PRODUCTS
             return
+        }else{
+            binding.recyclerViewProducts.visibility = View.VISIBLE
+            binding.recyclerViewHistory.visibility = View.GONE
+            binding.recyclerTitle.text = PRODUCTS
+
         }
         hideFailImgWithLabel()
         val allProductsAdapter = AllProductsAdapter(data, this)
-        binding.recyclerView.adapter = allProductsAdapter
-        RecyclerAnimation.animateRecycler(binding.recyclerView)
+        binding.recyclerViewProducts.adapter = allProductsAdapter
+        RecyclerAnimation.animateRecycler(binding.recyclerViewProducts)
         allProductsAdapter.notifyDataSetChanged()
-        binding.recyclerView.scheduleLayoutAnimation()
+        binding.recyclerViewProducts.scheduleLayoutAnimation()
     }
 
     private fun hideKeyboardAutomatically() {
@@ -222,7 +241,7 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun searchWithFilter(searchTxt: String) {
+    private fun searchProductsWithFilter(searchTxt: String) {
         if (viewModel.products == null) {
             getAllProducts()
             return
@@ -235,7 +254,34 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
             viewModel.products!!.filter {
                 it.productName!!.lowercase().contains(searchTxt.lowercase())
             } as ArrayList<Product>
+
+        if (searchProducts.isEmpty()) {
+            showFailImgWithLabel("No products found")
+        }
         initProductsRv(searchProducts)
+    }
+
+    private fun searchHistoryWithFilter(searchTxt: String) {
+        if (recentSearch == null) {
+            recentSearch = Gson().fromJson(
+                SharedPreferencesHelper.getString(RECENT_SEARCH),
+                object : TypeToken<MutableSet<String>?>() {}.type
+            )
+        }
+        if (recentSearch == null) {
+            showFailImgWithLabel("No recent search found")
+            return
+        }
+        val searchHistory = ArrayList(recentSearch)
+        val filteredList = searchHistory.filter {
+            it.lowercase().contains(searchTxt.lowercase())
+        }
+        if (filteredList.isEmpty()) {
+            showFailImgWithLabel("No recent search found")
+            return
+        }
+        initHistoryRv(ArrayList(filteredList))
+
     }
 
     override fun itemOnClick(product: Product, view: View) {
@@ -248,6 +294,7 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
         findNavController().navigate(action, extras)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun cartOnClick(productId: String, product: Product) {
         if (firebaseAuth.currentUser == null) {
             AppDialog().showingRegisterDialogIfNotRegister(
@@ -256,12 +303,33 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
             )
             return
         }
+        addProductToCart(product)
 
     }
 
     var job: Job = Job()
     var coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    private fun initEdCallback(){
+        edCallback =object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun afterTextChanged(p0: Editable?) {
+                if (enableSearchHistory.not()){
+                    enableSearchHistory = true
+                    return
+                }
+                job.cancel()
+                job = coroutineScope.launch {
+                    withContext(Dispatchers.Main) {
+                        searchHistoryWithFilter(p0.toString())
+                    }
+                }
+            }
+        }
+    }
     @RequiresApi(Build.VERSION_CODES.M)
     private fun fragOnClick() {
         binding.apply {
@@ -269,27 +337,14 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
                 if (i === EditorInfo.IME_ACTION_SEARCH) {
                     if (textView.text.toString().isNotEmpty()) {
                         hideKeyboardAutomatically()
-                        searchWithFilter(textView.text.toString())
+                        searchProductsWithFilter(textView.text.toString())
                         saveSearchWord(textView.text.toString())
                         return@setOnEditorActionListener true
                     }
                 }
                 false
             }
-            searchEd.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-                @RequiresApi(Build.VERSION_CODES.M)
-                override fun afterTextChanged(p0: Editable?) {
-                    job.cancel()
-                    job = coroutineScope.launch {
-                        delay(700)
-
-                    }
-                }
-            })
-
+            searchEd.addTextChangedListener(edCallback)
             imgMic.setOnClickListener {
                 val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
                 intent.putExtra(
@@ -332,8 +387,9 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun itemOnClick(searchTxt: String) {
+        enableSearchHistory = false
         binding.searchEd.setText(searchTxt)
-        searchWithFilter(searchTxt)
+        searchProductsWithFilter(searchTxt)
 
     }
 
@@ -368,19 +424,17 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
                 viewModel.addToCartFlow.collect {
                     when (it) {
                         is Resource.Success -> {
-                            appDialog.dismissProgress()
-                            Toast.makeText(context, "Product added successfully", Toast.LENGTH_LONG)
-                                .show()
+                            hideProgressDialog()
+                            showShortToast("Product added successfully")
                         }
 
                         is Resource.Loading -> {
-                            appDialog.showProgressDialog()
+                            showProgressDialog()
                         }
 
                         is Resource.Failure -> {
-                            appDialog.dismissProgress()
-                            Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                            Log.d("test", "addProductToCartCallback " + it.message)
+                            hideProgressDialog()
+                            showShortToast(it.message ?: "Failed to add it")
                         }
 
                         else -> {}
@@ -412,6 +466,33 @@ class SearchFragment : Fragment(), AllProductsAdapter.AllProductsOnClick,
         }
 
     }
+    private fun onSwipe(adapter : RecentSearchAdapter): ItemTouchHelper.SimpleCallback {
+        val rvSwipe = RvSwipe().onSwipe { viewHolder, i ->
+            val customViewHolder = viewHolder as RecentSearchAdapter.ViewHolder
+            val txt = customViewHolder.binding.historyTxt.text.toString()
+            recentSearch!!.remove(txt)
+            adapter.data.remove(txt)
+            adapter.notifyDataSetChanged()
+            if( adapter.data.isEmpty())
+                showFailImgWithLabel("No recent search found")
+            val toJson = Gson().toJson(recentSearch)
+            SharedPreferencesHelper.addString(RECENT_SEARCH, toJson)
+        }
+        return rvSwipe
+    }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun addProductToCart(product: Product) {
+        viewModel.addProductToCart(
+            firebaseAuth.currentUser?.uid ?: "",
+            product,
+            -1,
+            ""
+        )
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.searchEd.removeTextChangedListener(edCallback)
+    }
 }

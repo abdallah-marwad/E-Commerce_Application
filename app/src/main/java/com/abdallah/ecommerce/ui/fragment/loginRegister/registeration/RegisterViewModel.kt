@@ -25,6 +25,7 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +46,7 @@ class RegisterViewModel @Inject constructor(
 
 
 
+    private var job : Job? = null
     private val _noInternet = Channel<Boolean>()
     val noInternet = _noInternet.receiveAsFlow()
 
@@ -64,7 +66,8 @@ class RegisterViewModel @Inject constructor(
 
 
     fun sendVerificationCode(phoneNumber : String , activity: Activity){
-        viewModelScope.launch (Dispatchers.IO){
+        job?.cancel()
+        job = viewModelScope.launch (Dispatchers.IO){
             phoneRegister.sendVerificationCode(phoneNumber,activity)
         }
     }

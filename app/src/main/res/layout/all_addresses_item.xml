@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/nameTxt"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_35sdp"
+        style="@style/titleHintTxtStyle"
+        tools:text="Name"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/addressTxt"
+        style="@style/titleHintTxtStyle"
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/address"
+        app:layout_constraintStart_toStartOf="@+id/nameTxt"
+        app:layout_constraintTop_toTopOf="@+id/address"
+        tools:text="address" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/nameTxt"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="4"
+        android:minHeight="@dimen/_40sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:ellipsize="end"
+        tools:text="a,jsncasc,ancm,nxmcXMcnancjlancjlabjabdjabdjjjcbamcx,mnczxmczmxnczncknlcasla/kkkk/cccccccccccccccccccccckmkmaddddddddddddddddddddddddddddddddd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/nameTxt"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+
+    <TextView
+        android:id="@+id/phoneNumber"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/nameTxt"
+        app:layout_constraintTop_toBottomOf="@+id/address" />
+
+    <TextView
+        android:id="@+id/phoneNumberTxt"
+        style="@style/titleHintTxtStyle"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="@+id/nameTxt"
+        app:layout_constraintTop_toTopOf="@+id/phoneNumber"
+        tools:text="Phone Number" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.abdallah.ecommerce.utils.BottomSheets
 
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
@@ -24,7 +25,8 @@ fun Fragment.showResetPasswordDialog(
     val btnCancel = view.findViewById<AppCompatButton>(R.id.btnCancel)
     val btnSend = view.findViewById<AppCompatButton>(R.id.btnSend)
 
-
+    dialog.window?.findViewById<View>(R.id.design_bottom_sheet)
+        ?.setBackgroundResource(android.R.color.transparent)
     btnCancel.setOnClickListener {
         dialog.dismiss()
     }
@@ -37,9 +39,10 @@ fun Fragment.showResetPasswordDialog(
         val validEmail = emailState is ValidationState.Valid
         var errMsg = ""
 
-        if (!validEmail)
+        if (!validEmail) {
             errMsg = emailState.msg
-
+            return@setOnClickListener
+        }
         onSendClick(email, validEmail, errMsg)
 
         dialog.dismiss()

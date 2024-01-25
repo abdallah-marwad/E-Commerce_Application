@@ -77,8 +77,6 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentProductDetailsBinding.inflate(inflater)
-        val shoppingActivity = activity as ShoppingActivity
-        shoppingActivity.hideNavBar()
         addReviewCallback()
         return binding.root
     }

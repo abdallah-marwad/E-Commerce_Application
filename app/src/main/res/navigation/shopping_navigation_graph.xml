@@ -24,6 +24,13 @@
             app:exitAnim="@anim/to_right"
             app:popEnterAnim="@anim/from_right"
             app:popExitAnim="@anim/to_left" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -42,7 +49,11 @@
         android:id="@+id/cartFragment"
         android:name="com.abdallah.ecommerce.ui.fragment.shopping.cart.CartFragment"
         android:label="fragment_cart"
-        tools:layout="@layout/fragment_cart" />
+        tools:layout="@layout/fragment_cart" >
+        <action
+            android:id="@+id/action_cartFragment_to_allAddressesFragment"
+            app:destination="@id/allAddressesFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.abdallah.ecommerce.ui.fragment.shopping.profile.ProfileFragment"
@@ -86,5 +97,13 @@
             app:exitAnim="@anim/to_right"
             app:popEnterAnim="@anim/from_right"
             app:popExitAnim="@anim/to_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/allAddressesFragment"
+        android:name="com.abdallah.ecommerce.ui.fragment.shopping.cart.address.AllAddressesFragment"
+        android:label="AllAddressesFragment" >
+        <action
+            android:id="@+id/action_allAddressesFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
     </fragment>
 </navigation>

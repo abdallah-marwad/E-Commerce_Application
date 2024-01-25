@@ -1,5 +1,6 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.cart
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog.show
 import android.content.Intent
 import android.graphics.Canvas
@@ -17,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.R
@@ -25,8 +27,10 @@ import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.data.model.PlusAndMinus
 import com.abdallah.ecommerce.databinding.FragmentCartBinding
 import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
+import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
+import com.abdallah.ecommerce.utils.animation.RvSwipe
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -48,6 +52,7 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
     private var posToDelete: Int = 0
     private var posToChange: Int = 0
     private var isChecked = false
+    private var registerForCart = true
     private var registerdeleteProduct = true
     private var registerProductCount = true
     private val appDialog by lazy { AppDialog() }
@@ -74,14 +79,30 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
         changeProductCount()
         getProductData()
         noInternetCallback()
+        fragOnClick()
     }
 
+    private fun fragOnClick() {
+        binding.locationArea.setOnClickListener {
+            if (firebaseAuth.currentUser == null) {
+                AppDialog().showingRegisterDialogIfNotRegister(
+                    Constant.COULDNOT_DO_THIS_ACTON,
+                    Constant.PLS_LOGIN
+                )
+                return@setOnClickListener
+            }
+            findNavController().navigate(R.id.action_cartFragment_to_allAddressesFragment)
+        }
+    }
     private fun initViews() {
         binding.appbar.title.text = "My Cart"
         binding.appbar.cardImage.visibility = View.GONE
     }
 
     private fun getProductData() {
+        if(registerForCart.not()){
+            return
+        }
         if (firebaseAuth.currentUser == null) {
             showEmptyCartViews()
             return
@@ -102,10 +123,10 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                if (cartList.isNotEmpty()) {
-                    initCartRV(cartList)
-                    return@repeatOnLifecycle
-                }
+//                if (cartList.isNotEmpty()) {
+//                    initCartRV(cartList)
+//                    return@repeatOnLifecycle
+//                }
                 viewModel.products.collect {
                     when (it) {
                         is Resource.Success -> {
@@ -114,8 +135,10 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
                                 showEmptyCartViews()
                                 return@collect
                             }
-                            cartList = it.data!!
-                            initCartRV(cartList)
+//                            cartList = it.data!!
+//                            initCartRV(cartList)
+                            registerForCart = false
+                            initCartRV(it.data!!)
                         }
 
                         is Resource.Loading -> {
@@ -142,62 +165,18 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
         RecyclerAnimation.animateRecycler(binding.rvCart)
         adapter.notifyDataSetChanged()
         binding.rvCart.scheduleLayoutAnimation()
-        val itemTouchHelper = ItemTouchHelper(onSwipe(adapter))
+        val itemTouchHelper = ItemTouchHelper(onSwipe())
         itemTouchHelper.attachToRecyclerView(binding.rvCart)
     }
 
 
-    private fun onSwipe(adapter: CartRVAdapter): ItemTouchHelper.SimpleCallback {
-        val itemTouchHelper = object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                posToDelete = viewHolder.absoluteAdapterPosition
-                showDeleteItemDialog(posToDelete , viewHolder.itemView)
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-                RecyclerViewSwipeDecorator.Builder(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-                    .addActionIcon(R.drawable.baseline_delete_outline_24)
-                    .create()
-                    .decorate()
-            }
-
+    @SuppressLint("NewApi")
+    private fun onSwipe(): ItemTouchHelper.SimpleCallback {
+        val rvSwipe = RvSwipe().onSwipe { viewHolder, i ->
+            posToDelete = viewHolder.absoluteAdapterPosition
+            showDeleteItemDialog(posToDelete , viewHolder.itemView)
         }
-        return itemTouchHelper
+        return rvSwipe
     }
 
     private fun deleteProductCallback() {
@@ -227,25 +206,6 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
             }
         }
     }
-    private fun handleDeleteItem() {
-        val item = adapter.data[posToDelete]
-        appDialog.dismissProgress()
-        adapter.data.removeAt(posToDelete)
-        if(item.isChecked){
-            val newPrice = item.product.price!! - item.product.offerValue!!
-            adapter.totalPrice -= (newPrice * item.quantity)
-            binding.tvTotalprice.text = adapter.totalPrice.toString()+" EGP"
-        }
-        adapter.notifyDataSetChanged()
-        Snackbar.make(
-            binding.rvCart,
-            "Successfully deleted",
-            Snackbar.LENGTH_SHORT
-        ).show()
-        if (adapter.data.isEmpty())
-            showEmptyCartViews()
-    }
-
     private fun changeProductCount() {
         if (registerProductCount.not())
             return
@@ -377,6 +337,36 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
             "Successfully ${operation.toString().lowercase()}",
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+    private fun handleDeleteItem() {
+        appDialog.dismissProgress()
+        val item = adapter.data[posToDelete]
+        adapter.data.removeAt(posToDelete)
+        if(item.isChecked){
+            val newPrice = item.product.price!! - item.product.offerValue!!
+            adapter.totalPrice -= (newPrice * item.quantity)
+            binding.tvTotalprice.text = adapter.totalPrice.toString()+" EGP"
+        }
+        adapter.notifyItemRemoved(posToDelete)
+        adapter.notifyItemRangeChanged(posToDelete ,adapter.data.size)
+        Snackbar.make(
+            binding.rvCart,
+            "Successfully deleted",
+            Snackbar.LENGTH_SHORT
+        ).show()
+        if (adapter.data.isEmpty())
+            showEmptyCartViews()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("test" ,"onDestroy cart " )
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("test" ,"onDestroyView cart " )
     }
 
 

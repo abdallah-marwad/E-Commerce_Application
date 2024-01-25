@@ -40,7 +40,6 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick,
 
     lateinit var binding: FragmentAllProductsBinding
     var categoriesAdapter: AllCategoriesAdapter? = null
-    var registerCallback = true
     private val appDialog by lazy { AppDialog() }
 
     @Inject
@@ -54,8 +53,6 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAllProductsBinding.inflate(inflater)
-        val shoppingActivity = activity as ShoppingActivity
-        shoppingActivity.hideNavBar()
         return binding.root
     }
 
@@ -241,6 +238,12 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick,
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        categoriesAdapter?.removeSelectedItem ()
+
     }
 
 

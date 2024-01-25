@@ -26,10 +26,10 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
-        val item = data[position]
+        val item = data[holder.layoutPosition]
         val newPrice = item.product.price!! - item.product.offerValue!!
         holder.initViews( item, newPrice)
-        holder.handleClicks( item, newPrice, holder.layoutPosition)
+        holder.handleClicks( item, newPrice, holder.layoutPosition , data )
 
     }
 
@@ -59,7 +59,7 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
             binding.imageCartProductColor.setImageDrawable(
                 ColorDrawable(item.color)
             )
-            if (item.size.isEmpty())
+            if (item.size.isEmpty() || item.size == "")
                 binding.tvCartProductSize.visibility = View.GONE
             else {
                 binding.tvCartProductSize.text = item.size
@@ -68,13 +68,13 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
             }
             binding.tvCartProductQuantity.text = item.quantity.toString()
             binding.tvProductCartPrice.text = newPrice.toString()
-            binding.checkBox.isChecked = item.isChecked
         }
 
         fun handleClicks(
             item: CartProduct,
             newPrice: Double,
-            position: Int
+            position: Int,
+            array: MutableList<CartProduct>
         ) {
             binding.imagePlus.setOnClickListener {
                 listener.plusOnClick(item, position, newPrice, binding.checkBox.isChecked)
@@ -86,6 +86,8 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
             binding.cardParent.setOnClickListener {}
             binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
+                    position
+                    array
                     totalPrice += (newPrice * item.quantity)
                 } else {
                     totalPrice -= (newPrice * item.quantity)

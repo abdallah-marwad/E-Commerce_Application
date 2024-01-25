@@ -15,12 +15,27 @@
     <style name="titleTxtStyle">
         <item name="android:fontFamily">@font/poppins_thin</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+    </style>
+    <style name="titleHintTxtStyle">
+        <item name="android:fontFamily">@font/poppins_light</item>
+        <item name="android:textColor">@color/g_gray500</item>
+        <item name="android:textSize">@dimen/_10ssp</item>
+    </style>
+    <style name="recyclerBoldTitle">
+        <item name="android:fontFamily">@font/poppins_thin</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_11ssp</item>
+    </style>
+    <style name="offerPercentageTitle">
+        <item name="android:fontFamily">@font/poppins_light</item>
+        <item name="android:textColor">@color/g_red</item>
+        <item name="android:textSize">@dimen/_11ssp</item>
     </style>
     <style name="seeMoreTxtStyle">
         <item name="android:fontFamily">@font/poppins_light</item>
         <item name="android:textColor">@color/app_theme_color</item>
-        <item name="android:textSize">@dimen/_13ssp</item>
+        <item name="android:textSize">@dimen/_11ssp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -34,7 +49,7 @@
         <item name="android:background">@drawable/blue_background</item>
         <item name="android:fontFamily">@font/poppins_thin</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/h2TextSize</item>
+        <item name="android:textSize">@dimen/_11sdp</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
@@ -42,7 +57,7 @@
         <item name="android:background">@drawable/white_background</item>
         <item name="android:fontFamily">@font/poppins_thin</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">@dimen/h2TextSize</item>
+        <item name="android:textSize">@dimen/_11sdp</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
@@ -51,6 +66,7 @@
         <item name="android:gravity">center</item>
         <item name="singleLine">true</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/_11sdp</item>
         <item name="android:fontFamily">@font/poppins_light</item>
         <item name="android:paddingStart">@dimen/_8sdp</item>
         <item name="android:paddingEnd">@dimen/_8sdp</item>

@@ -2,6 +2,7 @@ package com.abdallah.ecommerce.ui.fragment.loginRegister.registeration
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -25,8 +26,10 @@ import com.abdallah.ecommerce.utils.BottomSheets.SingleInputBottomSheet
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Constant.IS_SKIP
 import com.abdallah.ecommerce.utils.Resource
+import com.abdallah.ecommerce.utils.SmsBroadcastReceiver
 import com.abdallah.ecommerce.utils.validation.ValidationState
 import com.abdallah.ecommerce.utils.validation.isPhoneNumberValid
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +39,12 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     private val TAG = "RegisterFragment"
     private lateinit var arl: ActivityResultLauncher<Intent>
     private lateinit var binding: FragmentRegisterBinding
+    private var bottomSheet: SingleInputBottomSheet? = null
+    private  var registerForOtp = true
+    private  var registerForPhone = true
     private val viewModel by viewModels<RegisterViewModel>()
+    private var receiver: SmsBroadcastReceiver? = null
+
 
 
     override fun onCreateView(
@@ -60,8 +68,31 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         googleSignInCallBack()
         fragOnClicks()
         validationState()
+    }
 
+    override fun onResume() {
+        super.onResume()
+//        requireContext().registerReceiver(receiver,  IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION))
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+//        requireContext().unregisterReceiver(receiver)
+
+    }
+
+    private fun initSmsListener() {
+        val client = SmsRetriever.getClient(requireActivity())
+        client.startSmsRetriever()
+    }
+    private fun initSmsReceiver(){
+        receiver = SmsBroadcastReceiver()
+        receiver!!.setOTPListener(object : SmsBroadcastReceiver.OTPReceiveListener {
+            override fun onOTPReceived(otp: String?) {
+                bottomSheet?.edOtp?.setText(otp)
+            }
+        })
     }
 
 
@@ -142,12 +173,12 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
 
 
+
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("SuspiciousIndentation")
     private fun showOtpBottomSheet() {
-
-        val bottomSheet = SingleInputBottomSheet()
-            bottomSheet.createDialog(requireActivity() ,
+        bottomSheet = SingleInputBottomSheet()
+            bottomSheet!!.createDialog(requireActivity() ,
                 "Enter Otp" ,
                 "Verify",
                 "Otp Verification",
@@ -158,23 +189,25 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 return@createDialog
             }
             viewModel.registerWithPhone(otp)
-            observeOtpState(bottomSheet)
+                observeRegisterPhone(bottomSheet!!)
         }
     }
     @RequiresApi(Build.VERSION_CODES.M)
     private fun observeOtpState(bottomSheet : SingleInputBottomSheet) {
+        if (registerForOtp.not()){
+            return
+        }
+        registerForOtp = false
         viewModel.sendOtpState.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
                     bottomSheet.dismiss()
                     hideLoader()
-                    Toast.makeText(context , "Successful sign in" , Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(context , ShoppingActivity::class.java))
-                    activity?.finish()
+                    showOtpBottomSheet()
                 }
 
                 is Resource.Failure -> {
-                    bottomSheet.dismiss()
+                    bottomSheet.hideLoader()
                     Toast.makeText(activity, it.message, Toast.LENGTH_SHORT).show()
                 }
 
@@ -203,22 +236,26 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             if(isPhoneNumberValid(ed)){
                 viewModel.sendVerificationCode(phoneNumber , requireActivity())
             }
-            observeRegisterPhone(phoneBottomSheet)
-
-
+            observeOtpState(phoneBottomSheet)
         }
     }
     @RequiresApi(Build.VERSION_CODES.M)
     private fun observeRegisterPhone(bottomSheet : SingleInputBottomSheet) {
+        if (registerForPhone.not()){
+            return
+        }
+        registerForPhone = false
         viewModel.phoneRegisterState.observe(viewLifecycleOwner) {
 
             when (it){
                 is Resource.Success ->{
                     bottomSheet.dismiss()
-                    showOtpBottomSheet()
+                    Toast.makeText(context , "Successful sign in" , Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(context , ShoppingActivity::class.java))
+                    activity?.finish()
                 }
                 is Resource.Failure ->{
-                    bottomSheet.dismiss()
+                    bottomSheet.hideLoader()
                     Toast.makeText(activity , it.message , Toast.LENGTH_SHORT).show()
                 }
                 is Resource.Loading ->{
@@ -235,7 +272,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     }
 
     private fun registerStateCallBack() {
-
         lifecycleScope.launchWhenStarted {
             viewModel.register.collect { resource ->
                 when (resource) {
@@ -330,6 +366,10 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     binding.edLastName.error = it.lastName.msg
             }
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        receiver = null
     }
 
 }

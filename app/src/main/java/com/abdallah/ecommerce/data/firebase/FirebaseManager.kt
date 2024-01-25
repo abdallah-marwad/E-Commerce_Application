@@ -1,5 +1,6 @@
 package com.abdallah.ecommerce.data.firebase
 
+import com.abdallah.ecommerce.data.model.AddressModel
 import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.utils.Constant
@@ -25,18 +26,6 @@ object FirebaseManager {
     ) =
         firestore.collection("products").whereEqualTo("categoryName", categoryName)
             .limit(Constant.PAGE_SIZE)
-
-    fun getUserData(
-        firestore: FirebaseFirestore,
-        email: String
-    ) =
-        firestore.collection("users").whereEqualTo("email", email)
-
-    fun saveUserData(
-        firestore: FirebaseFirestore,
-        userData: UserData,
-    ) =
-        firestore.collection("users").document(userData.email).set(userData)
 
     fun addReview(
         firestore: FirebaseFirestore,
@@ -99,4 +88,15 @@ object FirebaseManager {
     fun getAllProducts(
         firestore: FirebaseFirestore,
     ) = firestore.collection("products").get()
+
+    fun getAllAddresses(
+        firestore: FirebaseFirestore,
+        docID : String
+    ) =  firestore.collection("users").document(docID).collection("addresses").get()
+fun addAddress(
+        firestore: FirebaseFirestore,
+        docID : String,
+        address : AddressModel
+    ) =  firestore.collection("users").document(docID).collection("addresses").add(address)
+
 }

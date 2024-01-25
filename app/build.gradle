@@ -104,6 +104,7 @@ dependencies {
 
     //sign in with google
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
 
     implementation 'com.google.android.play:integrity:1.2.0'
 
@@ -144,6 +145,13 @@ dependencies {
     implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
     // img viewer
     implementation 'com.github.stfalcon-studio:StfalconImageViewer:v1.0.1'
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
+
+    //ripple layout
+    implementation 'com.balysv:material-ripple:1.0.2'
+
+
 
 
 }

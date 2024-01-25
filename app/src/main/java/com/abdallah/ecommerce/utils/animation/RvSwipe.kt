@@ -11,7 +11,7 @@ import com.abdallah.ecommerce.ui.fragment.shopping.cart.CartRVAdapter
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 class RvSwipe {
-    private fun onSwipe(onSwipe:  (RecyclerView.ViewHolder, Int) -> Unit): ItemTouchHelper.SimpleCallback {
+     fun onSwipe(onSwipe:  (RecyclerView.ViewHolder, Int) -> Unit): ItemTouchHelper.SimpleCallback {
         val itemTouchHelper = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(

@@ -16,6 +16,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,8 +34,8 @@ class SearchViewModel @Inject constructor(
     val noInternetCart = addProductToCart.noInternet
 
     private val _searchProducts =
-        MutableLiveData<Resource<ArrayList<Product>>>(Resource.UnSpecified())
-    val searchProducts: LiveData<Resource<ArrayList<Product>>> = _searchProducts
+        MutableStateFlow<Resource<ArrayList<Product>>>(Resource.UnSpecified())
+    val searchProducts: Flow<Resource<ArrayList<Product>>> = _searchProducts
     private val _noInternet = Channel<Boolean>()
     val noInternet = _noInternet.receiveAsFlow()
 
@@ -46,18 +48,18 @@ class SearchViewModel @Inject constructor(
 
             }
         }
-        _searchProducts.postValue(Resource.Loading())
+        viewModelScope.launch(Dispatchers.IO) {_searchProducts.emit(Resource.Loading())}
         FirebaseManager.getAllProducts(
             firestore,
         ).addOnSuccessListener { value ->
             val products = value.toObjects(Product::class.java) as ArrayList<Product>
-            _searchProducts.postValue(
+            viewModelScope.launch(Dispatchers.IO) {  _searchProducts.emit(
                 Resource.Success(
                     products
                 )
-            )
+            )}
         }.addOnFailureListener {
-            _searchProducts.postValue(Resource.Failure(it.message))
+            viewModelScope.launch(Dispatchers.IO) { _searchProducts.emit(Resource.Failure(it.message))}
 
         }
     }

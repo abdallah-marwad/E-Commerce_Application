@@ -68,7 +68,6 @@ class AllCategoriesAdapter(val data: ArrayList<Category>, val itemOnClick: AllCa
     }
     fun removeSelectedItem() {
         data[lastSelectedItem].isSelected = false
-
         notifyDataSetChanged()
     }
 

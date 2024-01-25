@@ -111,7 +111,7 @@ class LoginViewModel @Inject constructor(
             firebaseAuth.sendPasswordResetEmail(email)
                 .addOnSuccessListener {
                     runBlocking {
-                        _resetPassword.send(Resource.Success("Email send successfully"))
+                        _resetPassword.send(Resource.Success("Email sent successfully"))
                     }
                 }
                 .addOnFailureListener {

@@ -51,7 +51,7 @@ class RegisterWithPhone @Inject constructor() {
         auth = FirebaseAuth.getInstance()
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber("+20$number")
-            .setTimeout(60L, java.util.concurrent.TimeUnit.SECONDS)
+            .setTimeout(90L, java.util.concurrent.TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(callbacks)
             .build()
@@ -87,7 +87,6 @@ class RegisterWithPhone @Inject constructor() {
             ) {
                 _sendOtpState.postValue(Resource.Success(true))
                 storedVerificationId = verificationId
-
                 Log.d("test", "onCodeSent with $verificationId")
 
             }

@@ -46,9 +46,9 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     BestDealsAdapter.BestDealsTestOnClick, MainCategoryAdapter.MainCategoryOnClick {
 
     private val viewModel by viewModels<ShoppingHomeViewModel>()
-    private var parent: NestedScrollView? = null
     private var registerForBanner = true
     private var registerForCategories = true
+    private var registerForProducts = true
     private var bannerCurrentPosition = 0
     private var categoryList: ArrayList<Category> = ArrayList()
 
@@ -58,24 +58,35 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("test" , " onCreate ShoppingHomeFragment")
+    }
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val shoppingActivity = activity as ShoppingActivity
-        shoppingActivity.showNavBar()
         noInternetCallBack()
-        startBannerShimmer()
-        startMainCategoryShimmer()
-        startDealsShimmer()
         downloadBannerImages()
-        downloadBannerImagesCallBack()
-        getCategoriesCallBack()
         getCategories()
         getProducts()
+        downloadBannerImagesCallBack()
+        getCategoriesCallBack()
         getProductsCallBack()
         fragOnClick()
         addProductToCartCallback()
+        swipeRefreshCallback()
     }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun swipeRefreshCallback() {
+        binding.swiperefresh.setOnRefreshListener{
+            viewModel.downloadBannerImages()
+            viewModel.getCategories()
+            viewModel.getOfferedProducts()
+            binding.swiperefresh.isRefreshing = false
+        }
+    }
+
     private fun fragOnClick() {
         binding.seeMoreCategories.setOnClickListener {
             if (categoryList.isEmpty()) {
@@ -91,6 +102,12 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                 0
             )
             findNavController().navigate(action)
+        }
+        binding.searchArea.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+        }
+        binding.micArae.setOnClickListener {
+            binding.searchArea.performClick()
         }
     }
 
@@ -114,7 +131,6 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                                 autoLoopBanner()
                             }
                         }
-
                         is Resource.Failure -> {
                             stopBannerShimmer()
                             val localImgList =
@@ -124,7 +140,6 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
                         is Resource.Loading -> {
                             startBannerShimmer()
-
                         }
 
                         else -> {}
@@ -166,13 +181,11 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun getCategories() {
-//        if(registerForCategories.not()){
-//            return
-//        }
-//        registerForCategories = false
+        if(registerForCategories.not()){
+            return
+        }
         viewModel.getCategories()
     }
-
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getCategoriesCallBack() {
         lifecycleScope.launch {
@@ -180,9 +193,9 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                 viewModel.categoryList.collect { result ->
                     when (result) {
                         is Resource.Success -> {
-                            Log.d("test", "getCategoriesCallBack")
                             stopMainCategoryShimmer()
                             result.data?.let {
+                                registerForCategories = false
                                 initMainCategoryRv(it)
                                 categoryList = it
                             }
@@ -208,11 +221,15 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getProducts() {
+        if(registerForProducts.not()){
+            return
+        }
         viewModel.getOfferedProducts()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getProductsCallBack() {
+
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.offeredProducts.collect { result ->
@@ -220,10 +237,10 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                         is Resource.Success -> {
                             stopDealsShimmer()
                             result.data?.let {
+                                registerForProducts = false
                                 initOfferedRv(it)
                             }
                         }
-
                         is Resource.Failure -> {
                             stopDealsShimmer()
                             Toast.makeText(
@@ -263,18 +280,22 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     private fun startBannerShimmer() {
         binding.shimmerBanner.visibility = View.VISIBLE
+        binding.bannerHomeParent.visibility = View.INVISIBLE
         binding.shimmerBanner.startShimmer()
     }
 
     private fun stopBannerShimmer() {
         binding.shimmerBanner.stopShimmer()
         binding.shimmerBanner.visibility = View.INVISIBLE
+        binding.bannerHomeParent.visibility = View.VISIBLE
+
     }
 
     private fun startMainCategoryShimmer() {
         binding.shimmerMainCategory.visibility = View.VISIBLE
         binding.shimmerMainCategory.startShimmer()
         binding.categoriesArea.visibility = View.INVISIBLE
+        binding.mainRecCategory.visibility = View.INVISIBLE
         binding.shimmerCategoriesArea.visibility = View.VISIBLE
         binding.shimmerCategoriesArea.startShimmer()
     }
@@ -285,6 +306,8 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
         binding.categoriesArea.visibility = View.VISIBLE
         binding.shimmerCategoriesArea.stopShimmer()
         binding.shimmerCategoriesArea.visibility = View.INVISIBLE
+        binding.mainRecCategory.visibility = View.VISIBLE
+
     }
 
     private fun startDealsShimmer() {
@@ -293,13 +316,17 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
         binding.shimmerDealsArea.visibility = View.VISIBLE
         binding.shimmerDealsTxt.visibility = View.VISIBLE
         binding.bestDealsContainer.visibility = View.INVISIBLE
+        binding.bestDealsRV.visibility = View.INVISIBLE
     }
+
     private fun stopDealsShimmer() {
         binding.shimmerDealsArea.stopShimmer()
         binding.shimmerDealsTxt.stopShimmer()
         binding.shimmerDealsArea.visibility = View.INVISIBLE
         binding.shimmerDealsTxt.visibility = View.INVISIBLE
         binding.bestDealsContainer.visibility = View.VISIBLE
+        binding.bestDealsRV.visibility = View.VISIBLE
+
 
     }
 
@@ -399,7 +426,6 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                         is Resource.Failure -> {
                             hideProgressDialog()
                             Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                            Log.d("test", "addProductToCartCallback " + it.message)
                         }
 
                         else -> {}
@@ -411,8 +437,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     override fun onDestroyView() {
         super.onDestroyView()
-        parent = binding.nestedParent
-        parent = null
+        Log.d("test", "onDestroyView shopping Frag")
     }
 
 }

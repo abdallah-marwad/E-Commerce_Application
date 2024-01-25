@@ -14,23 +14,26 @@ import com.wang.avi.AVLoadingIndicatorView
 class SingleInputBottomSheet() {
     private lateinit var dialog :BottomSheetDialog
     private lateinit var loader :AVLoadingIndicatorView
-    private lateinit var btnSend :AppCompatButton
+    lateinit var btnSend :AppCompatButton
+    lateinit var edOtp :EditText
     private lateinit var btnCancel :AppCompatButton
     fun createDialog(context: Activity, edHint : String,btnTxt : String,titleTxt : String,hintTxt : String ,onSendClick: (String , EditText) -> Unit) {
         dialog = BottomSheetDialog(context, R.style.DialogStyle)
         val view = context.layoutInflater.inflate(R.layout.otp_bottom_sheet, null)
         dialog.setContentView(view)
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
 
 
-        val edOtp = view.findViewById<EditText>(R.id.edOtp)
+         edOtp = view.findViewById<EditText>(R.id.edOtp)
         val hint = view.findViewById<TextView>(R.id.hint)
         val title = view.findViewById<TextView>(R.id.title)
          btnCancel = view.findViewById<AppCompatButton>(R.id.btnCancel)
         btnSend = view.findViewById<AppCompatButton>(R.id.btnSend)
          loader = view.findViewById<AVLoadingIndicatorView>(R.id.loader)
-
+        dialog.window?.findViewById<View>(R.id.design_bottom_sheet)
+            ?.setBackgroundResource(android.R.color.transparent)
         edOtp.hint = edHint
         btnSend.text = btnTxt
         title.text = titleTxt

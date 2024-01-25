@@ -31,6 +31,8 @@ fun showDialog(
     )
     dialog.setContentView(view)
     dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+    dialog.window?.findViewById<View>(R.id.design_bottom_sheet)
+        ?.setBackgroundResource(android.R.color.transparent)
     dialog.show()
 
     val itemRatingBar = view.findViewById<RatingBar>(R.id.itemRatingBar)

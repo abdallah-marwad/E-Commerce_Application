@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/_10sdp"
     android:animateLayoutChanges="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <include
         android:id="@+id/bottomSheetBar"
         android:layout_width="match_parent"
@@ -12,30 +13,33 @@
         layout="@layout/bottom_sheet_bar"
         app:layout_constraintTop_toTopOf="parent"
         />
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetBar"
+        >
+        <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_10sdp"
-        android:fontFamily="@font/poppins_thin"
         android:gravity="center"
         android:text="OTP VERIFICATION"
         android:textColor="@color/g_black"
-        android:textSize="@dimen/_15sdp"
+            style="@style/titleTxtStyle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bottomSheetBar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/hint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_4sdp"
-        android:fontFamily="@font/poppins_light"
         android:gravity="start"
-
+        style="titleHintTxtStyle"
         android:text="Enter The Verification Otp "
         android:textColor="@color/g_black"
-        android:textSize="@dimen/_13sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@id/title" />
@@ -64,11 +68,12 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/_40sdp"
         app:layout_constraintWidth_percent="0.43"
-        android:fontFamily="@font/poppins_light"
         android:text="Cancel"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:layout_marginBottom="@dimen/_12sdp"
         android:layout_marginTop="@dimen/_16sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/edOtp"
         app:layout_constraintTop_toBottomOf="@+id/edOtp"
         app:spinning_bar_color="@color/white" />
@@ -79,7 +84,6 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/_40sdp"
         android:layout_marginTop="@dimen/_16sdp"
-        android:fontFamily="@font/poppins_light"
         android:text="Send"
         android:textColor="@color/white"
         android:textStyle="bold"
@@ -99,4 +103,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnCancel" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

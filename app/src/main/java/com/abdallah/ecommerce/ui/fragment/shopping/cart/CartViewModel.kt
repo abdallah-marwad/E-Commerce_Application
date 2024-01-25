@@ -27,8 +27,8 @@ class CartViewModel @Inject constructor(
     val fireStore: FirebaseFirestore
 ) : ViewModel() {
     private val _products =
-        MutableStateFlow<Resource<List<CartProduct>>>(Resource.UnSpecified())
-    val products: Flow<Resource<List<CartProduct>>> = _products
+        Channel<Resource<List<CartProduct>>>()
+    val products: Flow<Resource<List<CartProduct>>> = _products.receiveAsFlow()
 
     private val _deleteProduct by lazy {   Channel<Resource<Boolean>>()}
     val deleteProduct: Flow<Resource<Boolean>> = _deleteProduct.receiveAsFlow()
@@ -42,14 +42,14 @@ class CartViewModel @Inject constructor(
     fun getCartProduct(
         docID: String
     ) {
-        viewModelScope.launch { _products.emit(Resource.Loading())}
+        viewModelScope.launch { _products.send(Resource.Loading())}
         FirebaseManager.getCartProducts(
             fireStore,
             docID).addOnSuccessListener {
             val cardProducts = it.toObjects(CartProduct::class.java)
-            viewModelScope.launch { _products.emit(Resource.Success(cardProducts))}
+            viewModelScope.launch { _products.send(Resource.Success(cardProducts))}
         }.addOnFailureListener {
-            viewModelScope.launch {_products.emit(Resource.Failure(it.message))}
+            viewModelScope.launch {_products.send(Resource.Failure(it.message))}
         }
     }
     @RequiresApi(Build.VERSION_CODES.M)
