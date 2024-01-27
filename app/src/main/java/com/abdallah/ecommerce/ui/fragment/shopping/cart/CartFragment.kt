@@ -1,14 +1,10 @@
 package com.abdallah.ecommerce.ui.fragment.shopping.cart
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog.show
-import android.content.Intent
-import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -20,13 +16,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.R
-import com.abdallah.ecommerce.application.MyApplication
 import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.data.model.PlusAndMinus
 import com.abdallah.ecommerce.databinding.FragmentCartBinding
-import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
@@ -35,18 +28,19 @@ import com.abdallah.ecommerce.utils.dialogs.AppDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 
-class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
+class CartFragment : Fragment(), CartRVAdapter.CartOnClick, CartRVAdapterTest.CartOnClickTest {
 
     private val viewModel by viewModels<CartViewModel>()
     lateinit var binding: FragmentCartBinding
     lateinit var adapter: CartRVAdapter
+    lateinit var adapterTest: CartRVAdapterTest
+    lateinit var cartList: ArrayList<CartProduct>
     private var totalPrice = 0.0
     private var itemPrice = 0.0
     private var posToDelete: Int = 0
@@ -56,8 +50,7 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
     private var registerdeleteProduct = true
     private var registerProductCount = true
     private val appDialog by lazy { AppDialog() }
-    private lateinit var selectedProducts: ArrayList<CartProduct>
-    private var cartList: List<CartProduct> = ArrayList()
+
 
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
@@ -138,7 +131,9 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
 //                            cartList = it.data!!
 //                            initCartRV(cartList)
                             registerForCart = false
-                            initCartRV(it.data!!)
+                            cartList = (it.data as ArrayList<CartProduct>?)!!
+                            val copylist = cartList.map { it.copy() }
+                            initCartRVTest(copylist)
                         }
 
                         is Resource.Loading -> {
@@ -169,12 +164,29 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
         itemTouchHelper.attachToRecyclerView(binding.rvCart)
     }
 
+    private fun initCartRVTest(cartList: List<CartProduct>) {
+        // copy the list
+//        var copyList = ArrayList<CartProduct>(cartList)
+        adapterTest = CartRVAdapterTest(cartList.toMutableList(), this)
+        Log.d(
+            "test",
+            "List hash code the same ? " + (this.cartList.hashCode() == cartList.hashCode())
+        )
+        binding.rvCart.adapter = adapterTest
+        adapterTest.totalPrice = this.totalPrice
+        RecyclerAnimation.animateRecycler(binding.rvCart)
+        adapterTest.notifyDataSetChanged()
+        binding.rvCart.scheduleLayoutAnimation()
+        val itemTouchHelper = ItemTouchHelper(onSwipe())
+        itemTouchHelper.attachToRecyclerView(binding.rvCart)
+    }
+
 
     @SuppressLint("NewApi")
     private fun onSwipe(): ItemTouchHelper.SimpleCallback {
         val rvSwipe = RvSwipe().onSwipe { viewHolder, i ->
-            posToDelete = viewHolder.absoluteAdapterPosition
-            showDeleteItemDialog(posToDelete , viewHolder.itemView)
+            posToDelete = viewHolder.layoutPosition
+            showDeleteItemDialog(posToDelete, viewHolder.itemView)
         }
         return rvSwipe
     }
@@ -309,13 +321,14 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
                 posToDelete = position
                 viewModel.deleteProduct(
                     firebaseAuth.currentUser!!.uid,
-                    adapter.data[posToDelete].product.id
+                    adapterTest.list[posToDelete].product.id // crash here
                 )
             },
             {
                 appDialog.dismiss()
                 itemView?.translationX = 0f
-                adapter.notifyItemChanged(position)
+//                adapter.notifyItemChanged(position)
+                adapterTest.notifyItemChanged(position)
             }
         )
     }
@@ -323,15 +336,25 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
         this.totalPrice = totalPrice
         binding.tvTotalprice.text = "$totalPrice EGP"
     }
+
     private fun handleProductCountCallback(operation: PlusAndMinus) {
         if (isChecked) {
-            if (operation == PlusAndMinus.PLUS) adapter.totalPrice += itemPrice else adapter.totalPrice -= itemPrice
-            binding.tvTotalprice.text = "${adapter.totalPrice} EGP"
+            if (operation == PlusAndMinus.PLUS) adapterTest.totalPrice += itemPrice else adapterTest.totalPrice -= itemPrice
+            binding.tvTotalprice.text = "${adapterTest.totalPrice} EGP"
         }
-        if (operation == PlusAndMinus.PLUS) adapter.data[posToChange].quantity += 1
-        else adapter.data[posToChange].quantity -= 1
-        adapter.data[posToChange].isChecked = isChecked
-        adapter.notifyDataSetChanged()
+
+        if (operation == PlusAndMinus.PLUS) cartList[posToChange].quantity += 1
+        else cartList[posToChange].quantity -= 1
+
+        cartList[posToChange].isChecked = isChecked
+        adapterTest.list
+
+        // this code cartList.map { it.copy()}  for take a copy from list with another allocation
+        // to be a differ between adapter list and this class list
+        // to make the adapter detect the different between the new list and old one
+
+        adapterTest.list = cartList.toMutableList()
+        adapterTest.notifyDataSetChanged()
         Snackbar.make(
             binding.rvCart,
             "Successfully ${operation.toString().lowercase()}",
@@ -339,34 +362,71 @@ class CartFragment : Fragment(), CartRVAdapter.CartOnClick {
         ).show()
     }
     private fun handleDeleteItem() {
-        appDialog.dismissProgress()
-        val item = adapter.data[posToDelete]
-        adapter.data.removeAt(posToDelete)
-        if(item.isChecked){
+        val item = adapterTest.list[posToDelete]
+        cartList.removeAt(posToDelete)
+        if (item.isChecked) {
             val newPrice = item.product.price!! - item.product.offerValue!!
-            adapter.totalPrice -= (newPrice * item.quantity)
-            binding.tvTotalprice.text = adapter.totalPrice.toString()+" EGP"
+            adapterTest.totalPrice -= (newPrice * item.quantity)
+            binding.tvTotalprice.text = adapterTest.totalPrice.toString() + " EGP"
         }
-        adapter.notifyItemRemoved(posToDelete)
-        adapter.notifyItemRangeChanged(posToDelete ,adapter.data.size)
+        adapterTest.setAdapterList(cartList.map { it.copy() })
+        appDialog.dismissProgress()
         Snackbar.make(
             binding.rvCart,
             "Successfully deleted",
             Snackbar.LENGTH_SHORT
         ).show()
-        if (adapter.data.isEmpty())
+        if (adapterTest.list.isEmpty())
             showEmptyCartViews()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("test" ,"onDestroy cart " )
-
+    override fun itemOnClickTest(product: CartProduct, view: View) {
+        TODO("Not yet implemented")
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d("test" ,"onDestroyView cart " )
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun plusOnClickTest(
+        product: CartProduct,
+        position: Int,
+        price: Double,
+        isChecked: Boolean
+    ) {
+        posToChange = position
+        itemPrice = price
+        this.isChecked = isChecked
+        viewModel.changeCartProductCount(
+            firebaseAuth.currentUser?.uid ?: "",
+            product.product.id,
+            product.quantity + 1,
+            PlusAndMinus.PLUS
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun minusOnClickTest(
+        product: CartProduct,
+        position: Int,
+        price: Double,
+        isChecked: Boolean
+    ) {
+        if (product.quantity == 1) {
+            showDeleteItemDialog(position)
+            return
+        }
+        posToChange = position
+        itemPrice = price
+        this.isChecked = isChecked
+        viewModel.changeCartProductCount(
+            firebaseAuth.currentUser?.uid ?: "",
+            product.product.id,
+            product.quantity - 1,
+            PlusAndMinus.MINUS
+        )
+    }
+
+    override fun cartCheckBoxTest(totalPrice: Double) {
+        this.totalPrice = totalPrice
+        binding.tvTotalprice.text = "$totalPrice EGP"
     }
 
 

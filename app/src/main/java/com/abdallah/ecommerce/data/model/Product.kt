@@ -3,10 +3,8 @@ package com.abdallah.ecommerce.data.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-//@Entity(tableName = "products")
 @Parcelize
 data class Product (
-//    @PrimaryKey
     var id : String = "",
     var productName: String? = null,
     var categoryName: String? = null,

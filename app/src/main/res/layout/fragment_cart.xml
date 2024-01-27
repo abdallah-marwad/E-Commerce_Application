@@ -137,24 +137,25 @@
                 android:id="@+id/img_empty_box_texture"
                 android:layout_width="@dimen/_200sdp"
                 android:layout_height="@dimen/_250sdp"
-                android:src="@drawable/ic_empty_box_texture"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/img_empty_box"
+                android:src="@drawable/ic_empty_box_texture"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/img_empty_box"
                 app:layout_constraintStart_toStartOf="@id/img_empty_box"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/img_empty_box"
-                android:layout_width="@dimen/_120sdp"
-                android:layout_height="@dimen/_120sdp"
-                android:layout_marginTop="130dp"
-                android:src="@drawable/ic_empty_box"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/img_empty_box"
+        android:layout_width="@dimen/_120sdp"
+        android:layout_height="@dimen/_120sdp"
+        android:layout_marginTop="130dp"
+        android:src="@drawable/ic_empty_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/img_empty_box_texture"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/img_empty_box_texture" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
