@@ -24,7 +24,6 @@ import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.data.model.RatingModel
 import com.abdallah.ecommerce.data.model.SizesModel
 import com.abdallah.ecommerce.databinding.FragmentProductDetailsBinding
-import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.ColorsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.ReviewsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.ViewPagerAdapter
@@ -118,7 +117,7 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
         }
         binding.btnAddToCart.setOnClickListener {
             if (firebaseAuth.currentUser == null) {
-                AppDialog().showingRegisterDialogIfNotRegister(
+                AppDialog().showingRegisterDialog(
                     Constant.COULDNOT_DO_THIS_ACTON,
                     Constant.PLS_LOGIN
                 )
@@ -200,7 +199,7 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
 
     private fun addReview(comment: String, rating: Float) {
         if (firebaseAuth.currentUser == null) {
-            AppDialog().showingRegisterDialogIfNotRegister(
+            AppDialog().showingRegisterDialog(
                 Constant.COULDNOT_DO_THIS_ACTON,
                 Constant.PLS_LOGIN
             )

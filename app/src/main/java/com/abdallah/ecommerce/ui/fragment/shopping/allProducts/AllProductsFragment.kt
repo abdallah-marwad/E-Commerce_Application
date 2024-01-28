@@ -20,7 +20,6 @@ import androidx.navigation.fragment.navArgs
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.FragmentAllProductsBinding
-import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllCategoriesAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllProductsAdapter
 import com.abdallah.ecommerce.utils.Constant
@@ -190,7 +189,7 @@ class AllProductsFragment : Fragment(), AllCategoriesAdapter.AllCategoryOnClick,
     @RequiresApi(Build.VERSION_CODES.M)
     override fun cartOnClick(productId: String, product: Product) {
         if (firebaseAuth.currentUser == null) {
-            AppDialog().showingRegisterDialogIfNotRegister(
+            AppDialog().showingRegisterDialog(
                 Constant.COULDNOT_DO_THIS_ACTON,
                 Constant.PLS_LOGIN
             )

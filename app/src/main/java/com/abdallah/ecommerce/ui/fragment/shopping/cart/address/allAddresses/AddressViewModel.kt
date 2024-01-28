@@ -1,14 +1,10 @@
-package com.abdallah.ecommerce.ui.fragment.shopping.cart.address
+package com.abdallah.ecommerce.ui.fragment.shopping.cart.address.allAddresses
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdallah.ecommerce.data.firebase.FirebaseManager
 import com.abdallah.ecommerce.data.model.AddressModel
-import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.utils.Resource
-import com.google.android.play.integrity.internal.f
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

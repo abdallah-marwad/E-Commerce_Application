@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,7 +20,6 @@ import com.abdallah.ecommerce.data.model.Categories
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
-import com.abdallah.ecommerce.ui.activity.shopping.ShoppingActivity
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BannerRecAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BestDealsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.MainCategoryAdapter
@@ -384,7 +382,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     @RequiresApi(Build.VERSION_CODES.M)
     override fun cartOnClick(productId: String, product: Product) {
         if (firebaseAuth.currentUser == null) {
-            AppDialog().showingRegisterDialogIfNotRegister(
+            AppDialog().showingRegisterDialog(
                 Constant.COULDNOT_DO_THIS_ACTON,
                 Constant.PLS_LOGIN
             )

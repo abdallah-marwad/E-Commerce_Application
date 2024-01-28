@@ -57,7 +57,7 @@ class AppDialog {
             customDialog?.dismiss()
     }
 
-    fun showingRegisterDialogIfNotRegister(title: String, message: String) {
+    fun showingRegisterDialog(title: String, message: String) {
         showDialog(
             title,
             message,

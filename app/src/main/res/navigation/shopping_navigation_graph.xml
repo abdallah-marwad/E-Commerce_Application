@@ -100,10 +100,22 @@
     </fragment>
     <fragment
         android:id="@+id/allAddressesFragment"
-        android:name="com.abdallah.ecommerce.ui.fragment.shopping.cart.address.AllAddressesFragment"
-        android:label="AllAddressesFragment" >
+        android:name="com.abdallah.ecommerce.ui.fragment.shopping.cart.address.allAddresses.AllAddressesFragment"
+        android:label="AllAddressesFragment">
         <action
             android:id="@+id/action_allAddressesFragment_to_cartFragment"
             app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_allAddressesFragment_to_addAddressFragment"
+            app:destination="@id/addAddressFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAddressFragment"
+        android:name="com.abdallah.ecommerce.ui.fragment.shopping.cart.address.addAddress.AddAddressFragment"
+        android:label="fragment_addd_adress"
+        tools:layout="@layout/fragment_addd_adress">
+        <action
+            android:id="@+id/action_addAddressFragment_to_allAddressesFragment"
+            app:destination="@id/allAddressesFragment" />
     </fragment>
 </navigation>

@@ -8,16 +8,12 @@ import com.abdallah.ecommerce.application.MyApplication
 import com.abdallah.ecommerce.data.firebase.FirebaseManager
 import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.data.model.PlusAndMinus
-import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.utils.InternetConnection
 import com.abdallah.ecommerce.utils.Resource
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObjects
-import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,15 +22,20 @@ import javax.inject.Inject
 class CartViewModel @Inject constructor(
     val fireStore: FirebaseFirestore
 ) : ViewModel() {
+    /*
+    * I make the _products Channel receiveAsFlow() because when collect it
+    * and go to onStop then onStart the collect not fire again
+    * */
     private val _products =
         Channel<Resource<List<CartProduct>>>()
     val products: Flow<Resource<List<CartProduct>>> = _products.receiveAsFlow()
 
-    private val _deleteProduct by lazy {   Channel<Resource<Boolean>>()}
+    private val _deleteProduct by lazy { Channel<Resource<Boolean>>() }
     val deleteProduct: Flow<Resource<Boolean>> = _deleteProduct.receiveAsFlow()
 
-    private val _changeCartProductCount by lazy {   Channel<Resource<PlusAndMinus>>()}
-    val changeCartProductCount: Flow<Resource<PlusAndMinus>> = _changeCartProductCount.receiveAsFlow()
+    private val _changeCartProductCount by lazy { Channel<Resource<PlusAndMinus>>() }
+    val changeCartProductCount: Flow<Resource<PlusAndMinus>> =
+        _changeCartProductCount.receiveAsFlow()
 
     private val _noInternet by lazy {   Channel<Boolean>()}
     val noInternet: Flow<Boolean> = _noInternet.receiveAsFlow()

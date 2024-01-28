@@ -9,8 +9,4 @@ data class CartProduct(
 ) {
     constructor() : this(Product(), 1, 1, "")
 
-//    override operator fun equals(other: Any?): Boolean {
-//        val anotherObj = other as CartProduct
-//        return quantity ==anotherObj.quantity
-//    }
 }

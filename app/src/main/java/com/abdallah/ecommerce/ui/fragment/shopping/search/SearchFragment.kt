@@ -8,16 +8,11 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -29,7 +24,6 @@ import com.abdallah.ecommerce.application.core.BaseFragment
 import com.abdallah.ecommerce.data.model.Product
 import com.abdallah.ecommerce.data.sharedPreferences.SharedPreferencesHelper
 import com.abdallah.ecommerce.databinding.FragmentSearchBinding
-import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
 import com.abdallah.ecommerce.ui.fragment.shopping.allProducts.adapter.AllProductsAdapter
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
@@ -45,8 +39,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -63,7 +55,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
     private val RECENT_SEARCH = "Recent Search"
     private val PRODUCTS = "Products"
     private val REQUEST_CODE_SPEECH_INPUT = 10
-    private var edCallback:TextWatcher ? = null
+    private var edCallback: TextWatcher? = null
     private var enableSearchHistory = true
     private var recentSearch: MutableSet<String>? = null
 
@@ -85,7 +77,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
         if (binding.searchEd.text.toString().isNotEmpty()) {
             return
         }
-        getRecentSearch()?.let { initHistoryRv(ArrayList(it)) }
+        getRecentSearch()?.let { ArrayList(it) }
     }
 
     override fun onPause() {
@@ -152,20 +144,23 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
         return
     }
 
+    private fun noHistroySearchImpl() {
+        binding.recyclerViewProducts.visibility = View.GONE
+        binding.recyclerViewHistory.visibility = View.GONE
+        showFailImgWithLabel("Not Found History Search")
+        binding.recyclerTitle.text = RECENT_SEARCH
+    }
+
     private fun initHistoryRv(data: ArrayList<String>) {
-        if (data.isEmpty()) {
-            binding.recyclerViewProducts.visibility = View.GONE
-            binding.recyclerViewHistory.visibility = View.GONE
-            showFailImgWithLabel("Not Found History Search")
-            binding.recyclerTitle.text = RECENT_SEARCH
-
+        if (data == null) {
+            noHistroySearchImpl()
             return
-        }else{
-            binding.recyclerViewHistory.visibility = View.VISIBLE
-            binding.recyclerViewProducts.visibility = View.GONE
-            binding.recyclerTitle.text = RECENT_SEARCH
-
         }
+        binding.recyclerViewHistory.visibility = View.VISIBLE
+        binding.recyclerViewProducts.visibility = View.GONE
+        binding.recyclerTitle.text = RECENT_SEARCH
+
+
         hideFailImgWithLabel()
         val adapter = RecentSearchAdapter(data, this)
         binding.recyclerViewHistory.adapter = adapter
@@ -219,7 +214,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
             showFailImgWithLabel("No products founded")
             binding.recyclerTitle.text = PRODUCTS
             return
-        }else{
+        } else {
             binding.recyclerViewProducts.visibility = View.VISIBLE
             binding.recyclerViewHistory.visibility = View.GONE
             binding.recyclerTitle.text = PRODUCTS
@@ -280,6 +275,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
             showFailImgWithLabel("No recent search found")
             return
         }
+        /*
+        * Should change the data set not recreate new adapter
+        * */
         initHistoryRv(ArrayList(filteredList))
 
     }
@@ -297,27 +295,26 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
     @RequiresApi(Build.VERSION_CODES.M)
     override fun cartOnClick(productId: String, product: Product) {
         if (firebaseAuth.currentUser == null) {
-            AppDialog().showingRegisterDialogIfNotRegister(
+            AppDialog().showingRegisterDialog(
                 Constant.COULDNOT_DO_THIS_ACTON,
                 Constant.PLS_LOGIN
             )
             return
         }
         addProductToCart(product)
-
     }
 
     var job: Job = Job()
     var coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private fun initEdCallback(){
-        edCallback =object : TextWatcher {
+    private fun initEdCallback() {
+        edCallback = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             @RequiresApi(Build.VERSION_CODES.M)
             override fun afterTextChanged(p0: Editable?) {
-                if (enableSearchHistory.not()){
+                if (enableSearchHistory.not()) {
                     enableSearchHistory = true
                     return
                 }
@@ -330,6 +327,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
             }
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     private fun fragOnClick() {
         binding.apply {
@@ -466,14 +464,15 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
         }
 
     }
-    private fun onSwipe(adapter : RecentSearchAdapter): ItemTouchHelper.SimpleCallback {
+
+    private fun onSwipe(adapter: RecentSearchAdapter): ItemTouchHelper.SimpleCallback {
         val rvSwipe = RvSwipe().onSwipe { viewHolder, i ->
             val customViewHolder = viewHolder as RecentSearchAdapter.ViewHolder
             val txt = customViewHolder.binding.historyTxt.text.toString()
             recentSearch!!.remove(txt)
             adapter.data.remove(txt)
             adapter.notifyDataSetChanged()
-            if( adapter.data.isEmpty())
+            if (adapter.data.isEmpty())
                 showFailImgWithLabel("No recent search found")
             val toJson = Gson().toJson(recentSearch)
             SharedPreferencesHelper.addString(RECENT_SEARCH, toJson)
