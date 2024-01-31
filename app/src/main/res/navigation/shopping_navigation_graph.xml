@@ -13,8 +13,6 @@
         <action
             android:id="@+id/action_homeFragment_to_allProducts"
             app:destination="@id/allProducts"
-            app:enterAnim="@anim/from_left"
-            app:exitAnim="@anim/to_right"
             app:popEnterAnim="@anim/from_right"
             app:popExitAnim="@anim/to_left" />
         <action
@@ -52,7 +50,9 @@
         tools:layout="@layout/fragment_cart" >
         <action
             android:id="@+id/action_cartFragment_to_allAddressesFragment"
-            app:destination="@id/allAddressesFragment" />
+            app:destination="@id/allAddressesFragment"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -107,7 +107,11 @@
             app:destination="@id/cartFragment" />
         <action
             android:id="@+id/action_allAddressesFragment_to_addAddressFragment"
-            app:destination="@id/addAddressFragment" />
+            app:destination="@id/addAddressFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
     </fragment>
     <fragment
         android:id="@+id/addAddressFragment"

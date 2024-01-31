@@ -6,21 +6,19 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.abdallah.ecommerce.data.firebase.FirebaseManager
+import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithGoogle
+import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
+import com.abdallah.ecommerce.data.model.User
 import com.abdallah.ecommerce.utils.InternetConnection
 import com.abdallah.ecommerce.utils.Resource
 import com.abdallah.ecommerce.utils.validation.RegisterValidation
 import com.abdallah.ecommerce.utils.validation.ValidationState
-import com.abdallah.ecommerce.utils.validation.validateEmail
 import com.abdallah.ecommerce.utils.validation.isInputNotEmpty
+import com.abdallah.ecommerce.utils.validation.validateEmail
 import com.abdallah.ecommerce.utils.validation.validatePassword
-import com.google.firebase.auth.FirebaseAuth
-import com.abdallah.ecommerce.data.model.User
-import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithGoogle
-import com.abdallah.ecommerce.data.firebase.registeration.RegisterWithPhone
-import com.abdallah.ecommerce.data.model.UserData
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,9 +53,6 @@ class RegisterViewModel @Inject constructor(
 
     private val _register = MutableStateFlow<Resource<String>>(Resource.UnSpecified())
     val register: Flow<Resource<String>> = _register
-
-    private val _saveUserData = MutableStateFlow<Resource<String>>(Resource.UnSpecified())
-    val saveUserData: Flow<Resource<String>> = _saveUserData
 
     val googleRegister: Flow<Resource<String>> = google.googleRegister
 

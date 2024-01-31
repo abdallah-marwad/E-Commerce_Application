@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.abdallah.ecommerce.R
 import com.abdallah.ecommerce.application.core.BaseFragment
+import com.abdallah.ecommerce.data.model.AddressModel
 import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.data.model.PlusAndMinus
 import com.abdallah.ecommerce.databinding.FragmentCartBinding
@@ -37,7 +38,11 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
     private var posToDelete: Int = 0
     private var posToChange: Int = 0
     private var isChecked = false
+    private var registerForCart = true
     private val appDialog by lazy { AppDialog() }
+    private var selectedAddress: AddressModel? = null
+    private var registerForSelectedAddresses = true
+
 
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
@@ -51,8 +56,45 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
         getProductData()
         noInternetCallback()
         fragOnClick()
+        getAddressFromAllAddressFrag()
+        getSelectedAddressCallBack()
+
     }
 
+    private fun getSelectedAddresses() {
+        if (registerForSelectedAddresses.not())
+            return
+        viewModel.getSelectedAddress(firebaseAuth.currentUser!!.uid)
+    }
+
+    private fun getSelectedAddressCallBack() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedAddress.collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            binding.locationProgress.visibility = View.GONE
+                            registerForSelectedAddresses = false
+                            selectedAddress = result.data
+                            binding.addressTxt.text =
+                                selectedAddress?.addressTitle ?: "Unknown Location"
+                        }
+
+                        is Resource.Failure -> {
+                            binding.locationProgress.visibility = View.GONE
+//                            result.message?.let { showLongToast(it) }
+                        }
+
+                        is Resource.Loading -> {
+                            binding.locationProgress.visibility = View.VISIBLE
+                        }
+
+                        else -> {}
+                    }
+                }
+            }
+        }
+    }
     private fun fragOnClick() {
         binding.locationArea.setOnClickListener {
             if (firebaseAuth.currentUser == null) {
@@ -69,9 +111,21 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
     private fun initViews() {
         binding.appbar.title.text = "My Cart"
         binding.appbar.cardImage.visibility = View.GONE
+
     }
 
+    private fun getAddressFromAllAddressFrag() {
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<AddressModel>(Constant.ADDRESS)?.observe(viewLifecycleOwner) { result ->
+                binding.addressTxt.text = result.addressTitle
+                selectedAddress = result
+            }
+    }
+
+
     private fun getProductData() {
+        if (registerForCart.not())
+            return
         if (firebaseAuth.currentUser == null) {
             showEmptyCartViews()
             return
@@ -86,6 +140,7 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
         binding.imgEmptyBox.visibility = View.VISIBLE
         binding.imgEmptyBoxTexture.visibility = View.VISIBLE
         binding.tvEmptyCart.visibility = View.VISIBLE
+        binding.addressTxt.visibility = View.GONE
     }
 
     private fun getProductDataCallback() {
@@ -99,7 +154,9 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
                                 showEmptyCartViews()
                                 return@collect
                             }
+                            registerForCart = false
                             initCartRV(it.data!!)
+                            getSelectedAddresses()
                         }
 
                         is Resource.Loading -> {
@@ -109,6 +166,7 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
                         is Resource.Failure -> {
                             appDialog.dismissProgress()
                             Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                            getSelectedAddresses()
                         }
 
                         else -> Unit

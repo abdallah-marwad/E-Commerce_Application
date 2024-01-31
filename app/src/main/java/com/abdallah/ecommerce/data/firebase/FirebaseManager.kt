@@ -2,7 +2,6 @@ package com.abdallah.ecommerce.data.firebase
 
 import com.abdallah.ecommerce.data.model.AddressModel
 import com.abdallah.ecommerce.data.model.CartProduct
-import com.abdallah.ecommerce.data.model.UserData
 import com.abdallah.ecommerce.utils.Constant
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -91,12 +90,29 @@ object FirebaseManager {
 
     fun getAllAddresses(
         firestore: FirebaseFirestore,
-        docID : String
-    ) =  firestore.collection("users").document(docID).collection("addresses").get()
-fun addAddress(
-        firestore: FirebaseFirestore,
-        docID : String,
-        address : AddressModel
-    ) =  firestore.collection("users").document(docID).collection("addresses").add(address)
+        docID: String
+    ) = firestore.collection("users").document(docID).collection("addresses").get()
 
+    fun addAddress(
+        fireStore: FirebaseFirestore,
+        addressID: String,
+        docID: String,
+        address: AddressModel
+    ) = fireStore.collection("users").document(docID).collection("addresses")
+        .document(addressID).set(address)
+
+    fun updateSelectedAddress(
+        fireStore: FirebaseFirestore,
+        docID: String,
+        address: AddressModel
+    ) =
+        fireStore.collection("users").document(docID).collection("selected_address")
+            .document("selected_address").set(address)
+
+    fun getSelectedAddress(
+        fireStore: FirebaseFirestore,
+        docID: String,
+    ) =
+        fireStore.collection("users").document(docID).collection("selected_address")
+            .document("selected_address").get()
 }

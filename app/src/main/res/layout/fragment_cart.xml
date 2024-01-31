@@ -4,45 +4,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-  >
+    android:animateLayoutChanges="true">
 
     <include
         android:id="@+id/appbar"
         layout="@layout/appbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-            <TextView
-                style="@style/offerPercentageTitle"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:background="@drawable/white_background"
-                android:drawablePadding="@dimen/_8sdp"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:singleLine="true"
-                android:text="Unknown Location"
-                android:textColor="@color/black"
-                android:layout_margin="@dimen/_10sdp"
+        app:layout_constraintTop_toTopOf="parent" />
 
-                app:drawableEndCompat="@drawable/ic_arrow_down"
-                app:drawableStartCompat="@drawable/ic_location"
-                app:layout_constraintTop_toBottomOf="@id/appbar" />
+    <TextView
+        android:id="@+id/addressTxt"
+        style="@style/offerPercentageTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_margin="@dimen/_10sdp"
+        android:background="@drawable/white_background"
+        android:drawablePadding="@dimen/_8sdp"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:textAlignment="viewStart"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/_8sdp"
+        android:singleLine="true"
+        android:text="Unknown Location"
+        android:textColor="@color/black"
+        app:drawableEndCompat="@drawable/ic_arrow_down"
+        app:drawableStartCompat="@drawable/ic_location"
+        app:layout_constraintTop_toBottomOf="@id/appbar"
+        tools:layout_editor_absoluteX="13dp" />
 
-            <FrameLayout
-                android:id="@+id/locationArea"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_margin="@dimen/_10sdp"
-                android:background="@drawable/btn_bg_ripple"
-                app:layout_constraintTop_toBottomOf="@id/appbar" />
+    <ProgressBar
+        android:id="@+id/locationProgress"
+        android:layout_width="@dimen/_17sdp"
+        android:layout_height="@dimen/_17sdp"
+        android:visibility="gone"
+        android:layout_marginEnd="@dimen/_35sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/addressTxt"
+        app:layout_constraintEnd_toEndOf="@+id/addressTxt"
+        app:layout_constraintTop_toTopOf="@+id/addressTxt" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_cart"
+    <FrameLayout
+        android:id="@+id/locationArea"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_margin="@dimen/_10sdp"
+        android:background="@drawable/btn_bg_ripple"
+        app:layout_constraintTop_toBottomOf="@id/appbar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_cart"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginBottom="8dp"

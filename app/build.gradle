@@ -151,7 +151,8 @@ dependencies {
     //ripple layout
     implementation 'com.balysv:material-ripple:1.0.2'
 
-
+    // location
+    implementation "com.google.android.gms:play-services-location:21.1.0"
 
 
 }

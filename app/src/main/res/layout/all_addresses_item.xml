@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentArea"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_10sdp">
 
     <TextView
         android:id="@+id/nameTxt"
+        style="@style/titleHintTxtStyle"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_35sdp"
-        style="@style/titleHintTxtStyle"
-        tools:text="Name"
         android:layout_marginStart="@dimen/_8sdp"
-        android:gravity="center_vertical"
+        android:gravity="start|center_vertical"
+
+        android:text="Name"
+        android:textAlignment="viewStart"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,50 +25,61 @@
         style="@style/titleHintTxtStyle"
         android:layout_width="@dimen/_80sdp"
         android:layout_height="@dimen/_35sdp"
-        android:gravity="center_vertical"
+        android:gravity="start|center_vertical"
+        android:text="address"
+        android:textAlignment="viewStart"
         app:layout_constraintBottom_toBottomOf="@+id/address"
         app:layout_constraintStart_toStartOf="@+id/nameTxt"
-        app:layout_constraintTop_toTopOf="@+id/address"
-        tools:text="address" />
+        app:layout_constraintTop_toTopOf="@+id/address" />
 
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="@dimen/_35sdp"
         android:layout_marginEnd="@dimen/_8sdp"
+        android:textAlignment="viewStart"
+        android:gravity="start|center_vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/nameTxt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/nameTxt"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/nameTxt" />
 
     <TextView
         android:id="@+id/address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
         android:maxLines="4"
         android:minHeight="@dimen/_40sdp"
         android:layout_marginEnd="@dimen/_8sdp"
-        android:ellipsize="end"
-        tools:text="a,jsncasc,ancm,nxmcXMcnancjlancjlabjabdjabdjjjcbamcx,mnczxmczmxnczncknlcasla/kkkk/cccccccccccccccccccccckmkmaddddddddddddddddddddddddddddddddd"
+        android:gravity="start|center_vertical"
+        android:textAlignment="viewStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/nameTxt"
-        app:layout_constraintTop_toBottomOf="@+id/name" />
+        app:layout_constraintTop_toBottomOf="@+id/nameTxt"
+        tools:text="" />
 
     <TextView
         android:id="@+id/phoneNumber"
         android:layout_width="0dp"
         android:layout_height="@dimen/_35sdp"
         android:layout_marginEnd="@dimen/_8sdp"
+        android:textAlignment="viewStart"
+        android:gravity="start|center_vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/phoneNumberTxt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/nameTxt"
-        app:layout_constraintTop_toBottomOf="@+id/address" />
+        app:layout_constraintTop_toTopOf="@+id/phoneNumberTxt" />
 
     <TextView
         android:id="@+id/phoneNumberTxt"
         style="@style/titleHintTxtStyle"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_35sdp"
-        android:gravity="center_vertical"
+        android:gravity="start|center_vertical"
+        android:text="Phone Number"
+        android:textAlignment="viewStart"
         app:layout_constraintStart_toStartOf="@+id/nameTxt"
-        app:layout_constraintTop_toTopOf="@+id/phoneNumber"
-        tools:text="Phone Number" />
+        app:layout_constraintTop_toBottomOf="@+id/address" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

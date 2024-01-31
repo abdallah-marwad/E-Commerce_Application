@@ -2,4 +2,6 @@
 <resources>
     <string name="best_deals">أفضل العروض</string>
     <string name="see_more">المزيد</string>
+    <string name="address_location_ie_home"> العنوان بالكامل</string>
+
 </resources>

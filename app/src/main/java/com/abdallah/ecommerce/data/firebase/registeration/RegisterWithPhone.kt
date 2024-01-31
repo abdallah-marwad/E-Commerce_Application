@@ -22,7 +22,7 @@ class RegisterWithPhone @Inject constructor() {
     private val _phoneRegisterState = MutableLiveData<Resource<Boolean>>()
     val phoneRegisterState = _phoneRegisterState
 
-    private val _sendOtpState = MutableLiveData<Resource<Boolean>>()
+    private val _sendOtpState = MutableLiveData<Resource<String>>()
     val sendOtpState = _sendOtpState
 
     fun registerWithPhone(otp: String) {
@@ -62,7 +62,7 @@ class RegisterWithPhone @Inject constructor() {
         object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                _sendOtpState.postValue(Resource.Success(true))
+                _sendOtpState.postValue(Resource.Success(""))
                 registerWithPhone(credential.smsCode ?: "")
                 Log.d("test", "onVerificationCompleted")
 
@@ -85,8 +85,8 @@ class RegisterWithPhone @Inject constructor() {
                 verificationId: String,
                 token: PhoneAuthProvider.ForceResendingToken,
             ) {
-                _sendOtpState.postValue(Resource.Success(true))
                 storedVerificationId = verificationId
+                _sendOtpState.postValue(Resource.Success(storedVerificationId))
                 Log.d("test", "onCodeSent with $verificationId")
 
             }

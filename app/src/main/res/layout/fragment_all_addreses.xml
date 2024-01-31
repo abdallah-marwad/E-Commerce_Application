@@ -19,7 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp"
         android:layout_margin="@dimen/_10sdp"
-        android:textColor="@color/black"
         android:text="Add Address"
         android:paddingStart="@dimen/_8sdp"
         android:gravity="start|center_vertical"
@@ -30,16 +29,36 @@
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_cart"
+        android:id="@+id/rvAddresses"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/_10sdp"
-        android:layout_marginBottom="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/done"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addAddress"
-        tools:listitem="@layout/cart_product_item" />
+        tools:listitem="@layout/all_addresses_item" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/done"
+        style="@style/blueButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_margin="@dimen/_10sdp"
+        android:drawablePadding="@dimen/_8sdp"
+        android:text="Done"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/noAddresses"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_200sdp"
+        android:src="@drawable/no_product"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

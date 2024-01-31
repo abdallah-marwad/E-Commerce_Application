@@ -82,13 +82,15 @@ class AppDialog {
 
     fun showProgressDialog() {
         progressDialog = Dialog(MyApplication.myAppContext.getCurrentAct()!!)
-        val inflate = LayoutInflater.from(MyApplication.myAppContext.getCurrentAct()).inflate(R.layout.loading_dialog, null)
+        val inflate = LayoutInflater.from(MyApplication.myAppContext.getCurrentAct())
+            .inflate(R.layout.loading_dialog, null)
         progressDialog.setContentView(inflate)
         progressDialog.setCancelable(false)
         progressDialog.window!!.setBackgroundDrawable(
             ColorDrawable(Color.TRANSPARENT)
         )
-        progressDialog.show()
+        if (MyApplication.myAppContext.getCurrentAct()!!.isFinishing.not())
+            progressDialog.show()
     }
     fun dismissProgress(){
         if (progressDialog != null )
