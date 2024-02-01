@@ -111,6 +111,7 @@
         android:layout_marginTop="@dimen/_17sdp"
         android:layout_marginHorizontal="@dimen/_8sdp"
         android:visibility="visible"
+        app:shimmer_duration="1800"
         tools:listitem="@layout/item_banner_home">
         <include layout="@layout/home_banner_shimmer"/>
     </com.facebook.shimmer.ShimmerFrameLayout>
@@ -146,6 +147,7 @@
 
             />
     </LinearLayout>
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_categories_area"
         android:layout_width="0dp"
@@ -155,10 +157,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/shimmer_banner"
         android:visibility="visible"
+        app:shimmer_duration="1800"
+
         android:layout_marginHorizontal="@dimen/_8sdp"
 
         tools:listitem="@layout/item_banner_home">
-        <include layout="@layout/shimmer_labels"/>
+
+        <include layout="@layout/shimmer_labels" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 
 <RelativeLayout
@@ -183,26 +188,37 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/main_category_item" />
 </RelativeLayout>
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_main_category"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/categoriesArea"        android:layout_margin="@dimen/_12sdp"
+        app:layout_constraintTop_toBottomOf="@id/categoriesArea"
+        android:layout_margin="@dimen/_12sdp"
         android:visibility="visible"
+        app:shimmer_duration="1800"
+
         >
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <include layout="@layout/main_category_shimmer"/>
-            <include layout="@layout/main_category_shimmer"/>
-            <include layout="@layout/main_category_shimmer"/>
-            <include layout="@layout/main_category_shimmer"/>
-            <include layout="@layout/main_category_shimmer"/>
+
+            <include layout="@layout/main_category_shimmer" />
+
+            <include layout="@layout/main_category_shimmer" />
+
+            <include layout="@layout/main_category_shimmer" />
+
+            <include layout="@layout/main_category_shimmer" />
+
+            <include layout="@layout/main_category_shimmer" />
 
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_deals_txt"
         android:layout_width="0dp"
@@ -213,8 +229,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/shimmer_main_category"
         android:visibility="visible"
+        app:shimmer_duration="1800"
+
         tools:listitem="@layout/item_banner_home">
-        <include layout="@layout/shimmer_labels"/>
+
+        <include layout="@layout/shimmer_labels" />
     </com.facebook.shimmer.ShimmerFrameLayout>
     <LinearLayout
         android:id="@+id/bestDealsContainer"
@@ -257,6 +276,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bestDealsContainer"
         android:visibility="visible"
+        app:shimmer_duration="1800"
         >
         <include layout="@layout/best_deals_shimmer"/>
     </com.facebook.shimmer.ShimmerFrameLayout>

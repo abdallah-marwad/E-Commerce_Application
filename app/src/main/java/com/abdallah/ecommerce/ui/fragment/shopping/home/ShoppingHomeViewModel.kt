@@ -16,13 +16,12 @@ import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.ListResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -34,7 +33,7 @@ class ShoppingHomeViewModel @Inject constructor(
     application: Application,
     val downloadImage: DownloadImage,
     val firestore: FirebaseFirestore,
-    val addProductToCart : AddProductToCart
+    val addProductToCart: AddProductToCart
 ) : AndroidViewModel(application) {
 
 
@@ -56,28 +55,34 @@ class ShoppingHomeViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.M)
     fun downloadBannerImages() {
         viewModelScope.launch(Dispatchers.IO) {
-            _imageList.send(Resource.Loading())}
-            downloadImage.downloadAllImages(Constant.HOME_BANNER_BATH)
-                .addOnSuccessListener { result ->
-                    result?.let {
-                        viewModelScope.launch(Dispatchers.IO) {
-                            _imageList.send(
-                                Resource.Success(
-                                    downloadImagesFromListResult(
-                                        it
-                                    )
+            _imageList.send(Resource.Loading())
+        }
+        downloadImage.downloadAllImages(Constant.HOME_BANNER_BATH)
+            .addOnSuccessListener { result ->
+                result?.let {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        _imageList.send(
+                            Resource.Success(
+                                downloadImagesFromListResult(
+                                    it
                                 )
                             )
-                        }
+                        )
                     }
                 }
-                .addOnFailureListener {
-                    runBlocking { _imageList.send(Resource.Failure(
-                        handleFireBaseException(it)
-                    )) }
+            }
+            .addOnFailureListener {
+                runBlocking {
+                    _imageList.send(
+                        Resource.Failure(
+                            handleFireBaseException(it)
+                        )
+                    )
                 }
+            }
 
-        }
+    }
+
     private fun handleFireBaseException(exception: java.lang.Exception): String {
         Log.e("test", "$exception")
         if (exception is FirebaseNetworkException) {
@@ -85,6 +90,7 @@ class ShoppingHomeViewModel @Inject constructor(
         }
         return exception.localizedMessage.toString()
     }
+
     private suspend fun downloadImagesFromListResult(listResult: ListResult): ArrayList<Uri> {
         val arrOFImage = ArrayList<Uri>()
         for (item in listResult.items) {
@@ -92,6 +98,53 @@ class ShoppingHomeViewModel @Inject constructor(
             arrOFImage.add(url)
         }
         return arrOFImage
+    }
+
+    fun getCategoriesAndOffers() {
+        var dataCat: ArrayList<Category> = ArrayList()
+        val products = ArrayList<Product>()
+        var offersErr: String? = null
+        var categoriesErr: String? = null
+
+        val differed1 = viewModelScope.async(Dispatchers.IO) {
+            _categoryList.send(Resource.Loading())
+            val collectionReference = firestore.collection("category")
+            collectionReference.get()
+                .addOnSuccessListener { document ->
+                    if (!document.isEmpty) {
+                        dataCat =
+                            document.toObjects(Category::class.java) as ArrayList<Category>
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    categoriesErr = exception.message
+
+                }
+        }
+        val differed2 = viewModelScope.async(Dispatchers.IO) {
+            _offeredProducts.send(Resource.Loading())
+            try {
+                val querySnapshot = FirebaseManager.getOfferedProducts(firestore).await()
+                products.addAll(querySnapshot.toObjects(Product::class.java))
+            } catch (e: Exception) {
+                offersErr = e.message
+            }
+        }
+        viewModelScope.launch {
+            differed1.await()
+            differed2.await()
+            if (dataCat.isNotEmpty())
+                _categoryList.send(Resource.Success(dataCat))
+            if (products.isNotEmpty())
+                _offeredProducts.send(Resource.Success(products))
+            if (categoriesErr != null && categoriesErr!!.isNotEmpty())
+                _categoryList.send(Resource.Failure(categoriesErr))
+            if (offersErr != null && offersErr!!.isNotEmpty())
+                _offeredProducts.send(Resource.Failure(offersErr))
+
+
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -103,7 +156,8 @@ class ShoppingHomeViewModel @Inject constructor(
         collectionReference.get()
             .addOnSuccessListener { document ->
                 if (!document.isEmpty) {
-                    var dataCat: ArrayList<Category> = document.toObjects(Category::class.java) as ArrayList<Category>
+                    var dataCat: ArrayList<Category> =
+                        document.toObjects(Category::class.java) as ArrayList<Category>
                     viewModelScope.launch(Dispatchers.IO) {
                         _categoryList.send(Resource.Success(dataCat))
                     }
@@ -124,14 +178,13 @@ class ShoppingHomeViewModel @Inject constructor(
         try {
             val products = ArrayList<Product>()
             val querySnapshot = FirebaseManager.getOfferedProducts(firestore).await()
-            querySnapshot.documents.forEach {
-                it.toObject<Product>()?.let { product -> products.add(product) }
-            }
+            products.addAll(querySnapshot.toObjects(Product::class.java))
             _offeredProducts.send(Resource.Success(products))
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             _offeredProducts.send(Resource.Failure(e.message))
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     fun addProductToCart(
         docID: String,
@@ -139,13 +192,13 @@ class ShoppingHomeViewModel @Inject constructor(
         selectedColor: Int,
         selectedSize: String
     ) {
-            addProductToCart.addProductToCartNew(
-                docID,
-                product,
-                selectedColor,
-                selectedSize,
-                firestore
-            )
+        addProductToCart.addProductToCartNew(
+            docID,
+            product,
+            selectedColor,
+            selectedSize,
+            firestore
+        )
 
     }
 

@@ -64,9 +64,10 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         noInternetCallBack()
-        downloadBannerImages()
-        getCategories()
-        getProducts()
+//        downloadBannerImages()
+//        getCategories()
+        getCategoriesAndOffers()
+//        getProducts()
         downloadBannerImagesCallBack()
         getCategoriesCallBack()
         getProductsCallBack()
@@ -177,13 +178,21 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
         }
     }
 
+    //    @RequiresApi(Build.VERSION_CODES.M)
+//    fun getCategories() {
+//        if(registerForCategories.not()){
+//            return
+//        }
+//        viewModel.getCategories()
+//    }
     @RequiresApi(Build.VERSION_CODES.M)
-    fun getCategories() {
-        if(registerForCategories.not()){
+    fun getCategoriesAndOffers() {
+        if (registerForCategories.not()) {
             return
         }
-        viewModel.getCategories()
+        viewModel.getCategoriesAndOffers()
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getCategoriesCallBack() {
         lifecycleScope.launch {
@@ -197,6 +206,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                                 initMainCategoryRv(it)
                                 categoryList = it
                             }
+//                            getProducts()
                         }
                         is Resource.Failure -> {
                             stopMainCategoryShimmer()
@@ -238,6 +248,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                                 registerForProducts = false
                                 initOfferedRv(it)
                             }
+                            downloadBannerImages()
                         }
                         is Resource.Failure -> {
                             stopDealsShimmer()
@@ -283,9 +294,9 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     }
 
     private fun stopBannerShimmer() {
-        binding.shimmerBanner.stopShimmer()
         binding.shimmerBanner.visibility = View.INVISIBLE
         binding.bannerHomeParent.visibility = View.VISIBLE
+        binding.shimmerBanner.stopShimmer()
 
     }
 
@@ -299,12 +310,13 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     }
 
     private fun stopMainCategoryShimmer() {
-        binding.shimmerMainCategory.stopShimmer()
         binding.shimmerMainCategory.visibility = View.INVISIBLE
         binding.categoriesArea.visibility = View.VISIBLE
-        binding.shimmerCategoriesArea.stopShimmer()
         binding.shimmerCategoriesArea.visibility = View.INVISIBLE
         binding.mainRecCategory.visibility = View.VISIBLE
+        binding.shimmerMainCategory.stopShimmer()
+        binding.shimmerCategoriesArea.stopShimmer()
+
 
     }
 
@@ -318,13 +330,12 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     }
 
     private fun stopDealsShimmer() {
-        binding.shimmerDealsArea.stopShimmer()
-        binding.shimmerDealsTxt.stopShimmer()
         binding.shimmerDealsArea.visibility = View.INVISIBLE
         binding.shimmerDealsTxt.visibility = View.INVISIBLE
         binding.bestDealsContainer.visibility = View.VISIBLE
         binding.bestDealsRV.visibility = View.VISIBLE
-
+        binding.shimmerDealsArea.stopShimmer()
+        binding.shimmerDealsTxt.stopShimmer()
 
     }
 
