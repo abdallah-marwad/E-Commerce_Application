@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardParent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginVertical="@dimen/_10sdp"
+    android:animateLayoutChanges="true"
     android:background="@drawable/white_background"
     android:backgroundTint="@color/g_white">
 
@@ -117,6 +117,22 @@
         app:layout_constraintEnd_toEndOf="@id/imageCartProductSize"
         app:layout_constraintStart_toStartOf="@id/imageCartProductSize"
         app:layout_constraintTop_toTopOf="@id/imageCartProductSize" />
+
+    <TextView
+        android:id="@+id/sizeErr"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_4sdp"
+        android:fontFamily="@font/poppins_light"
+        android:textColor="@color/g_red"
+        android:textSize="@dimen/_8sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/imagePlus"
+        app:layout_constraintEnd_toStartOf="@id/imagePlus"
+        app:layout_constraintStart_toEndOf="@+id/imageCartProductSize"
+
+
+        app:layout_constraintTop_toTopOf="@+id/imagePlus"
+        tools:text="Max count must less than" />
 
     <CheckBox
         android:id="@+id/checkBox"

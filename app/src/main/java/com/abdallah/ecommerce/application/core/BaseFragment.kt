@@ -69,4 +69,9 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     protected fun hideProgressDialog() {
         appDialog.dismissProgress()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        hideProgressDialog()
+    }
 }

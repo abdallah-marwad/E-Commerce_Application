@@ -77,7 +77,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), AllProductsAdapter
         if (binding.searchEd.text.toString().isNotEmpty()) {
             return
         }
-        getRecentSearch()?.let { ArrayList(it) }
+        getRecentSearch()?.let { initHistoryRv(ArrayList(it)) }
     }
 
     override fun onPause() {

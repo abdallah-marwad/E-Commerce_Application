@@ -16,7 +16,7 @@ import com.abdallah.ecommerce.ui.activity.LoginRegisterActivity
 
 class AppDialog {
     private lateinit var customDialog: AlertDialog
-    lateinit var progressDialog: Dialog
+    var progressDialog: Dialog? = null
 
     fun showDialog(
         title: String,
@@ -84,18 +84,18 @@ class AppDialog {
         progressDialog = Dialog(MyApplication.myAppContext.getCurrentAct()!!)
         val inflate = LayoutInflater.from(MyApplication.myAppContext.getCurrentAct())
             .inflate(R.layout.loading_dialog, null)
-        progressDialog.setContentView(inflate)
-        progressDialog.setCancelable(false)
-        progressDialog.window!!.setBackgroundDrawable(
+        progressDialog!!.setContentView(inflate)
+        progressDialog!!.setCancelable(false)
+        progressDialog!!.window!!.setBackgroundDrawable(
             ColorDrawable(Color.TRANSPARENT)
         )
         if (MyApplication.myAppContext.getCurrentAct()!!.isFinishing.not())
-            progressDialog.show()
+            progressDialog!!.show()
     }
     fun dismissProgress(){
-        if (progressDialog != null )
-            if( progressDialog.isShowing )
-                progressDialog.dismiss()
+        if (progressDialog != null)
+            if (progressDialog!!.isShowing)
+                progressDialog!!.dismiss()
     }
 
 }

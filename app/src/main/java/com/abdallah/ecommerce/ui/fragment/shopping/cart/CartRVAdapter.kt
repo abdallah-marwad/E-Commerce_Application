@@ -5,8 +5,10 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.abdallah.ecommerce.R
+import com.abdallah.ecommerce.application.MyApplication
 import com.abdallah.ecommerce.data.model.CartProduct
 import com.abdallah.ecommerce.data.model.PlusAndMinus
 import com.abdallah.ecommerce.databinding.CartProductItemBinding
@@ -20,6 +22,9 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
     var itemPrice = 0.0
     var positionToChange = 0
     var isChecked = false
+    var enableShake = false
+    var maxCount = 0
+    lateinit var viewHolder: ViewHolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -30,12 +35,25 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
+        viewHolder = holder
         val item = data[holder.layoutPosition]
         val newPrice = item.product.price!! - item.product.offerValue!!
         holder.binding.checkBox.setOnCheckedChangeListener(null)
         holder.initViews(item, newPrice)
         holder.handleClicks(item, newPrice, holder.layoutPosition)
+        if (enableShake) {
+            holder.binding.cardParent.animation =
+                AnimationUtils.loadAnimation(
+                    MyApplication.myAppContext.getCurrentAct(),
+                    R.anim.shake_animation
+                )
+            enableShake = false
+            holder.binding.sizeErr.visibility = View.VISIBLE
+            holder.binding.sizeErr.text = "Max count must less than $maxCount"
+        } else {
+            holder.binding.sizeErr.visibility = View.GONE
 
+        }
     }
 
     interface CartOnClick {
@@ -64,9 +82,10 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
             binding.imageCartProductColor.setImageDrawable(
                 ColorDrawable(item.color)
             )
-            if (item.size.isEmpty() || item.size == "")
+            if (item.size.isEmpty() || item.size == "") {
                 binding.tvCartProductSize.visibility = View.GONE
-            else {
+                binding.imageCartProductSize.visibility = View.GONE
+            } else {
                 binding.tvCartProductSize.text = item.size
                 binding.tvCartProductSize.visibility = View.VISIBLE
 

@@ -20,6 +20,7 @@ import com.abdallah.ecommerce.data.model.PlusAndMinus
 import com.abdallah.ecommerce.databinding.FragmentCartBinding
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Resource
+import com.abdallah.ecommerce.utils.VibratePhone
 import com.abdallah.ecommerce.utils.animation.RecyclerAnimation
 import com.abdallah.ecommerce.utils.animation.RvSwipe
 import com.abdallah.ecommerce.utils.dialogs.AppDialog
@@ -82,7 +83,6 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
 
                         is Resource.Failure -> {
                             binding.locationProgress.visibility = View.GONE
-//                            result.message?.let { showLongToast(it) }
                         }
 
                         is Resource.Loading -> {
@@ -106,6 +106,14 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
             }
             findNavController().navigate(R.id.action_cartFragment_to_allAddressesFragment)
         }
+        binding.btnCheckout.setOnClickListener {
+            if (selectedAddress != null) {
+                VibratePhone()
+                showShortSnackBar("Select Location")
+                return@setOnClickListener
+            }
+        }
+
     }
 
     private fun initViews() {
