@@ -152,8 +152,9 @@ class CartRVAdapter(val data: MutableList<CartProduct>, val listener: CartOnClic
             totalPrice -= (newPrice * item.quantity)
             listener.cartCheckBox(totalPrice)
         }
-        notifyItemRemoved(posToDelete)
-        notifyItemRangeChanged(posToDelete, data.size)
+//        notifyItemRemoved(posToDelete)
+//        notifyItemRangeChanged(posToDelete, data.size)
+        notifyDataSetChanged()  // error might be here
         if (data.isEmpty())
             listener.emptyCart()
     }
