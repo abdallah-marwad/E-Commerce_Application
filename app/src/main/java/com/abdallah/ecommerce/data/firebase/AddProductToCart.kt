@@ -32,18 +32,11 @@ class AddProductToCart @Inject constructor() {
         fireStore: FirebaseFirestore
 
     ) {
-
         if (!InternetConnection().hasInternetConnection(MyApplication.myAppContext)) {
             runBlocking { _noInternet.send(true) }
             return
         }
         runBlocking { _addToCartFlow.send(Resource.Loading()) }
-            val newCartList = CartProduct(
-                product,
-                1,
-                selectedColor,
-                selectedSize
-            )
             val docRef = FirebaseManager.addProductToCart(fireStore, docID, product.id)
             fireStore.runTransaction { transaction ->
                 val snapshot = transaction.get(docRef)
@@ -57,6 +50,12 @@ class AddProductToCart @Inject constructor() {
                     transaction.set(docRef, updatedData, SetOptions.merge())
                     null
                 } else {
+                    val newCartList = CartProduct(
+                        product,
+                        1,
+                        selectedColor,
+                        selectedSize
+                    )
                     transaction.set(docRef, newCartList)
                     null
                 }
@@ -68,8 +67,6 @@ class AddProductToCart @Inject constructor() {
                 runBlocking {
                     _addToCartFlow.send(Resource.Failure(it.message))
                 }
-
             }
-
         }
     }

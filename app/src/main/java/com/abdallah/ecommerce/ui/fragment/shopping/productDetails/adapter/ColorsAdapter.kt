@@ -15,20 +15,18 @@ import com.abdallah.ecommerce.application.MyApplication
 import com.abdallah.ecommerce.data.model.Category
 import com.abdallah.ecommerce.data.model.ColorModel
 import com.abdallah.ecommerce.data.model.SizesModel
+import com.abdallah.ecommerce.databinding.CartProductItemBinding
 import com.abdallah.ecommerce.databinding.ColorsAndSizesBinding
 import com.abdallah.ecommerce.utils.animation.RecyclerTouchEffect
 
 class ColorsAdapter(val dataColors: ArrayList<ColorModel>?, val dataSizes: ArrayList<SizesModel>? , val listener:SelectedColorAndSize) :
     RecyclerView.Adapter<ColorsAdapter.ViewHolder>() {
-    var selectedColors = -1
     var lastSelectedItem = -1
-        private set
-    var selectedSizes = ""
         private set
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ColorsAndSizesBinding.inflate(inflater)
+        val binding = ColorsAndSizesBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 

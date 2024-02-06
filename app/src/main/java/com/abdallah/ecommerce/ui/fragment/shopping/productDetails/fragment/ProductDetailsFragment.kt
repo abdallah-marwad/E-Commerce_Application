@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -29,6 +30,7 @@ import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.Review
 import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.adapter.ViewPagerAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.productDetails.viewmodel.ProductDetailsViewModel
 import com.abdallah.ecommerce.utils.BottomSheets.RatingDialog
+import com.abdallah.ecommerce.utils.ColorAndSizeConverter
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.CustomShimmerDrawable
 import com.abdallah.ecommerce.utils.Resource
@@ -262,13 +264,13 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
 
     private fun initViews() {
         val newPrice = product.price!! - product.offerValue!!
-
         binding.toolbar.title.text = "Product Details"
         binding.tvProductName.text = product.productName
         binding.tvProductDescription.text = product.productdescription
         binding.tvProductPrice.text = "EGP " + newPrice
         binding.category.text = "Category : " + product.categoryName
         binding.ratingNumber.text = "(${product.ratersNum})"
+        binding.tvProductQuantity.text = "Available Quantity : ${product.productQuantity}"
         binding.itemRatingBar.rating = if (product.rating <= 0) 5F else product.rating
         handleProductOfferPrice()
         setupViewPager()
@@ -278,11 +280,8 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
     }
 
     private fun initColorsRv() {
-        val colorsList = product.productColors
-        val colorModelList = ArrayList<ColorModel>()
-        colorsList?.forEach {
-            colorModelList.add(ColorModel(it, false))
-        }
+        val colorsList = product.productColors ?: return
+        val colorModelList = ColorAndSizeConverter().toColorList(colorsList)
         colorsAdapter = ColorsAdapter(colorModelList, null, this)
         binding.rvColors.adapter = colorsAdapter
         RecyclerAnimation.animateRecycler(binding.rvColors)
@@ -304,13 +303,13 @@ class ProductDetailsFragment : Fragment(), ColorsAdapter.SelectedColorAndSize {
     }
 
     private fun initSizesRv() {
-        val sizesList = product.productSize
-        val sizesModelList = ArrayList<SizesModel>()
-        sizesList?.forEach {
-            sizesModelList.add(SizesModel(it, false))
-        }
-        if (sizesModelList.isEmpty())
+        val sizesList = product.productSize ?: ArrayList()
+        val sizesModelList = ColorAndSizeConverter().toSizeList(sizesList)
+        if (sizesModelList.isEmpty()) {
             selectedSize = ""
+            binding.tvSize.visibility = View.GONE
+            return
+        }
         val sizesAdapter = ColorsAdapter(null, sizesModelList, this)
         binding.rvSizes.adapter = sizesAdapter
         RecyclerAnimation.animateRecycler(binding.rvSizes)

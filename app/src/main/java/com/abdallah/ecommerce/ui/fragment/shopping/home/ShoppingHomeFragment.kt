@@ -23,6 +23,7 @@ import com.abdallah.ecommerce.databinding.FragmentShoppingHomeBinding
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BannerRecAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.BestDealsAdapter
 import com.abdallah.ecommerce.ui.fragment.shopping.home.adapter.MainCategoryAdapter
+import com.abdallah.ecommerce.utils.BottomSheets.ColorAndSizeBottomSheet
 import com.abdallah.ecommerce.utils.Constant
 import com.abdallah.ecommerce.utils.Constant.PRODUCT_TRANSITION_NAME
 import com.abdallah.ecommerce.utils.Resource
@@ -49,6 +50,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
     private var registerForProducts = true
     private var bannerCurrentPosition = 0
     private var categoryList: ArrayList<Category> = ArrayList()
+    private  var colorBottomSheet: ColorAndSizeBottomSheet? = null
 
     @Inject
     lateinit var firestore: FirebaseFirestore
@@ -58,8 +60,9 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("test" , " onCreate ShoppingHomeFragment")
+        Log.d("test", " onCreate ShoppingHomeFragment")
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,7 +81,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun swipeRefreshCallback() {
-        binding.swiperefresh.setOnRefreshListener{
+        binding.swiperefresh.setOnRefreshListener {
             viewModel.downloadBannerImages()
             viewModel.getCategories()
             viewModel.getOfferedProducts()
@@ -117,6 +120,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
         }
         viewModel.downloadBannerImages()
     }
+
     private fun downloadBannerImagesCallBack() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -130,6 +134,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                                 autoLoopBanner()
                             }
                         }
+
                         is Resource.Failure -> {
                             stopBannerShimmer()
                             val localImgList =
@@ -208,6 +213,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                             }
 //                            getProducts()
                         }
+
                         is Resource.Failure -> {
                             stopMainCategoryShimmer()
                             Toast.makeText(
@@ -229,7 +235,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getProducts() {
-        if(registerForProducts.not()){
+        if (registerForProducts.not()) {
             return
         }
         viewModel.getOfferedProducts()
@@ -250,6 +256,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                             }
                             downloadBannerImages()
                         }
+
                         is Resource.Failure -> {
                             stopDealsShimmer()
                             Toast.makeText(
@@ -405,12 +412,19 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun addProductToCart(product: Product) {
-        viewModel.addProductToCart(
-            firebaseAuth.currentUser?.uid ?: "",
-            product,
-            -1,
-            ""
-        )
+        colorBottomSheet = ColorAndSizeBottomSheet()
+        colorBottomSheet!!.showDialog(
+            product.productColors!!,
+            product.productSize,
+        ) { selectedSize, selectedColor ->
+            viewModel.addProductToCart(
+                firebaseAuth.currentUser?.uid ?: "",
+                product,
+                selectedColor,
+                selectedSize ?: ""
+            )
+        }
+
     }
 
     private fun addProductToCartCallback() {
@@ -419,6 +433,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                 viewModel.addToCartFlow.collect {
                     when (it) {
                         is Resource.Success -> {
+                            colorBottomSheet?.dismiss()
                             hideProgressDialog()
                             Toast.makeText(
                                 context,
@@ -433,6 +448,7 @@ class ShoppingHomeFragment : BaseFragment<FragmentShoppingHomeBinding>(),
                         }
 
                         is Resource.Failure -> {
+                            colorBottomSheet?.dismiss()
                             hideProgressDialog()
                             Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
                         }

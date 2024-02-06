@@ -80,6 +80,13 @@ object FirebaseManager {
 
     fun getCartProductCount(
         firestore: FirebaseFirestore,
+        hashMap: HashMap<String, Any>,
+        docID: String,
+        productID: String,
+    ) =
+        firestore.collection("users").document(docID).collection("cart").document(productID)
+    fun getCartProductCount(
+        firestore: FirebaseFirestore,
         docID: String,
     ) =
         firestore.collection("users").document(docID).collection("cart")

@@ -107,11 +107,12 @@ class CartFragment : BaseFragment<FragmentCartBinding>(), CartRVAdapter.CartOnCl
             findNavController().navigate(R.id.action_cartFragment_to_allAddressesFragment)
         }
         binding.btnCheckout.setOnClickListener {
-            if (selectedAddress != null) {
+            if (selectedAddress == null) {
                 VibratePhone()
                 showShortSnackBar("Select Location")
                 return@setOnClickListener
             }
+
         }
 
     }
